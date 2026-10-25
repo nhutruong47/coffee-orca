@@ -100,7 +100,7 @@ class OrderStateMachineTest {
     @Test
     void terminalStatusesAreTerminal() {
         assertTrue(OrderStatus.CANCELED.isTerminal());
-        assertTrue(OrderStatus.REJECTED.isTerminal());
+        assertFalse(OrderStatus.REJECTED.isTerminal()); // Can be revived by Re-quoting
         assertTrue(OrderStatus.REFUNDED.isTerminal());
         assertFalse(OrderStatus.CONFIRMED.isTerminal());
         assertFalse(OrderStatus.DISPUTED.isTerminal());

@@ -51,15 +51,15 @@ class TrustScoreServiceTest {
     }
 
     @Test
-    @DisplayName("Team mới (0 completed, 0 cancelled) → trustScore = 100")
+    @DisplayName("Team mới (0 completed, 0 cancelled) → trustScore = -1 (chưa có dữ liệu)")
     void newTeam_hasFullTrust() {
-        assertThat(service.calculate(team(0, 0))).isEqualTo(100);
+        assertThat(service.calculate(team(0, 0))).isEqualTo(-1);
     }
 
     @Test
-    @DisplayName("Team 8 completed, 2 cancelled → 80%")
+    @DisplayName("Team 8 completed, 2 cancelled → capped at 100")
     void team_eightOfTen() {
-        assertThat(service.calculate(team(8, 2))).isEqualTo(80);
+        assertThat(service.calculate(team(8, 2))).isEqualTo(100);
     }
 
     @Test
@@ -69,15 +69,15 @@ class TrustScoreServiceTest {
     }
 
     @Test
-    @DisplayName("User 6 completed, 4 cancelled → 60% (cùng công thức Team)")
+    @DisplayName("User 6 completed, 4 cancelled → 80%")
     void user_sixOfTen() {
-        assertThat(service.calculate(user(6, 4))).isEqualTo(60);
+        assertThat(service.calculate(user(6, 4))).isEqualTo(80);
     }
 
     @Test
-    @DisplayName("User mới → 100%")
+    @DisplayName("User mới → -1")
     void newUser_hasFullTrust() {
-        assertThat(service.calculate(user(0, 0))).isEqualTo(100);
+        assertThat(service.calculate(user(0, 0))).isEqualTo(-1);
     }
 
     @Test
