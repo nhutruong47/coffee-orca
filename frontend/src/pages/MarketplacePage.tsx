@@ -1621,7 +1621,7 @@ export default function MarketplacePage() {
                                             <div className="mp-fcard-type" style={{color: 'var(--text-muted)', fontSize: 13, marginBottom: 8}}>
                                                 {t[factory.factoryType || ''] || factory.factoryType || t.roastery} • {factory.yearsInOperationMock} {t.yearsInOperation}
                                             </div>
-                                            <div className="mp-fcard-tags" style={{display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 16}}>
+                                            <div className="mp-fcard-tags" style={{display: 'flex', gap: 6, flexWrap: 'wrap', minHeight: 48, alignContent: 'flex-start', marginBottom: 12}}>
                                                 {factory.specializationsMock?.slice(0, 3).map(tag => (
                                                     <span key={tag} style={{background: 'rgba(255,255,255,0.05)', padding: '4px 8px', borderRadius: 4, fontSize: 12, border: '1px solid rgba(255,255,255,0.1)'}}>{t[tag.replace(' ', '_')] || tag}</span>
                                                 ))}
