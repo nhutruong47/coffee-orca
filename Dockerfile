@@ -11,5 +11,6 @@ RUN mvn clean package -DskipTests
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 COPY --from=build /app/target/backend-0.0.1-SNAPSHOT.jar app.jar
+ENV PORT=8080
 EXPOSE 8080
-ENTRYPOINT ["sh", "-c", "java -XX:+UseSerialGC -XX:MaxRAMPercentage=75.0 -Dspring.profiles.active=prod -Dserver.port=${PORT:-8080} -jar app.jar"]
+ENTRYPOINT ["sh", "-c", "exec java -XX:+UseSerialGC -XX:MaxRAMPercentage=75.0 -Dspring.profiles.active=prod -Dserver.port=${PORT:-8080} -jar app.jar"]
