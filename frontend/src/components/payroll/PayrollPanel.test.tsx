@@ -72,6 +72,8 @@ describe('PayrollPanel', () => {
     it('shows attendance-based payroll without task or adjustment metrics', async () => {
         render(<PayrollPanel teamId="team-1" />);
 
+        fireEvent.click(screen.getByRole('button', { name: /Xem bảng/i }));
+
         await waitFor(() => expect(screen.getAllByText('Trần Quốc Bảo').length).toBeGreaterThan(0));
         expect(screen.getAllByText('5 ngày · 9,5 giờ').length).toBeGreaterThan(0);
         expect(screen.getAllByText('375.000 đ').length).toBeGreaterThan(0);

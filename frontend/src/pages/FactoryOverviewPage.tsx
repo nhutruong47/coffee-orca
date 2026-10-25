@@ -84,13 +84,13 @@ export default function FactoryOverviewPage() {
                 const price = 0; // InterGroupOrder DTO không expose giá — bỏ qua phần revenue
                 if (price > 0) {
                     totalRevenue += price * qty;
-                    const created = new Date(o.createdAt ?? Date.now());
+                    const created = new Date(o.createdAt ?? 0);
                     const m = created.getMonth();
                     revenueByMonth[m] = (revenueByMonth[m] ?? 0) + price * qty;
                     ordersByMonth[m] = (ordersByMonth[m] ?? 0) + 1;
                 } else {
                     // Tính orders theo tháng ngay cả khi chưa có giá
-                    const created = new Date(o.createdAt ?? Date.now());
+                    const created = new Date(o.createdAt ?? 0);
                     const m = created.getMonth();
                     ordersByMonth[m] = (ordersByMonth[m] ?? 0) + 1;
                 }
