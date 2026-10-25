@@ -320,7 +320,7 @@ export default function AdminPage() {
 
     setAdminLoading(true);
     setAdminError('');
-    Promise.all([
+    Promise.allSettled([
       adminService.getOverview(),
       adminService.getUsers(0, 1000, ''),
       adminService.getTeams(0, 1000, ''),
@@ -328,13 +328,18 @@ export default function AdminPage() {
       adminService.getPlans(),
       adminService.getLogs(0, 100, ''),
     ])
-      .then(([overviewData, userData, teamData, paymentData, plansData, logsData]) => {
-        setOverview({ ...emptyOverview, ...overviewData });
-        setAdminUsers(userData.content || []);
-        setAdminTeams(teamData.content || []);
-        setAdminPayments(paymentData.content || []);
-        setPlans(plansData || []);
-        setSystemLogs(logsData.content || []);
+      .then(([overviewRes, userRes, teamRes, paymentRes, plansRes, logsRes]) => {
+        if (overviewRes.status === 'fulfilled') setOverview({ ...emptyOverview, ...overviewRes.value });
+        if (userRes.status === 'fulfilled') setAdminUsers(userRes.value?.content || []);
+        if (teamRes.status === 'fulfilled') setAdminTeams(teamRes.value?.content || []);
+        if (paymentRes.status === 'fulfilled') setAdminPayments(paymentRes.value?.content || []);
+        if (plansRes.status === 'fulfilled') setPlans(plansRes.value || []);
+        if (logsRes.status === 'fulfilled') setSystemLogs(logsRes.value?.content || []);
+
+        const allFailed = [overviewRes, userRes, teamRes, paymentRes, plansRes, logsRes].every(r => r.status === 'rejected');
+        if (allFailed) {
+          setAdminError('Không tải được thống kê thật từ hệ thống.');
+        }
       })
       .catch(() => {
         setAdminError('Không tải được thống kê thật từ hệ thống.');
