@@ -81,11 +81,13 @@ class InterGroupOrderServiceTest {
         trustScoreService = mock(TrustScoreService.class);
         orderProofImageRepo = mock(OrderProofImageRepository.class);
         orderEventLogRepo = mock(OrderEventLogRepository.class);
+        OutboxEventService outboxEventService = mock(OutboxEventService.class);
 
         service = new InterGroupOrderService(
                 orderRepo, teamRepo, goalRepo, notificationService,
                 reviewRepo, inventoryService, userRepository,
-                stateMachine, trustScoreService, orderProofImageRepo, orderEventLogRepo
+                stateMachine, trustScoreService, orderProofImageRepo, orderEventLogRepo,
+                outboxEventService
         );
 
         sellerOwner = new User();

@@ -36,6 +36,7 @@ public class InterGroupOrderService {
     private final TrustScoreService trustScoreService;
     private final org.example.backend.repository.OrderProofImageRepository orderProofImageRepo;
     private final org.example.backend.repository.OrderEventLogRepository orderEventLogRepo;
+    private final OutboxEventService outboxEventService;
 
     public InterGroupOrderService(InterGroupOrderRepository orderRepo, TeamRepository teamRepo,
             GoalRepository goalRepo, NotificationService notificationService,
@@ -44,7 +45,8 @@ public class InterGroupOrderService {
             OrderStateMachine stateMachine,
             TrustScoreService trustScoreService,
             org.example.backend.repository.OrderProofImageRepository orderProofImageRepo,
-            org.example.backend.repository.OrderEventLogRepository orderEventLogRepo) {
+            org.example.backend.repository.OrderEventLogRepository orderEventLogRepo,
+            OutboxEventService outboxEventService) {
         this.orderRepo = orderRepo;
         this.teamRepo = teamRepo;
         this.goalRepo = goalRepo;
@@ -56,6 +58,7 @@ public class InterGroupOrderService {
         this.trustScoreService = trustScoreService;
         this.orderProofImageRepo = orderProofImageRepo;
         this.orderEventLogRepo = orderEventLogRepo;
+        this.outboxEventService = outboxEventService;
     }
 
 
@@ -215,6 +218,7 @@ public class InterGroupOrderService {
         teamRepo.save(buyerTeam);
 
         InterGroupOrder saved = orderRepo.save(order);
+        outboxEventService.publish("InterGroupOrder", saved.getId().toString(), "ORDER_CREATED", java.util.Map.of("id", saved.getId(), "status", String.valueOf(saved.getStatus())));
 
         // Notify seller team owner about new order
         notifyUser(sellerTeam.getOwner(),

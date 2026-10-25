@@ -18,4 +18,6 @@ public interface InterGroupOrderRepository extends JpaRepository<InterGroupOrder
     // Đơn xưởng khác đặt mình (Xưởng của mình là Seller)
     @EntityGraph(attributePaths = {"buyerTeam", "buyerUser", "sellerTeam"})
     List<InterGroupOrder> findBySellerTeamIdOrderByCreatedAtDesc(UUID sellerTeamId);
+
+    List<InterGroupOrder> findByStatusAndDeadlineBefore(String status, java.time.LocalDateTime cutoff);
 }
