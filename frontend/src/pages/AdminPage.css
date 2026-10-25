@@ -461,10 +461,10 @@
 }
 
 .admin-table th {
-  padding: 14px 16px;
+  padding: 10px 12px;
   background: var(--bg-input);
   color: var(--text-secondary);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -473,10 +473,10 @@
 }
 
 .admin-table td {
-  padding: 16px;
+  padding: 10px 12px;
   border-bottom: 1px solid var(--border);
   color: var(--text-primary);
-  font-size: 14px;
+  font-size: 13px;
   vertical-align: middle;
 }
 
