@@ -96,6 +96,7 @@ export default function Sidebar() {
 
     const adminNavItems = [
         { path: '/admin?section=overview', label: 'Tổng quan & Phân tích', icon: 'speedometer-outline' },
+        { path: '/forecast', label: 'Dự báo giá AI', icon: 'trending-up-outline' },
         { path: '/admin?section=workspace_requests', label: 'Yêu cầu mở xưởng', icon: 'person-add-outline' },
         { path: '/admin?section=companies', label: 'Quản lý doanh nghiệp', icon: 'business-outline' },
         { path: '/admin?section=users', label: 'Quản lý người dùng', icon: 'people-outline' },

@@ -22,8 +22,8 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // Redirect ADMIN away from standard user pages (dashboard, groups, etc)
-  if (user?.role === 'ADMIN' && !location.pathname.startsWith('/admin') && !['/profile', '/settings'].includes(location.pathname)) {
+  // Redirect ADMIN away from standard user pages (dashboard, groups, etc), but allow forecast, marketplace, profile, settings
+  if (user?.role === 'ADMIN' && !location.pathname.startsWith('/admin') && !['/profile', '/settings', '/forecast', '/du-bao-gia', '/marketplace'].includes(location.pathname)) {
     return <Navigate to="/admin" replace />;
   }
 
