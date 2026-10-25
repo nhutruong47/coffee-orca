@@ -20,7 +20,7 @@ function MetricPill({ label, value, unit, color }: { label: string; value: strin
 }
 
 function ProgressBar({ value, max = 100, color, height = 8 }: { value: number; max?: number; color?: string; height?: number }) {
-    const pct = Math.min(100, Math.max(0, (value / max) * 100));
+    const pct = max > 0 ? Math.min(100, Math.max(0, (value / max) * 100)) : 0;
     const barColor = color || (pct >= 100 ? '#10b981' : pct >= 80 ? '#f59e0b' : '#ef4444');
     return (
         <div style={{ background: 'var(--bg-input)', borderRadius: height, height, overflow: 'hidden' }}>
@@ -47,7 +47,7 @@ function StageRow({ label, target, actual, color }: { label: string; target: num
             <ProgressBar value={actual} max={target} color={color} />
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4, fontSize: 11, color: 'var(--text-muted)' }}>
                 <span>{pct.toFixed(1)}%</span>
-                <span>Con {remaining.toLocaleString('vi-VN')} kg</span>
+                <span>Còn {remaining.toLocaleString('vi-VN')} kg</span>
             </div>
         </div>
     );

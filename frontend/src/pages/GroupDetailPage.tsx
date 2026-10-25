@@ -1,7 +1,7 @@
 import { Fragment, useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { teamService, goalService, taskService, getTrialStatus, chatService, inventoryService, notificationService } from '../services/groupService';
+import { teamService, goalService, taskService, getTrialStatus, chatService, inventoryService, notificationService, productionService } from '../services/groupService';
 import { attendanceService } from '../services/attendanceService';
 import type { AttendanceDTO, AttendanceSettingsDTO } from '../services/attendanceService';
 import type { AttendanceCorrectionDTO } from '../services/attendanceService';
@@ -1392,10 +1392,10 @@ export default function GroupDetailPage() {
                                     status: 'IN_PROGRESS',
                                 } as any);
                                 const stages = [
-                                    { title: `[QC Đầu Vào] Sàng phân cỡ & đo độ ẩm nhân xanh 11.5-12.5% (${batchCode})`, stage: 'QA', target: 588.2, workload: 2 },
-                                    { title: `[Rang Mẻ] Gia công rang chuẩn Profile Medium & tách đá Destoner (${batchCode})`, stage: 'RANG', target: 500, workload: 4 },
-                                    { title: `[Cupping & QC] Đo màu Agtron #58, thử nếm SCA 85+ & Degassing (${batchCode})`, stage: 'QA', target: 500, workload: 1.5 },
-                                    { title: `[Đóng Gói] Đóng túi van 1 chiều, hàn nhiệt & dán tem truy xuất (${batchCode})`, stage: 'DONG_GOI', target: 500, workload: 2.5 },
+                                    { title: `[1. QC Đầu Vào] Sàng phân cỡ & đo độ ẩm nhân xanh 11.5-12.5% (${batchCode})`, stage: 'QA', target: 588.2, workload: 2 },
+                                    { title: `[2. Rang Mẻ] Gia công rang chuẩn Profile Medium & tách đá Destoner (${batchCode})`, stage: 'RANG', target: 500, workload: 4 },
+                                    { title: `[3. Cupping & QC] Đo màu Agtron #58, thử nếm SCA 85+ & Degassing (${batchCode})`, stage: 'QA', target: 500, workload: 1.5 },
+                                    { title: `[4. Đóng Gói] Đóng túi van 1 chiều, hàn nhiệt & dán tem truy xuất (${batchCode})`, stage: 'DONG_GOI', target: 500, workload: 2.5 },
                                 ];
                                 for (const s of stages) {
                                     await taskService.create({
@@ -1408,6 +1408,33 @@ export default function GroupDetailPage() {
                                         priority: 1,
                                     } as any);
                                 }
+                                try {
+                                    const todayStr = new Date().toISOString().split('T')[0];
+                                    const nextWeek = new Date();
+                                    nextWeek.setDate(nextWeek.getDate() + 7);
+                                    const delivStr = nextWeek.toISOString().split('T')[0];
+                                    const createdOrder = await productionService.createOrder(id, {
+                                        title: `Lô Rang ${batchCode} - Fine Robusta & Arabica Chuẩn SCA`,
+                                        customerName: 'Đối tác Chuỗi Cà Phê Đặc Sản ORCA',
+                                        productType: 'Robusta',
+                                        processType: 'Rang nguyên hạt SCA',
+                                        roastLevel: 'Medium',
+                                        packageSize: '1kg',
+                                        outputTarget: 500,
+                                        expectedYield: 0.85,
+                                        unit: 'kg',
+                                        orderDate: todayStr,
+                                        productionStartDate: todayStr,
+                                        customerDeliveryDate: delivStr,
+                                        safetyBufferDays: 2,
+                                    } as any);
+                                    if (createdOrder?.id) {
+                                        const plan = await productionService.generatePlan(createdOrder.id);
+                                        if (plan?.id) {
+                                            await productionService.approvePlan(plan.id);
+                                        }
+                                    }
+                                } catch { /* ignore if production order already exists */ }
                                 const updatedGoals = await goalService.getByTeam(id);
                                 setGoals(updatedGoals);
                                 const taskArrays = await Promise.all(updatedGoals.map(g => taskService.getByGoal(g.id)));
@@ -1560,27 +1587,27 @@ export default function GroupDetailPage() {
                             <ion-icon name="flag-outline" style={{ fontSize: 18 }}></ion-icon>
                         </span>
                         <div style={{ minWidth: 0 }}>
-                            <div style={{ fontSize: 11, color: 'var(--primary)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Muc tieu san xuat</div>
+                            <div style={{ fontSize: 11, color: 'var(--primary)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Mục tiêu sản xuất</div>
                             <h3 style={{ margin: 0, fontSize: 17, fontWeight: 800, color: 'var(--text-primary)', lineHeight: 1.35 }}>{latestGoal.title}</h3>
                             <div style={{ marginTop: 6, color: 'var(--text-secondary)', fontSize: 13 }}>{latestGoal.outputTarget || latestGoal.rawInstruction}</div>
                         </div>
                     </div>
-                    <span style={{ background: 'rgba(212, 165, 116, 0.15)', color: 'var(--primary)', padding: '5px 10px', borderRadius: 8, fontSize: 11, fontWeight: 800, whiteSpace: 'nowrap' }}>CAP NHAT MOI NHAT</span>
+                    <span style={{ background: 'rgba(212, 165, 116, 0.15)', color: 'var(--primary)', padding: '5px 10px', borderRadius: 8, fontSize: 11, fontWeight: 800, whiteSpace: 'nowrap' }}>CẬP NHẬT MỚI NHẤT</span>
                 </div>
                 <div style={{ padding: 20 }}>
-                    <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10 }}>Roadmap tu task database</div>
+                    <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10 }}>Lộ trình công đoạn sản xuất (Tự động đồng bộ)</div>
                     <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid var(--border)', borderRadius: 10, overflow: 'hidden' }}>
                         <thead>
                             <tr style={{ background: 'var(--bg-secondary)' }}>
-                                {['STT', 'Cong viec', 'Nguoi chinh', 'Du phong', 'Trang thai', 'Tien do'].map((h, i) => (
+                                {['STT', 'Công việc & Định mức', 'Người phụ trách', 'Dự phòng', 'Trạng thái', 'Tiến độ'].map((h, i) => (
                                     <th key={i} style={{ padding: '10px 12px', textAlign: 'left', fontSize: 11, fontWeight: 800, color: 'var(--text-secondary)', borderBottom: '1px solid var(--border)' }}>{h}</th>
                                 ))}
                             </tr>
                         </thead>
                         <tbody>
                             {latestGoalTasks.length === 0 ? (
-                                <tr><td colSpan={6} style={{ textAlign: 'center', padding: 28, color: 'var(--text-muted)', fontSize: 13 }}>Chua co task trong database</td></tr>
-                            ) : latestGoalTasks.map((task, index) => {
+                                <tr><td colSpan={6} style={{ textAlign: 'center', padding: 28, color: 'var(--text-muted)', fontSize: 13 }}>Chưa có công đoạn nào trong mục tiêu này</td></tr>
+                            ) : [...latestGoalTasks].sort((a, b) => (a.title || '').localeCompare(b.title || '')).map((task, index) => {
                                 const actual = Number(task.actualOutput ?? 0);
                                 const target = Number(task.outputTarget ?? 0);
                                 const progressPct = target > 0 ? Math.min(100, Math.round((actual / target) * 100)) : (task.completionPercentage || 0);
@@ -1601,7 +1628,11 @@ export default function GroupDetailPage() {
                                         <td style={{ padding: '10px 12px', color: 'var(--text-secondary)', fontSize: 13 }}>{index + 1}</td>
                                         <td style={{ padding: '10px 12px' }}>
                                             <div style={{ color: 'var(--text-primary)', fontWeight: 700, fontSize: 13 }}>{task.title}</div>
-                                            <div style={{ color: 'var(--text-secondary)', fontSize: 11, marginTop: 2 }}>{task.productionStage || task.taskCode}</div>
+                                            <div style={{ color: 'var(--text-secondary)', fontSize: 11, marginTop: 2 }}>
+                                                {task.productionStage || task.taskCode}
+                                                {target > 0 ? ` • Định mức: ${target.toLocaleString('vi-VN')} kg` : ''}
+                                                {task.workload ? ` • Thời lượng: ${task.workload} giờ` : ''}
+                                            </div>
                                             {task.dependencyTaskTitles && task.dependencyTaskTitles.length > 0 && <div style={{ color: '#dc2626', fontSize: 11, marginTop: 3 }}>Depends on: {task.dependencyTaskTitles.join(', ')}</div>}
                                         </td>
                                         <td style={{ padding: '10px 12px', color: 'var(--text-secondary)', fontSize: 13 }}>{task.memberName || '-'}</td>
