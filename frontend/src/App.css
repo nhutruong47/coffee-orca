@@ -549,6 +549,13 @@
   background: var(--bg-primary);
 }
 
+@media (min-height: 750px) {
+  .login-split {
+    height: 100vh;
+    overflow: hidden;
+  }
+}
+
 /* --- HERO SIDE --- */
 .login-hero {
   flex: 1.2;
@@ -3876,8 +3883,34 @@
 .login-hero {
   min-height: 100vh;
   align-items: center;
-  padding: clamp(20px, 3vw, 40px);
+  padding: clamp(16px, 2.5vw, 32px);
   box-sizing: border-box;
+}
+
+@media (max-height: 720px) {
+  .login-hero-title {
+    font-size: 1.4rem !important;
+    margin-bottom: 4px !important;
+  }
+  .login-hero-desc {
+    display: none;
+  }
+  .login-hero-badge {
+    margin-bottom: 6px !important;
+  }
+  .login-brands-list {
+    gap: 6px !important;
+  }
+  .login-brand-card {
+    min-height: 42px !important;
+    padding: 4px 6px !important;
+  }
+  .login-form-container {
+    padding: 24px 20px !important;
+  }
+  .login-form-header {
+    margin-bottom: 12px !important;
+  }
 }
 
 .login-hero-img {
