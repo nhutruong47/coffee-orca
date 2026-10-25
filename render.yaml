@@ -45,6 +45,18 @@ services:
       - key: GEMINI_API_KEY
         sync: false
 
+  - type: web
+    name: orca-frontend
+    env: static
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    publishPath: dist
+    autoDeploy: true
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
 databases:
   - name: orca-db
     plan: free # Change to starter/standard if needed
