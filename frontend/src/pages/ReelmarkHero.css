@@ -277,7 +277,7 @@
   width: calc(34 * var(--u));
   height: calc(34 * var(--u));
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.45);
+  background: rgba(0, 0, 0, 0.45);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   display: flex;
@@ -285,7 +285,8 @@
   justify-content: center;
   color: #fff;
   z-index: 5;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .play-pill svg {
@@ -419,7 +420,8 @@
     font-size: 14.5px;
     line-height: 1.55;
     margin-bottom: 16px;
-    max-width: 96%;
+    max-width: 320px;
+    text-wrap: balance;
     padding: 0;
   }
 
@@ -430,6 +432,19 @@
     height: 300px;
     margin: 8px 0 16px 0;
     overflow: hidden;
+  }
+
+  .play-pill {
+    width: 36px;
+    height: 36px;
+    bottom: 12px;
+    left: 12px;
+    background: rgba(0, 0, 0, 0.55);
+  }
+
+  .play-pill svg {
+    width: 18px;
+    height: 18px;
   }
 
   .cta-container {
