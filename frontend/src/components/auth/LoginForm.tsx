@@ -56,10 +56,12 @@ export default function LoginForm({ returnUrl }: LoginFormProps) {
                 localStorage.removeItem('orca_remember_username');
                 localStorage.removeItem('orca_remember_password');
             }
-            const savedUserStr = sessionStorage.getItem('user');
+            const savedUserStr = localStorage.getItem('user') || sessionStorage.getItem('user');
             const savedUser = savedUserStr ? JSON.parse(savedUserStr) : null;
             let finalUrl = returnUrl;
-            if (finalUrl.startsWith('/admin') && savedUser?.role !== 'ADMIN') {
+            if (finalUrl === '/login' || finalUrl === '/') {
+                finalUrl = savedUser?.role === 'ADMIN' ? '/admin' : '/dashboard';
+            } else if (finalUrl.startsWith('/admin') && savedUser?.role !== 'ADMIN') {
                 finalUrl = '/dashboard';
             }
 
