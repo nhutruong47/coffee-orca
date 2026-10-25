@@ -40,7 +40,7 @@ export function isPaymentRequiredError(error: any) {
 // Interceptor: tự động gắn JWT token vào mọi request
 api.interceptors.request.use(
     (config) => {
-        const token = sessionStorage.getItem('token');
+        const token = sessionStorage.getItem('token') || localStorage.getItem('token');
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
@@ -56,8 +56,12 @@ api.interceptors.response.use(
             // Token hết hạn hoặc không hợp lệ
             sessionStorage.removeItem('token');
             sessionStorage.removeItem('user');
-            // Redirect về login nếu không ở trang auth
-            if (!window.location.pathname.includes('/login') && !window.location.pathname.includes('/register')) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            // Chỉ redirect về login nếu đang ở route được bảo vệ (không phải trang công khai)
+            const publicPrefixes = ['/login', '/register', '/forecast', '/du-bao-gia', '/marketplace', '/dat-hang', '/thi-truong'];
+            const isPublicPage = window.location.pathname === '/' || publicPrefixes.some(p => window.location.pathname.startsWith(p));
+            if (!isPublicPage) {
                 window.location.href = '/login';
             }
         }

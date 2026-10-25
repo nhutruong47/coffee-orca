@@ -523,7 +523,7 @@ export default function MarketplacePage() {
                 setError('');
                 const [teamsAllResult, teamsMineResult] = await Promise.allSettled([
                     teamService.getAllTeams(),
-                    teamService.getMyTeams()
+                    user ? teamService.getMyTeams() : Promise.resolve([])
                 ]);
                 let teamsAll: Team[] = [];
                 if (teamsAllResult.status === 'fulfilled') {
