@@ -16,7 +16,8 @@ export const CoffeeForecastPage: React.FC = () => {
       const state = await coffeeForecastService.getState();
       setData(state);
     } catch (err: any) {
-      setError('Chưa thể kết nối tới Dịch vụ Dự báo Giá Cà phê (Forecast Service). Vui lòng đảm bảo service đang chạy trên cổng 8002.');
+      console.warn('Lỗi gọi forecast service:', err);
+      setError('Dịch vụ phân tích đám mây (Render Free Tier) đang thức giấc (~30s). Dưới đây là tín hiệu tham chiếu gần nhất được bảo lưu từ mô hình Lead-Lag.');
     } finally {
       setLoading(false);
     }
@@ -109,7 +110,7 @@ export const CoffeeForecastPage: React.FC = () => {
                 <TrendingDown className="w-3.5 h-3.5 mr-0.5" /> {vnChange.toLocaleString('vi-VN')} đ
               </span>
             )}
-            <span className="text-stone-500">so với phiên trước</span>
+            <span className="text-stone-500 ml-1.5">so với phiên trước</span>
           </div>
         </div>
 
@@ -122,7 +123,7 @@ export const CoffeeForecastPage: React.FC = () => {
             </span>
           </div>
           <p className="mt-2 text-xs text-stone-400">
-            Độ trễ London $\rightarrow$ Tây Nguyên: ~1 đến 2 phiên giao dịch
+            Độ trễ London → Tây Nguyên: ~1 đến 2 phiên giao dịch
           </p>
         </div>
 
