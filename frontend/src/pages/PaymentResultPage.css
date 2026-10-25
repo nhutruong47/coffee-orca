@@ -1,0 +1,128 @@
+﻿.payment-result-page {
+    min-height: 70vh;
+    display: grid;
+    place-items: center;
+    color: var(--text-primary);
+}
+
+.payment-result-card {
+    width: min(560px, 100%);
+    display: grid;
+    justify-items: center;
+    gap: 14px;
+    padding: 34px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-card);
+    box-shadow: var(--shadow-md);
+    text-align: center;
+}
+
+.payment-result-icon {
+    width: 68px;
+    height: 68px;
+    display: grid;
+    place-items: center;
+    border-radius: 999px;
+    background: var(--success-soft);
+    color: var(--success);
+    border: 1px solid var(--success);
+}
+
+.payment-result-card.failed .payment-result-icon {
+    background: var(--danger-soft);
+    color: var(--danger);
+    border-color: var(--danger);
+}
+
+.payment-result-kicker {
+    color: var(--primary);
+    font-size: 12px;
+    font-weight: 850;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.payment-result-card h1 {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: 30px;
+    line-height: 1.15;
+}
+
+.payment-result-card p {
+    max-width: 430px;
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+.payment-result-photo {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+}
+
+.payment-result-details {
+    width: 100%;
+    display: grid;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.payment-result-details div {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 14px;
+    border-radius: 8px;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+}
+
+.payment-result-details span {
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.payment-result-details strong {
+    color: var(--text-primary);
+    text-align: right;
+}
+
+.payment-result-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.payment-result-primary,
+.payment-result-secondary {
+    min-height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 850;
+}
+
+.payment-result-primary {
+    background: var(--primary);
+    color: var(--text-on-accent);
+}
+
+.payment-result-secondary {
+    color: var(--text-primary);
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+}

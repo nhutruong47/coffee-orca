@@ -1,0 +1,353 @@
+﻿/* PREMIUM PROFILE STYLES — token-based */
+
+.profile-header-backdrop {
+    position: absolute;
+    top: -20px; left: -20px; right: -20px; bottom: -20px;
+    background-size: cover;
+    background-position: center;
+    filter: blur(20px) brightness(0.4);
+    z-index: 0;
+    opacity: 0.6;
+}
+
+.avatar-edit-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    opacity: 0;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(4px);
+}
+
+.profile-avatar-large:hover .avatar-edit-overlay { opacity: 1; }
+
+.avatar-edit-btn {
+    background: var(--glass-bg);
+    border: 1px solid var(--border-strong);
+    color: var(--text-primary);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 20px;
+}
+
+.avatar-edit-btn:hover {
+    background: var(--accent-soft);
+    transform: scale(1.1);
+}
+
+.avatar-uploading-spinner {
+    position: absolute;
+    inset: 0;
+    background: var(--modal-overlay);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--info);
+    font-size: 32px;
+}
+
+.profile-edit-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 16px;
+}
+
+.premium-input-group {
+    position: relative;
+    width: 100%;
+}
+
+.premium-input {
+    width: 100%;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    padding: 16px 20px 16px 45px;
+    border-radius: 12px;
+    color: var(--text-primary);
+    font-size: 15px;
+    transition: all 0.3s ease;
+    outline: none;
+    box-shadow: var(--shadow-sm);
+}
+
+[data-theme="light"] .premium-input {
+    background: var(--bg-card);
+    border-color: var(--border);
+}
+
+.premium-input:focus,
+.premium-input:valid {
+    border-color: var(--primary);
+    background: var(--bg-input);
+}
+
+.premium-label {
+    position: absolute;
+    left: 45px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    font-size: 15px;
+    transition: all 0.3s ease;
+    pointer-events: none;
+}
+
+.premium-input:focus ~ .premium-label,
+.premium-input:valid ~ .premium-label {
+    top: -10px;
+    left: 15px;
+    font-size: 12px;
+    background: var(--bg-card);
+    padding: 0 5px;
+    color: var(--primary);
+    border-radius: 4px;
+}
+
+[data-theme="light"] .premium-input:focus ~ .premium-label,
+[data-theme="light"] .premium-input:valid ~ .premium-label {
+    background: var(--bg-card);
+}
+
+.premium-input-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    font-size: 20px;
+    transition: all 0.3s ease;
+}
+
+.premium-input:focus ~ .premium-input-icon {
+    color: var(--primary);
+}
+
+/* WEBCAM MODAL */
+.webcam-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: var(--modal-overlay);
+    backdrop-filter: blur(8px);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.webcam-modal {
+    width: 90%;
+    max-width: 500px;
+    border-radius: 20px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background: var(--modal-bg);
+    border: 1px solid var(--modal-border);
+    color: var(--text-primary);
+}
+
+.webcam-header {
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+}
+
+[data-theme="light"] .webcam-header { border-bottom-color: var(--border); }
+
+.webcam-header h3 { margin: 0; font-size: 18px; font-weight: 600; }
+
+.close-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 24px;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.close-btn:hover { color: var(--danger); }
+
+.webcam-body {
+    background: #000;
+    position: relative;
+    aspect-ratio: 4/3;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.webcam-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scaleX(-1);
+}
+
+.webcam-footer {
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.capture-btn {
+    padding: 12px 30px;
+    border-radius: 30px;
+    font-size: 16px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: var(--shadow-md);
+}
+
+.profile-feedback {
+    position: sticky;
+    top: 12px;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 16px;
+    border: 1px solid;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.profile-feedback.success {
+    color: var(--success);
+    background: var(--success-soft);
+    border-color: var(--success);
+}
+
+.profile-feedback.error {
+    color: var(--danger);
+    background: var(--danger-soft);
+    border-color: var(--danger);
+}
+
+.profile-feedback button,
+.profile-password-close {
+    margin-left: auto;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+.profile-security-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.profile-security-actions button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 42px;
+    padding: 10px 16px;
+}
+
+.profile-password-panel {
+    padding: 20px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--bg-input);
+}
+
+.profile-password-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.profile-password-heading h3 {
+    margin: 0 0 5px;
+    color: var(--text-primary);
+    font-size: 17px;
+}
+
+.profile-password-heading p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 13px;
+}
+
+.profile-password-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.profile-password-grid label {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.profile-password-grid input {
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    outline: none;
+    background: var(--bg-card);
+    color: var(--text-primary);
+}
+
+.profile-password-grid input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.profile-password-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.profile-password-actions button {
+    min-width: 110px;
+    min-height: 42px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    font-weight: 700;
+    cursor: pointer;
+}
+
+@media (max-width: 720px) {
+    .profile-edit-grid,
+    .profile-password-grid { grid-template-columns: 1fr; }
+
+    .profile-security-actions,
+    .profile-password-actions { flex-direction: column; }
+
+    .profile-security-actions button,
+    .profile-password-actions button { width: 100%; }
+}

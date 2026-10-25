@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8" />
+  <!-- ORCA-V2-LIVE-UPDATE-2026-03-21 -->
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover" />
+  <meta name="description" content="ORCA Factory Manager" />
+  <title>ORCA Factory Manager</title>
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+  <script>
+    if (typeof global === 'undefined') {
+      window.global = window;
+    }
+    if (typeof process === 'undefined') {
+      window.process = { env: {} };
+    }
+    // Apply theme synchronously before React hydration to prevent FOUC.
+    (function () {
+      try {
+        var saved = localStorage.getItem('orca-theme');
+        var mode = (saved === 'light' || saved === 'dark' || saved === 'system') ? saved : 'dark';
+        var resolved = mode;
+        if (mode === 'system') {
+          try {
+            resolved = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches
+              ? 'light' : 'dark';
+          } catch (e) { resolved = 'dark'; }
+        }
+        document.documentElement.setAttribute('data-theme', resolved);
+        document.documentElement.style.colorScheme = resolved;
+        document.documentElement.setAttribute('data-theme-mode', mode);
+      } catch (e) { /* ignore */ }
+    })();
+  </script>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+
+</html>

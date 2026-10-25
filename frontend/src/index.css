@@ -1,0 +1,341 @@
+/* ============================================================
+ *  ORCA Theme System  v2.1
+ *  Two truly distinct modes:
+ *    Light = warm pale yellow    + coffee goldenrod
+ *    Dark  = warm espresso brown + caramel
+ *  Tokens are split into two sets inside [data-theme="dark"]
+ *  and [data-theme="light"].
+ *  Components MUST use only token names (var(--bg-primary),
+ *  var(--text-primary), var(--primary), ...).
+ *  No hex colors inside component CSS.
+ * ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+/* ===== Shared (non-color) tokens ===== */
+:root {
+  --font: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+
+  --sidebar-width: 260px;
+  --topbar-height: 64px;
+
+  --fs-xs:  clamp(10px, 2vw,   12px);
+  --fs-sm:  clamp(12px, 2.5vw, 14px);
+  --fs-base:clamp(13px, 3vw,   15px);
+  --fs-lg:  clamp(14px, 3.5vw, 18px);
+  --fs-xl:  clamp(16px, 4vw,   20px);
+  --fs-2xl: clamp(18px, 4.5vw, 24px);
+  --fs-3xl: clamp(22px, 5.5vw, 28px);
+  --fs-4xl: clamp(28px, 7vw,   36px);
+  --fs-5xl: clamp(36px, 8.5vw, 48px);
+
+  --space-xs:  clamp(4px,  1vw,   8px);
+  --space-sm:  clamp(8px,  1.5vw, 12px);
+  --space-md:  clamp(12px, 2vw,   16px);
+  --space-lg:  clamp(16px, 2.5vw, 24px);
+  --space-xl:  clamp(24px, 3.5vw, 32px);
+  --space-2xl: clamp(32px, 4.5vw, 48px);
+
+  /* Chart categorical palette (works in both themes) */
+  --chart-1: #3b82f6;
+  --chart-2: #10b981;
+  --chart-3: #f59e0b;
+  --chart-4: #ef4444;
+  --chart-5: #8b5cf6;
+  --chart-6: #ec4899;
+  --chart-7: #14b8a6;
+  --chart-8: #f97316;
+}
+
+/* ============================================================
+ *  DARK MODE  (default) — Warm Espresso + Caramel Goldenrod
+ * ============================================================ */
+:root,
+[data-theme="dark"] {
+  /* ---- Surfaces ---- */
+  --bg-primary:     #0F0A07;
+  --bg-secondary:   #1A120C;
+  --bg-tertiary:    #261A12;
+  --bg-card:        #1F1611;
+  --bg-card-hover:  #2A1E16;
+  --bg-input:       #2A1E16;
+  --bg-elevated:    #2D1F16;
+
+  /* ---- Borders ---- */
+  --border:         #3E2B1F;
+  --border-strong:  #5A4030;
+  --border-focus:   #D4A574;
+
+  /* ---- Text ---- */
+  --text-primary:   #F2E8DC;
+  --text-secondary: #C8B8A4;
+  --text-muted:     #8B7355;
+  --text-on-accent: #0F0A07;
+  --text-inverse:   #0F172A;
+
+  /* ---- Brand / Accent ---- */
+  --primary:        #D4A574;
+  --primary-hover:  #E2B888;
+  --primary-soft:   rgba(212, 165, 116, 0.16);
+
+  --secondary:      #B8860B;
+  --secondary-hover:#D4A574;
+
+  --accent:         #D4A574;
+  --accent-gradient:linear-gradient(135deg, #dfc27d 0%, #b8860b 50%, #8b6508 100%);
+  --accent-glow:    rgba(212, 165, 116, 0.3);
+  --accent-soft:    rgba(212, 165, 116, 0.12);
+
+  /* ---- Semantic ---- */
+  --success:        #34D399;
+  --success-soft:   rgba(52, 211, 153, 0.16);
+  --warning:        #FBBF24;
+  --warning-soft:   rgba(251, 191, 36, 0.16);
+  --danger:         #F87171;
+  --danger-soft:    rgba(248, 113, 113, 0.16);
+  --info:           #60A5FA;
+  --info-soft:      rgba(96, 165, 250, 0.16);
+
+  /* ---- Icon ---- */
+  --icon:           #D4A574;
+  --icon-muted:     #8B7355;
+
+  /* ---- Shadows (warm tinted) ---- */
+  --shadow-sm:      0 2px 4px rgba(0, 0, 0, 0.4);
+  --shadow-md:      0 4px 12px rgba(0, 0, 0, 0.45);
+  --shadow-lg:      0 12px 32px rgba(0, 0, 0, 0.55);
+  --shadow-xl:      0 24px 60px rgba(0, 0, 0, 0.65);
+  --shadow-glow:    0 0 24px rgba(212, 165, 116, 0.18);
+
+  /* ---- Glass / Overlay ---- */
+  --overlay-bg:     rgba(7, 10, 18, 0.78);
+  --glass-bg:       rgba(31, 22, 17, 0.65);
+  --glass-border:   rgba(255, 255, 255, 0.08);
+
+  /* ---- Tooltip ---- */
+  --tooltip-bg:     #0F0A07;
+  --tooltip-text:   #F2E8DC;
+
+  /* ---- Dropdown (popover) ---- */
+  --dropdown-bg:        #2D1F16;
+  --dropdown-border:    #3E2B1F;
+  --dropdown-item-hover:rgba(212, 165, 116, 0.14);
+  --dropdown-text:      #F2E8DC;
+
+  /* ---- Modal ---- */
+  --modal-bg:       #1F1611;
+  --modal-border:   #3E2B1F;
+  --modal-overlay:  rgba(0, 0, 0, 0.7);
+
+  /* ---- Table ---- */
+  --table-bg:       transparent;
+  --table-header-bg:rgba(212, 165, 116, 0.08);
+  --table-row-hover:rgba(212, 165, 116, 0.06);
+  --table-border:   #3E2B1F;
+
+  /* ---- Login hero text (always cream on dark image) ---- */
+  --hero-text:      #FFF7EC;
+  --hero-text-soft: rgba(255, 247, 236, 0.72);
+  --hero-accent:    #D4A574;
+}
+
+/* ============================================================
+ *  LIGHT MODE  — Cool Neutral White + Dark Goldenrod
+ * ============================================================ */
+[data-theme="light"] {
+  /* ---- Surfaces ---- */
+  --bg-primary:     #FFF8E8;
+  --bg-secondary:   #FFF4D8;
+  --bg-tertiary:    #FFEEC2;
+  --bg-card:        #FFFDF7;
+  --bg-card-hover:  #FFF7E6;
+  --bg-input:       #FFFAF0;
+  --bg-elevated:    #FFFDF8;
+
+  /* ---- Borders ---- */
+  --border:         #EAD7B6;
+  --border-strong:  #D8BB86;
+  --border-focus:   #B97820;
+
+  /* ---- Text ---- */
+  --text-primary:   #24160A;
+  --text-secondary: #684F34;
+  --text-muted:     #9A7A55;
+  --text-on-accent: #241204;
+  --text-inverse:   #FFF7EC;
+
+  /* ---- Brand / Accent (warm coffee gold) ---- */
+  --primary:        #B97820;
+  --primary-hover:  #8A4F12;
+  --primary-soft:   rgba(185, 120, 32, 0.14);
+
+  --secondary:      #E6AC5A;
+  --secondary-hover:#B97820;
+
+  --accent:         #B97820;
+  --accent-gradient:linear-gradient(135deg, #F6D58F 0%, #E6AC5A 48%, #B97820 100%);
+  --accent-glow:    rgba(185, 120, 32, 0.25);
+  --accent-soft:    rgba(185, 120, 32, 0.12);
+
+  /* ---- Semantic ---- */
+  --success:        #059669;
+  --success-soft:   rgba(5, 150, 105, 0.12);
+  --warning:        #D97706;
+  --warning-soft:   rgba(217, 119, 6, 0.12);
+  --danger:         #DC2626;
+  --danger-soft:    rgba(220, 38, 38, 0.12);
+  --info:           #2563EB;
+  --info-soft:      rgba(37, 99, 235, 0.12);
+
+  /* ---- Icon ---- */
+  --icon:           #B97820;
+  --icon-muted:     #A98A62;
+
+  /* ---- Shadows (warm tinted, soft float) ---- */
+  --shadow-sm:      0 1px 2px rgba(121, 73, 22, 0.06);
+  --shadow-md:      0 4px 12px rgba(121, 73, 22, 0.08);
+  --shadow-lg:      0 12px 28px rgba(121, 73, 22, 0.11);
+  --shadow-xl:      0 24px 60px rgba(121, 73, 22, 0.15);
+  --shadow-glow:    0 0 24px rgba(185, 120, 32, 0.18);
+
+  /* ---- Glass / Overlay ---- */
+  --overlay-bg:     rgba(36, 22, 10, 0.36);
+  --glass-bg:       rgba(255, 250, 238, 0.82);
+  --glass-border:   rgba(121, 73, 22, 0.12);
+
+  /* ---- Tooltip ---- */
+  --tooltip-bg:     #3A210D;
+  --tooltip-text:   #FFF8E8;
+
+  /* ---- Dropdown ---- */
+  --dropdown-bg:        #FFFDF7;
+  --dropdown-border:    #EAD7B6;
+  --dropdown-item-hover:rgba(185, 120, 32, 0.10);
+  --dropdown-text:      #24160A;
+
+  /* ---- Modal ---- */
+  --modal-bg:       #FFFDF7;
+  --modal-border:   #EAD7B6;
+  --modal-overlay:  rgba(36, 22, 10, 0.42);
+
+  /* ---- Table ---- */
+  --table-bg:       transparent;
+  --table-header-bg:#FFF4D8;
+  --table-row-hover:#FFF7E6;
+  --table-border:   #EAD7B6;
+
+  /* ---- Login hero text (still cream over coffee image) ---- */
+  --hero-text:      #FFF7EC;
+  --hero-text-soft: rgba(255, 247, 236, 0.85);
+  --hero-accent:    #D4A574;
+}
+
+/* ===== Backwards-compat aliases (old variable names point to new tokens) ===== */
+:root,
+[data-theme="dark"],
+[data-theme="light"] {
+  --bg-card-hover-bg:  var(--bg-card-hover);
+  --card-bg:           var(--bg-card);
+  --border-color:      var(--border);
+  --success-bg:        var(--success-soft);
+  --warning-bg:        var(--warning-soft);
+  --danger-bg:         var(--danger-soft);
+  --info-bg:           var(--info-soft);
+  --text-primary-soft: var(--text-secondary);
+  --bg-card-soft:      var(--bg-input);
+  --accent-primary:    var(--primary);
+  --accent-secondary:  var(--secondary);
+  --text-accent:       var(--primary);
+  --bg-glass:          var(--glass-bg);
+  --bg-glass-hover:    var(--bg-elevated);
+}
+
+/* ============================================================
+ *  Reset + Base
+ * ============================================================ */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+}
+
+html {
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 200ms ease, color 200ms ease;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* ============================================================
+ *  Scrollbar
+ * ============================================================ */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+/* ============================================================
+ *  Animations
+ * ============================================================ */
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+@keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 0 0 var(--accent-glow); } 50% { box-shadow: 0 0 0 8px transparent; } }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ============================================================
+ *  Theme transition smoothness on major surfaces
+ * ============================================================ */
+.sidebar, .topbar, .layout, .layout-main, .layout-content,
+.modal, .modal-content, .modal-overlay, .card, .glass-panel,
+.table-container, .page-container, .admin-app, .admin-card,
+.admin-modal, .admin-modal-overlay, .auth-card, .nav-item,
+.tab-btn, .btn, .form-input, .settings-page, .profile-page,
+.dropdown, .select-menu, .options-menu, .data-table, .goals-table,
+.notification-dropdown, .fb-notification-dropdown,
+.sidebar-user-menu, .theme-preview-card {
+  transition:
+    background-color 200ms ease,
+    color 200ms ease,
+    border-color 200ms ease,
+    box-shadow 200ms ease;
+}
+
+/* ============================================================
+ *  Autofill Global Reset
+ * ============================================================ */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+textarea:-webkit-autofill:active {
+  -webkit-text-fill-color: var(--text-primary) !important;
+  -webkit-box-shadow: 0 0 0px 1000px var(--bg-input) inset !important;
+  transition: background-color 5000s ease-in-out 0s;
+}

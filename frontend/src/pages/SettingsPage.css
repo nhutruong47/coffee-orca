@@ -1,0 +1,450 @@
+/* SettingsPage — token-based (unified with global --* tokens). */
+
+.settings-page {
+    max-width: 980px;
+    margin: 0 auto;
+    color: var(--text-primary);
+}
+
+/* Hero */
+.settings-hero { margin-bottom: 28px; }
+
+.settings-hero > span {
+    display: block;
+    margin-bottom: 22px;
+    color: var(--text-primary);
+    font-family: 'Montserrat', system-ui, sans-serif;
+    font-size: 18px;
+    font-weight: 900;
+}
+
+.settings-hero h1 {
+    margin: 0 0 8px;
+    color: var(--text-primary);
+    font-family: 'Montserrat', system-ui, sans-serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 900;
+    letter-spacing: 0;
+}
+
+.settings-hero p {
+    max-width: 560px;
+    margin: 0;
+    color: var(--text-secondary);
+    line-height: 1.65;
+}
+
+/* Account Layout */
+.settings-account-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 290px;
+    gap: 22px;
+    align-items: start;
+}
+
+/* Cards */
+.settings-profile-card,
+.settings-security-card,
+.settings-plan-card,
+.settings-device-card {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--bg-card);
+    box-shadow: var(--shadow-md);
+}
+
+.settings-profile-card {
+    min-height: 590px;
+    padding: clamp(26px, 4vw, 38px);
+}
+
+/* Card Top */
+.settings-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 14px;
+}
+
+/* Pill Badge */
+.settings-pill {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    padding: 6px 12px;
+    background: var(--primary);
+    color: var(--text-on-accent);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.settings-card-top button {
+    min-height: 34px;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    border: 0;
+    border-radius: 10px;
+    padding: 0 16px;
+    background: var(--accent-soft);
+    color: var(--primary);
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.settings-card-top .material-symbols-outlined { font-size: 17px; }
+
+/* Headings */
+.settings-profile-card h2,
+.settings-security-card h2,
+.settings-plan-card h2,
+.settings-device-card h2 {
+    margin: 0;
+    color: var(--text-primary);
+    font-family: 'Montserrat', system-ui, sans-serif;
+    font-size: 24px;
+    font-weight: 900;
+}
+
+/* Info Grid */
+.settings-info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 34px 44px;
+    margin-top: 34px;
+    padding-bottom: 34px;
+    border-bottom: 1px solid var(--border);
+}
+
+.settings-info-grid span {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text-secondary);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.settings-info-grid strong {
+    display: block;
+    max-width: 210px;
+    color: var(--text-primary);
+    font-size: 15px;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+}
+
+.settings-dot-role::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    margin-right: 7px;
+    border-radius: 50%;
+    background: var(--primary);
+    vertical-align: 2px;
+}
+
+/* Verification */
+.settings-verification {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-top: 30px;
+}
+
+.settings-verification img {
+    width: 72px;
+    height: 72px;
+    flex: 0 0 auto;
+    border-radius: 4px;
+    object-fit: cover;
+}
+
+.settings-verification h3 {
+    margin: 0 0 6px;
+    color: var(--text-primary);
+    font-family: 'Montserrat', system-ui, sans-serif;
+    font-size: 22px;
+}
+
+.settings-verification p {
+    max-width: 420px;
+    margin: 0;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+/* Side Stack */
+.settings-side-stack { display: grid; gap: 22px; }
+
+.settings-security-card,
+.settings-plan-card { padding: 28px; }
+
+.settings-side-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.settings-side-head h2 { font-size: 21px; }
+
+.settings-side-head > span {
+    color: var(--primary);
+    font-size: 19px;
+}
+
+/* Security Rows */
+.settings-security-row {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr) 18px;
+    align-items: center;
+    gap: 10px;
+    border: 0;
+    padding: 10px 0;
+    background: transparent;
+    color: var(--text-primary);
+    text-align: left;
+    cursor: pointer;
+}
+
+.settings-security-row > .material-symbols-outlined:first-child {
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    border-radius: 8px;
+    background: var(--accent-soft);
+    color: var(--primary);
+    font-size: 18px;
+}
+
+.settings-security-row strong,
+.settings-security-row small { display: block; }
+
+.settings-security-row strong {
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.settings-security-row small {
+    margin-top: 3px;
+    color: var(--text-secondary);
+    font-size: 11px;
+}
+
+.settings-security-row:nth-of-type(2) small {
+    color: var(--success);
+    font-weight: 900;
+}
+
+/* Outline Button */
+.settings-outline-btn {
+    width: 100%;
+    min-height: 42px;
+    margin-top: 16px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: transparent;
+    color: var(--text-primary);
+    font-weight: 900;
+    cursor: pointer;
+}
+
+/* Plan Card */
+.settings-plan-card {
+    background: var(--accent-gradient);
+    color: var(--text-on-accent);
+}
+
+.settings-plan-card > span {
+    display: block;
+    margin-bottom: 10px;
+    color: rgba(255, 242, 230, 0.75);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.settings-plan-card h2 {
+    color: var(--text-on-accent);
+    font-size: 24px;
+    line-height: 1.1;
+}
+
+/* Plan Meter */
+.settings-plan-meter { margin: 24px 0; }
+
+.settings-plan-meter div {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 8px;
+    color: rgba(255, 242, 230, 0.85);
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.settings-plan-meter progress {
+    width: 100%;
+    height: 5px;
+    overflow: hidden;
+    border: 0;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.settings-plan-meter progress::-webkit-progress-bar {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.settings-plan-meter progress::-webkit-progress-value {
+    background: var(--text-on-accent);
+}
+
+.settings-plan-card button {
+    width: 100%;
+    min-height: 44px;
+    border: 0;
+    border-radius: 4px;
+    background: var(--bg-card);
+    color: var(--primary);
+    font-weight: 900;
+    cursor: pointer;
+}
+
+/* Device Card */
+.settings-device-card {
+    margin-top: 26px;
+    padding: 32px 38px;
+}
+
+.settings-device-card h2 { margin-top: 14px; }
+
+.settings-device-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin-top: 24px;
+}
+
+.settings-device-list article {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    background: var(--bg-input);
+}
+
+.settings-device-list .material-symbols-outlined { color: var(--primary); }
+
+.settings-device-list strong,
+.settings-device-list small { display: block; }
+
+.settings-device-list small,
+.settings-theme-card p {
+    margin-top: 4px;
+    color: var(--text-secondary);
+}
+
+/* Theme Card */
+.settings-theme-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+/* Theme option group */
+.settings-theme-options {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    flex: 1 1 320px;
+    justify-content: flex-end;
+}
+
+.settings-theme-option {
+    flex: 1 1 140px;
+    min-width: 140px;
+    max-width: 220px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid var(--border, transparent);
+    background: var(--bg-card);
+    color: var(--text-primary);
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 0.2s ease, transform 0.2s ease, background 0.2s ease;
+}
+
+.settings-theme-option:hover {
+    border-color: var(--primary);
+    transform: translateY(-1px);
+}
+
+.settings-theme-option.active {
+    border-color: var(--primary);
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: var(--text-on-accent);
+}
+
+.settings-theme-option ion-icon {
+    flex: 0 0 auto;
+}
+
+.settings-theme-option span {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    line-height: 1.2;
+}
+
+.settings-theme-option small {
+    font-size: 12px;
+    opacity: 0.85;
+}
+
+/* Responsive */
+@media (max-width: 980px) {
+    .settings-account-layout,
+    .settings-device-list { grid-template-columns: 1fr; }
+
+    .settings-profile-card { min-height: 0; }
+}
+
+@media (max-width: 640px) {
+    .settings-page { max-width: 100%; }
+
+    .settings-card-top,
+    .settings-theme-card,
+    .settings-verification {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .settings-info-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+
+    .settings-profile-card,
+    .settings-security-card,
+    .settings-plan-card,
+    .settings-device-card { padding: 22px; }
+}

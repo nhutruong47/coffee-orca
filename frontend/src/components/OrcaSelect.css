@@ -1,0 +1,136 @@
+/* ============================================================
+ * ORCA Select — Unified design system dropdown.
+ * Token-based; adapts automatically via [data-theme="dark"|"light"].
+ * ============================================================ */
+
+.orca-select-wrap {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  font-family: var(--font);
+}
+
+.orca-select-wrap.orca-select-full {
+  display: flex;
+  width: 100%;
+}
+
+.orca-select-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  letter-spacing: 0.01em;
+}
+
+.orca-select-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.orca-select {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 42px;
+  padding: 0 44px 0 14px;
+  display: block;
+  box-sizing: border-box;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--text-primary);
+  text-overflow: ellipsis;
+
+  background-color: var(--bg-input);
+  background-image: none;
+  background-repeat: no-repeat;
+
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  outline: none;
+
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+
+  cursor: pointer;
+  transition: border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+}
+
+.orca-select::-ms-expand { display: none; }
+.orca-select::-ms-value { background: transparent; color: inherit; }
+
+/* Hover */
+.orca-select:hover {
+  border-color: var(--border-strong);
+  background-color: var(--bg-card-hover);
+}
+
+/* Focus = ORCA accent ring */
+.orca-select:focus,
+.orca-select:focus-visible {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+  background-color: var(--bg-input);
+}
+
+/* Filled state */
+.orca-select-field[data-filled='true'] .orca-select {
+  border-color: var(--border-strong);
+}
+
+/* Placeholder */
+.orca-select-field:not([data-filled='true']) .orca-select {
+  color: var(--text-muted);
+}
+
+/* Disabled */
+.orca-select:disabled {
+  background-color: var(--bg-tertiary);
+  color: var(--text-muted);
+  cursor: not-allowed;
+  border-color: var(--border);
+}
+
+/* Options (native dropdown panel) */
+.orca-select option {
+  background-color: var(--bg-elevated);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Chevron — single, vertically centered */
+.orca-select-chevron {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--text-secondary);
+  transition: color 160ms ease;
+}
+
+.orca-select-field:hover .orca-select-chevron {
+  color: var(--text-primary);
+}
+
+.orca-select-field:focus-within .orca-select-chevron {
+  color: var(--primary);
+}
+
+/* Compact modifier */
+.orca-select-wrap.orca-select-sm .orca-select {
+  height: 36px;
+  padding: 0 38px 0 12px;
+  font-size: 13px;
+  border-radius: 10px;
+}
+.orca-select-wrap.orca-select-sm .orca-select-chevron {
+  right: 12px;
+}

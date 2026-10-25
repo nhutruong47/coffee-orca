@@ -1,0 +1,426 @@
+.vnpay-mock-page {
+    min-height: calc(100vh - var(--topbar-height));
+    color: #1f2937;
+    background: #f6f7fb;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.vnpay-mock-page.mb-bank {
+    --pay-primary: #1459c8;
+    --pay-primary-dark: #0b3d90;
+    --pay-soft: #eef6ff;
+    --pay-header: #fff;
+    --pay-header-text: #1459c8;
+}
+
+.vnpay-mock-page.vnpay {
+    --pay-primary: #1459c8;
+    --pay-primary-dark: #0f4198;
+    --pay-soft: #eef6ff;
+    --pay-header: #ffea00;
+    --pay-header-text: #1459c8;
+}
+
+.vnpay-mock-header {
+    height: 74px;
+    display: grid;
+    grid-template-columns: 160px 1fr 64px;
+    align-items: center;
+    padding: 0 24px;
+    background: var(--pay-header);
+    border-bottom: 1px solid #d8dce3;
+}
+
+.vnpay-back,
+.vnpay-close {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--pay-header-text);
+    border: 0;
+    background: transparent;
+    font: inherit;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.vnpay-close {
+    width: 42px;
+    height: 42px;
+    justify-content: center;
+    border-radius: 8px;
+    justify-self: end;
+}
+
+.vnpay-brand {
+    justify-self: center;
+    color: var(--pay-header-text);
+    font-size: 34px;
+    line-height: 1;
+    font-weight: 900;
+    letter-spacing: 0;
+}
+
+.vnpay-brand strong {
+    margin-left: 6px;
+    color: var(--pay-primary);
+}
+
+.vnpay-mock-page.vnpay .vnpay-brand strong {
+    color: #ed1c24;
+}
+
+.vnpay-mock-shell {
+    width: min(1040px, calc(100% - 32px));
+    margin: 28px auto;
+    display: grid;
+    gap: 18px;
+}
+
+.payment-order-card {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 18px;
+}
+
+.payment-order-info,
+.payment-qr-panel {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.08);
+}
+
+.payment-order-info {
+    padding: 22px;
+}
+
+.payment-provider {
+    display: inline-flex;
+    min-height: 28px;
+    align-items: center;
+    padding: 0 10px;
+    color: var(--pay-primary-dark);
+    background: var(--pay-soft);
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.payment-order-info h1 {
+    margin: 18px 0;
+    color: #111827;
+    font-size: 22px;
+    line-height: 1.2;
+}
+
+.payment-order-info dl {
+    display: grid;
+    gap: 14px;
+    margin: 0;
+}
+
+.payment-order-info dl div {
+    padding-bottom: 14px;
+    border-bottom: 1px solid #edf1f5;
+}
+
+.payment-order-info dt {
+    margin-bottom: 5px;
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.payment-order-info dd {
+    margin: 0;
+    color: #111827;
+    font-size: 14px;
+    font-weight: 850;
+    word-break: break-word;
+}
+
+.payment-amount {
+    color: var(--pay-primary) !important;
+    font-size: 24px !important;
+}
+
+.copy-txn {
+    width: 100%;
+    min-height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 18px;
+    border: 1px solid #d7dee8;
+    border-radius: 8px;
+    background: #fff;
+    color: #334155;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.copy-txn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.payment-qr-panel {
+    min-height: 560px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 28px;
+    text-align: center;
+    background:
+        linear-gradient(135deg, color-mix(in srgb, var(--pay-primary) 90%, #ffffff), var(--pay-primary-dark));
+}
+
+.payment-qr-head {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: #fff;
+}
+
+.payment-qr-head h2 {
+    margin: 0;
+    font-size: 24px;
+    line-height: 1.2;
+}
+
+.payment-qr-frame {
+    position: relative;
+    width: 246px;
+    height: 246px;
+    display: grid;
+    place-items: center;
+    margin: 28px 0 18px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 18px 42px rgba(15, 23, 42, 0.18);
+}
+
+.real-qr {
+    width: 216px;
+    height: 216px;
+    display: block;
+}
+
+.qr-render-error {
+    width: 216px;
+    height: 216px;
+    display: grid;
+    place-items: center;
+    color: #b91c1c;
+    background: #fff7f7;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.qr-badge {
+    position: absolute;
+    inset: 50% auto auto 50%;
+    min-width: 46px;
+    min-height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transform: translate(-50%, -50%);
+    padding: 0 6px;
+    color: #fff;
+    background: var(--pay-primary);
+    border: 3px solid #fff;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 900;
+}
+
+.scan-copy,
+.payment-expiry {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    max-width: 420px;
+    margin: 0;
+    color: #fff;
+    font-size: 14px;
+    line-height: 1.45;
+}
+
+.payment-expiry {
+    min-height: 32px;
+    margin-top: 12px;
+    padding: 0 12px;
+    background: rgba(255, 255, 255, 0.16);
+    border-radius: 999px;
+    font-weight: 800;
+}
+
+.open-wallet-link {
+    min-height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 12px;
+    padding: 0 14px;
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 850;
+    text-decoration: none;
+}
+
+.qr-placeholder {
+    width: 246px;
+    height: 246px;
+    display: grid;
+    place-items: center;
+    margin: 28px 0 18px;
+    color: #64748b;
+    background: #fff;
+    border-radius: 8px;
+    font-weight: 800;
+}
+
+.vnpay-confirm,
+.vnpay-cancel {
+    width: min(340px, 100%);
+    min-height: 48px;
+    border: 0;
+    border-radius: 8px;
+    font: inherit;
+    font-weight: 850;
+    cursor: pointer;
+}
+
+.vnpay-confirm {
+    margin-top: auto;
+    background: #fff;
+    color: var(--pay-primary-dark);
+}
+
+.vnpay-confirm:disabled {
+    opacity: 0.62;
+    cursor: not-allowed;
+}
+
+.vnpay-cancel {
+    margin-top: 10px;
+    background: rgba(255, 255, 255, 0.14);
+    color: #fff;
+}
+
+.vnpay-error {
+    width: min(420px, 100%);
+    margin: 16px 0;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: #fee2e2;
+    color: #b91c1c;
+    font-size: 13px;
+    text-align: left;
+}
+
+.payment-mobile-steps {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.payment-mobile-steps div {
+    min-height: 74px;
+    display: grid;
+    grid-template-columns: 18px 26px 1fr;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+}
+
+.payment-mobile-steps svg {
+    color: var(--pay-primary);
+}
+
+.payment-mobile-steps span {
+    width: 26px;
+    height: 26px;
+    display: grid;
+    place-items: center;
+    color: #fff;
+    background: var(--pay-primary);
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 900;
+}
+
+.payment-mobile-steps strong {
+    color: #334155;
+    font-size: 13px;
+    line-height: 1.35;
+}
+
+@media (max-width: 860px) {
+    .vnpay-mock-header {
+        grid-template-columns: 120px 1fr 48px;
+        padding: 0 12px;
+    }
+
+    .vnpay-brand {
+        font-size: 28px;
+    }
+
+    .payment-order-card {
+        grid-template-columns: 1fr;
+    }
+
+    .payment-qr-panel {
+        min-height: 520px;
+    }
+
+    .payment-mobile-steps {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 520px) {
+    .vnpay-mock-shell {
+        width: calc(100% - 20px);
+        margin-block: 18px;
+    }
+
+    .vnpay-mock-header {
+        grid-template-columns: 44px 1fr 44px;
+    }
+
+    .vnpay-back span {
+        display: none;
+    }
+
+    .payment-order-info,
+    .payment-qr-panel {
+        padding: 18px;
+    }
+
+    .payment-qr-frame,
+    .qr-placeholder {
+        width: 226px;
+        height: 226px;
+    }
+
+    .real-qr,
+    .qr-render-error {
+        width: 198px;
+        height: 198px;
+    }
+}

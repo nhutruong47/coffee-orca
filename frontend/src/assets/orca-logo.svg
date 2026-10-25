@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 320" role="img" aria-labelledby="title">
+  <title>ORCA logo</title>
+  <defs>
+    <linearGradient id="orcaBody" x1="72" y1="76" x2="433" y2="211" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#111827"/>
+      <stop offset="0.42" stop-color="#02040a"/>
+      <stop offset="1" stop-color="#0d1117"/>
+    </linearGradient>
+    <linearGradient id="orcaGold" x1="148" y1="186" x2="409" y2="217" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ffe08a"/>
+      <stop offset="0.45" stop-color="#f3b72f"/>
+      <stop offset="1" stop-color="#d99012"/>
+    </linearGradient>
+    <linearGradient id="orcaGoldFin" x1="220" y1="63" x2="292" y2="128" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fff1a8"/>
+      <stop offset="0.55" stop-color="#f4bf37"/>
+      <stop offset="1" stop-color="#d79111"/>
+    </linearGradient>
+    <filter id="orcaShadow" x="-12%" y="-18%" width="124%" height="136%">
+      <feDropShadow dx="0" dy="8" stdDeviation="6" flood-color="#000" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#orcaShadow)">
+    <path
+      fill="url(#orcaBody)"
+      d="M55 250c4-41 39-82 85-112 55-36 120-53 189-35 55 14 101 42 123 67 11 13 9 27-6 35-20 11-52 13-84 7-16 16-36 27-58 32-15 3-30 2-43-5-18 12-40 19-68 19-47 0-92-14-130-35-15 8-27 18-35 31-2-19 6-35 27-56-24 13-42 31-54 55-1-20 10-36 35-53 8-5 16-9 25-13-6 19-8 39-6 63Z"
+    />
+    <path
+      fill="url(#orcaGold)"
+      d="M153 176c47 29 107 42 177 36 32-3 64-10 98-20-17 20-43 32-76 36-41 5-79 1-116-9-34-9-62-23-83-43Z"
+    />
+    <path
+      fill="#fffaf0"
+      d="M110 173c18-12 49-13 71-2 8 4 10 10 4 14-10 5-30 3-47 4-16 0-29 5-40 12-5-9-1-20 12-28Z"
+    />
+    <path
+      fill="#fffaf0"
+      d="M385 153c19-3 37 1 54 11-10 7-28 8-43 5-15-3-24-11-11-16Z"
+    />
+    <path
+      fill="url(#orcaGoldFin)"
+      d="M231 88c-4-33 4-58 24-76 16 33 30 61 68 81-38-12-66-14-92-5Z"
+    />
+    <path
+      fill="url(#orcaGold)"
+      d="M224 112c15 8 33 10 53 7-14 15-35 19-57 11-7-3-7-13 4-18Z"
+      opacity="0.95"
+    />
+    <path
+      fill="url(#orcaBody)"
+      d="M293 217c23-5 47-14 71-29-9 32-33 53-70 62-20 5-38 1-50-10 14-10 30-18 49-23Z"
+    />
+    <path
+      fill="#fffaf0"
+      d="M42 227c18 4 35 1 50-10-1 17-8 30-23 39-4-10-13-15-27-16-10-1-19 1-28 6 5-10 14-16 28-19Z"
+    />
+    <path
+      fill="url(#orcaBody)"
+      d="M69 229c12 10 20 24 23 42-8-13-17-21-29-24-12-3-24 0-36 8 8-16 22-25 42-26Z"
+    />
+  </g>
+</svg>

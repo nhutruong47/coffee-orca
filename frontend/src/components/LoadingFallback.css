@@ -1,0 +1,46 @@
+.loading-fallback {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    color: var(--text-secondary);
+    gap: 12px;
+}
+
+.loading-fallback-spinner {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--brand-soft, rgba(212, 165, 116, 0.15));
+    color: var(--brand, #d4a574);
+    font-size: 28px;
+    animation: loading-fallback-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes loading-fallback-pulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 0.6;
+    }
+    50% {
+        transform: scale(1.08);
+        opacity: 1;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .loading-fallback-spinner {
+        animation: none;
+    }
+}
+
+.loading-fallback-text {
+    margin: 0;
+    font-size: 14px;
+    color: var(--text-muted);
+    letter-spacing: 0.02em;
+}

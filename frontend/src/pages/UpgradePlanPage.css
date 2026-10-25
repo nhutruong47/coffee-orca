@@ -1,0 +1,310 @@
+﻿.pricing-page {
+    min-height: 100%;
+    background: transparent;
+    font-family: var(--font, 'Inter', sans-serif);
+    padding: clamp(32px, 5vw, 64px) 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: var(--text-primary);
+}
+
+.pricing-header {
+    text-align: center;
+    margin-bottom: 24px;
+    margin-top: 20px;
+}
+
+.pricing-header h1 {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+}
+
+.pricing-header p {
+    font-size: 15px;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.pricing-payment-methods {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 48px;
+    justify-content: center;
+}
+
+.pricing-payment-methods button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--text-secondary);
+}
+
+.pricing-payment-methods button:hover {
+    background: var(--bg-card-hover);
+    color: var(--text-primary);
+}
+
+.pricing-payment-methods button.active.mb-bank {
+    border-color: #1459c8;
+    color: #1459c8;
+    background: rgba(20, 89, 200, 0.1);
+}
+
+.pricing-payment-methods button.active.vnpay {
+    border-color: #1459c8;
+    color: #1459c8;
+    background: rgba(20, 89, 200, 0.1);
+}
+
+.pricing-payment-methods button.active.payos {
+    border-color: #2e7d32;
+    color: #2e7d32;
+    background: rgba(46, 125, 50, 0.1);
+}
+
+.pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    max-width: 1000px;
+    width: 100%;
+    align-items: stretch;
+}
+
+/* === BASE CARD (Starter) === */
+.pricing-card {
+    position: relative;
+    border-radius: 16px;
+    padding: 40px 32px;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: var(--shadow-md);
+    background: var(--bg-card) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--border) !important;
+}
+
+.pricing-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* === FEATURED CARD (Professional) === */
+.pricing-card.featured {
+    transform: scale(1.04);
+    z-index: 10;
+    box-shadow: var(--shadow-lg), var(--shadow-glow);
+    border-color: var(--secondary) !important;
+    background: linear-gradient(180deg, rgba(212, 165, 116, 0.05) 0%, var(--bg-card) 100%) !important;
+}
+
+.pricing-card.featured:hover {
+    transform: scale(1.04) translateY(-4px);
+}
+
+.pricing-ribbon {
+    position: absolute;
+    top: -14px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--accent-gradient);
+    color: #fff;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+    box-shadow: var(--shadow-sm);
+}
+
+.pricing-card h2 {
+    font-size: 22px;
+    font-weight: 800;
+    margin: 0 0 16px 0;
+    color: var(--text-primary) !important;
+}
+
+.pricing-card.featured h2 {
+    color: var(--primary) !important;
+}
+
+.pricing-price {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    margin-bottom: 24px;
+}
+
+.pricing-price strong {
+    font-size: 38px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    color: var(--text-primary) !important;
+}
+
+.pricing-price span {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-muted) !important;
+}
+
+.pricing-subtitle {
+    margin-bottom: 32px;
+}
+
+.pricing-subtitle strong {
+    display: block;
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: var(--text-primary) !important;
+}
+
+.pricing-subtitle span {
+    display: block;
+    font-size: 13px;
+    opacity: 0.8;
+    color: var(--text-secondary) !important;
+}
+
+/* === BUTTON === */
+.pricing-action {
+    width: 100%;
+    padding: 14px;
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    border: 1px solid var(--border) !important;
+    margin-bottom: 36px;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: var(--text-primary) !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.pricing-card.featured .pricing-action {
+    background: var(--accent-gradient) !important;
+    color: #fff !important;
+    border: none !important;
+}
+
+.pricing-action:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.15);
+}
+
+.pricing-card.featured .pricing-action:hover {
+    filter: brightness(1.15);
+    background: var(--accent-gradient) !important;
+    box-shadow: 0 0 15px rgba(212, 165, 116, 0.4);
+}
+
+/* Shine animation overlay (Sleen effect) */
+.pricing-action::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transform: skewX(-25deg);
+    transition: left 0s;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.pricing-action:hover::before {
+    left: 200%;
+    transition: left 0.6s ease-in-out;
+}
+
+.pricing-features {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.pricing-features li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.5;
+    color: var(--text-secondary) !important;
+}
+
+.check-icon {
+    flex-shrink: 0;
+    color: var(--success) !important;
+}
+
+.pricing-card.featured .check-icon {
+    color: var(--primary) !important;
+}
+
+/* Theme overrides for specific cards if needed (Enterprise Card) */
+.pricing-card.theme-dark {
+    background: #0f1c2e !important;
+    border-color: #1a2a40 !important;
+}
+.pricing-card.theme-dark h2,
+.pricing-card.theme-dark .pricing-price strong,
+.pricing-card.theme-dark .pricing-subtitle strong {
+    color: #ffffff !important;
+}
+.pricing-card.theme-dark .pricing-price span,
+.pricing-card.theme-dark .pricing-subtitle span,
+.pricing-card.theme-dark .pricing-features li {
+    color: #849bb3 !important;
+}
+.pricing-card.theme-dark .pricing-action {
+    background: #ffffff !important;
+    color: #0f1c2e !important;
+    border-color: #ffffff !important;
+}
+.pricing-card.theme-dark .pricing-action:hover {
+    background: #f0f4f8 !important;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+}
+.pricing-card.theme-dark .pricing-action::before {
+    background: linear-gradient(to right, transparent, rgba(15, 28, 46, 0.15), transparent);
+}
+.pricing-card.theme-dark .check-icon {
+    color: #62dbcb !important;
+}
+
+@media (max-width: 960px) {
+    .pricing-grid {
+        grid-template-columns: 1fr;
+        max-width: 400px;
+        gap: 32px;
+    }
+    
+    .pricing-card.featured {
+        transform: scale(1);
+        padding: 40px 32px;
+    }
+    
+    .pricing-card.featured:hover {
+        transform: translateY(-4px);
+    }
+}
