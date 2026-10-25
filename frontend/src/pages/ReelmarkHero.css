@@ -289,6 +289,38 @@
   border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
+.card-badge-overlay {
+  position: absolute;
+  top: calc(14 * var(--u));
+  left: calc(14 * var(--u));
+  right: calc(14 * var(--u));
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.card-tag {
+  align-self: flex-start;
+  padding: 3px 8px;
+  border-radius: 12px;
+  background: rgba(8, 72, 45, 0.88);
+  backdrop-filter: blur(6px);
+  color: #daf2dc;
+  font-size: calc(11 * var(--u));
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.card-title {
+  color: #ffffff;
+  font-size: calc(13 * var(--u));
+  font-weight: 700;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+  line-height: 1.2;
+}
+
 .play-pill svg {
   width: calc(16 * var(--u));
   height: calc(16 * var(--u));

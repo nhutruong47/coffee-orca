@@ -13,8 +13,68 @@ import {
 } from 'lucide-react';
 import './ReelmarkHero.css';
 
-const GRID_POSTER = 'https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/b7ebb74a-8c8a-4f7e-8f80-55e2d74ecd05.webp';
-const GRID_VIDEO = 'https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/04fd3d5f-99d7-476e-98a4-46c08518ffb3.mp4';
+const COFFEE_MEDIA = [
+  {
+    title: 'Rang Cà Phê Mộc',
+    tag: 'Xưởng Rang',
+    poster: 'https://images.unsplash.com/photo-1518832553480-cd0e625ed3e6?w=600&auto=format&fit=crop&q=80',
+    video: 'https://assets.mixkit.co/videos/preview/mixkit-coffee-beans-falling-in-a-coffee-machine-42456-large.mp4'
+  },
+  {
+    title: 'Pha Chế Espresso',
+    tag: 'Barista',
+    poster: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=600&auto=format&fit=crop&q=80',
+    video: 'https://assets.mixkit.co/videos/preview/mixkit-barista-making-a-cappuccino-with-latte-art-42460-large.mp4'
+  },
+  {
+    title: 'Thu Hoạch Quả Chín',
+    tag: 'Nông Trường',
+    poster: 'https://images.unsplash.com/photo-1610632380989-680fe40816c6?w=600&auto=format&fit=crop&q=80',
+    video: 'https://assets.mixkit.co/videos/preview/mixkit-coffee-plantation-with-coffee-cherries-42462-large.mp4'
+  },
+  {
+    title: 'Phơi Nhân Honey',
+    tag: 'Sơ Chế',
+    poster: 'https://images.unsplash.com/photo-1587734195503-904fca47e0e9?w=600&auto=format&fit=crop&q=80',
+    video: 'https://assets.mixkit.co/videos/preview/mixkit-coffee-beans-scattered-on-a-table-42457-large.mp4'
+  },
+  {
+    title: 'Cupping Thử Nếm SCAA',
+    tag: 'Kiểm Định',
+    poster: 'https://images.unsplash.com/photo-1509785307050-d4066910ec1e?w=600&auto=format&fit=crop&q=80',
+    video: 'https://assets.mixkit.co/videos/preview/mixkit-pouring-hot-water-into-a-chemex-coffee-maker-42461-large.mp4'
+  },
+  {
+    title: 'Đóng Gói Bảo Quản',
+    tag: 'Kho Vận',
+    poster: 'https://images.unsplash.com/photo-1559525839-8f8ec3de0ffb?w=600&auto=format&fit=crop&q=80',
+    video: 'https://assets.mixkit.co/videos/preview/mixkit-roasted-coffee-beans-falling-in-slow-motion-42459-large.mp4'
+  },
+  {
+    title: 'Cold Brew Ủ Lạnh',
+    tag: 'Chiết Xuất',
+    poster: 'https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?w=600&auto=format&fit=crop&q=80',
+    video: 'https://assets.mixkit.co/videos/preview/mixkit-pouring-coffee-into-a-glass-with-ice-cubes-42458-large.mp4'
+  },
+  {
+    title: 'Xay Hạt Đặc Sản',
+    tag: 'Tiêu Chuẩn',
+    poster: 'https://images.unsplash.com/photo-1524350876685-274059332603?w=600&auto=format&fit=crop&q=80',
+    video: 'https://assets.mixkit.co/videos/preview/mixkit-coffee-beans-in-a-coffee-grinder-42463-large.mp4'
+  },
+  {
+    title: 'Pour Over V60',
+    tag: 'Nghệ Thuật',
+    poster: 'https://images.unsplash.com/photo-1498804103079-a6351b050096?w=600&auto=format&fit=crop&q=80',
+    video: 'https://assets.mixkit.co/videos/preview/mixkit-barista-dripping-filter-coffee-42465-large.mp4'
+  },
+  {
+    title: 'Latte Art Thiên Nga',
+    tag: 'Sáng Tạo',
+    poster: 'https://images.unsplash.com/photo-1534778101976-62847782c213?w=600&auto=format&fit=crop&q=80',
+    video: 'https://assets.mixkit.co/videos/preview/mixkit-pouring-milk-to-make-coffee-latte-art-42464-large.mp4'
+  }
+];
 
 interface ChatMessage {
   role: 'assistant' | 'user';
@@ -329,11 +389,7 @@ export const HomePage: React.FC = () => {
         {/* Curved Video Carousel */}
         <div className="carousel-viewport" ref={carouselRef}>
           <div className="carousel-stage">
-            {Array.from({ length: 10 }).map((_, idx) => {
-              // 5 columns, 2 rows (10 tiles in 5x2 grid)
-              const col = idx % 5;
-              const row = Math.floor(idx / 5);
-
+            {COFFEE_MEDIA.map((item, idx) => {
               return (
                 <div
                   key={idx}
@@ -343,24 +399,34 @@ export const HomePage: React.FC = () => {
                   }}
                 >
                   <img
-                    src={GRID_POSTER}
-                    alt="Reel clip poster"
+                    src={item.poster}
+                    alt={item.title}
                     className="card-poster"
                     style={{
-                      transform: `translate(-${col * 20}%, -${row * 50}%)`,
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      transform: 'none'
                     }}
                   />
                   <video
-                    src={GRID_VIDEO}
+                    src={item.video}
                     muted
                     loop
                     playsInline
                     autoPlay
                     className="card-video"
                     style={{
-                      transform: `translate(-${col * 20}%, -${row * 50}%)`,
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      transform: 'none'
                     }}
                   />
+                  <div className="card-badge-overlay">
+                    <span className="card-tag">{item.tag}</span>
+                    <span className="card-title">{item.title}</span>
+                  </div>
                   <div className="play-pill">
                     <svg viewBox="0 0 24 24">
                       <polygon points="6,4 20,12 6,20" />
