@@ -438,9 +438,9 @@
 .regions-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
+  gap: 24px;
   width: 100%;
-  margin-bottom: 32px;
+  margin-bottom: 60px;
 }
 
 .region-box {
@@ -494,6 +494,12 @@
   bottom: 24px;
   right: 24px;
   z-index: 1000;
+}
+
+@media (min-width: 1300px) {
+  .floating-ai-sommelier {
+    right: calc((100vw - 1240px) / 2 - 80px);
+  }
 }
 
 .btn-ai-sommelier {

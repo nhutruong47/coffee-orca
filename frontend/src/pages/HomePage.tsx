@@ -431,7 +431,7 @@ export const HomePage: React.FC = () => {
           <MapPin className="w-4 h-4" /> Bản Sắc Thổ Nhưỡng
         </div>
         <h2 className="section-title">
-          <span>8 Thủ Phủ Cà Phê</span>{' '}<span>Đặc Sản Việt Nam</span>
+          8 Thủ Phủ Cà Phê &nbsp;Đặc Sản Việt Nam
         </h2>
         <p className="section-desc">
           Từ những cánh rừng nguyên sinh Cầu Đất đến đất đỏ bazan Buôn Ma Thuột — mỗi mẻ rang đều mang đậm dấu ấn thổ nhưỡng độc bản.
