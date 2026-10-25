@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { teamService } from '../services/groupService';
 import { interGroupOrderService } from '../services/interGroupOrderService';
-import orcaLogo from '../assets/orca-logo.png';
 
 function getUsernameInitials(username?: string) {
     const value = username?.trim() || 'U';
@@ -144,7 +143,13 @@ export default function Sidebar() {
     return (
         <aside className="sidebar">
             <div className="sidebar-logo">
-                <img className="app-logo-mark sidebar-brand-logo" src={orcaLogo} alt="ORCA" />
+                <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
+                    <svg style={{ width: '26px', height: '26px', flexShrink: 0 }} viewBox="0 0 32 32" fill="none">
+                        <path d="M6 26C6 26 8 16 18 10C24 6.5 28 6 28 6C28 6 27 10 24 16C19 25 10 26 6 26Z" fill="#08482D" />
+                        <path d="M6 26C11 23 16 17 21 11" stroke="#F5F8EF" strokeWidth="2" strokeLinecap="round" />
+                    </svg>
+                    <span style={{ fontSize: '18px', fontWeight: 800, color: '#08482D', letterSpacing: '-0.02em' }}>ORCA Coffee</span>
+                </Link>
             </div>
 
             <nav className="sidebar-nav">

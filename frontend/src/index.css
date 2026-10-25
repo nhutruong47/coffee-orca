@@ -19,9 +19,9 @@
 
   --radius-xs: 6px;
   --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
 
   --sidebar-width: 260px;
   --topbar-height: 64px;
@@ -55,95 +55,96 @@
 }
 
 /* ============================================================
- *  DARK MODE  (default) — Warm Espresso + Caramel Goldenrod
+ *  SOFT MINT STUDIO THEME (Brand Identity: #F5F8EF, #08482D, #DAE7C7)
  * ============================================================ */
 :root,
+[data-theme="light"],
 [data-theme="dark"] {
   /* ---- Surfaces ---- */
-  --bg-primary:     #0F0A07;
-  --bg-secondary:   #1A120C;
-  --bg-tertiary:    #261A12;
-  --bg-card:        #1F1611;
-  --bg-card-hover:  #2A1E16;
-  --bg-input:       #2A1E16;
-  --bg-elevated:    #2D1F16;
+  --bg-primary:     #F5F8EF;
+  --bg-secondary:   #EDF2E4;
+  --bg-tertiary:    #E2EBD5;
+  --bg-card:        #FFFFFF;
+  --bg-card-hover:  #F7FAF1;
+  --bg-input:       #FFFFFF;
+  --bg-elevated:    #FFFFFF;
 
   /* ---- Borders ---- */
-  --border:         #3E2B1F;
-  --border-strong:  #5A4030;
-  --border-focus:   #D4A574;
+  --border:         rgba(8, 72, 45, 0.12);
+  --border-strong:  rgba(8, 72, 45, 0.25);
+  --border-focus:   #08482D;
 
   /* ---- Text ---- */
-  --text-primary:   #F2E8DC;
-  --text-secondary: #C8B8A4;
-  --text-muted:     #8B7355;
-  --text-on-accent: #0F0A07;
-  --text-inverse:   #0F172A;
+  --text-primary:   #101410;
+  --text-secondary: #374151;
+  --text-muted:     #6B7280;
+  --text-on-accent: #FFFFFF;
+  --text-inverse:   #FFFFFF;
 
-  /* ---- Brand / Accent ---- */
-  --primary:        #D4A574;
-  --primary-hover:  #E2B888;
-  --primary-soft:   rgba(212, 165, 116, 0.16);
+  /* ---- Brand / Forest Green & Mint Accent ---- */
+  --primary:        #08482D;
+  --primary-hover:  #0B5E3A;
+  --primary-soft:   rgba(8, 72, 45, 0.10);
 
-  --secondary:      #B8860B;
-  --secondary-hover:#D4A574;
+  --secondary:      #126340;
+  --secondary-hover:#08482D;
 
-  --accent:         #D4A574;
-  --accent-gradient:linear-gradient(135deg, #dfc27d 0%, #b8860b 50%, #8b6508 100%);
-  --accent-glow:    rgba(212, 165, 116, 0.3);
-  --accent-soft:    rgba(212, 165, 116, 0.12);
+  --accent:         #08482D;
+  --accent-gradient:linear-gradient(135deg, #0b5e3a 0%, #08482d 50%, #053320 100%);
+  --accent-glow:    rgba(8, 72, 45, 0.25);
+  --accent-soft:    #DAE7C7;
 
   /* ---- Semantic ---- */
-  --success:        #34D399;
-  --success-soft:   rgba(52, 211, 153, 0.16);
-  --warning:        #FBBF24;
-  --warning-soft:   rgba(251, 191, 36, 0.16);
-  --danger:         #F87171;
-  --danger-soft:    rgba(248, 113, 113, 0.16);
-  --info:           #60A5FA;
-  --info-soft:      rgba(96, 165, 250, 0.16);
+  --success:        #08482D;
+  --success-soft:   rgba(8, 72, 45, 0.12);
+  --warning:        #D97706;
+  --warning-soft:   rgba(217, 119, 6, 0.12);
+  --danger:         #DC2626;
+  --danger-soft:    rgba(220, 38, 38, 0.12);
+  --info:           #2563EB;
+  --info-soft:      rgba(37, 99, 235, 0.12);
 
   /* ---- Icon ---- */
-  --icon:           #D4A574;
-  --icon-muted:     #8B7355;
+  --icon:           #08482D;
+  --icon-muted:     #4B5563;
 
-  /* ---- Shadows (warm tinted) ---- */
-  --shadow-sm:      0 2px 4px rgba(0, 0, 0, 0.4);
-  --shadow-md:      0 4px 12px rgba(0, 0, 0, 0.45);
-  --shadow-lg:      0 12px 32px rgba(0, 0, 0, 0.55);
-  --shadow-xl:      0 24px 60px rgba(0, 0, 0, 0.65);
-  --shadow-glow:    0 0 24px rgba(212, 165, 116, 0.18);
+  /* ---- Shadows ---- */
+  --shadow-sm:      0 1px 3px rgba(8, 72, 45, 0.05);
+  --shadow-md:      0 4px 16px rgba(8, 72, 45, 0.06);
+  --shadow-lg:      0 12px 32px rgba(8, 72, 45, 0.08);
+  --shadow-xl:      0 24px 60px rgba(8, 72, 45, 0.12);
+  --shadow-glow:    0 0 24px rgba(8, 72, 45, 0.2);
 
   /* ---- Glass / Overlay ---- */
-  --overlay-bg:     rgba(7, 10, 18, 0.78);
-  --glass-bg:       rgba(31, 22, 17, 0.65);
-  --glass-border:   rgba(255, 255, 255, 0.08);
+  --overlay-bg:     rgba(8, 72, 45, 0.35);
+  --glass-bg:       rgba(255, 255, 255, 0.88);
+  --glass-border:   rgba(8, 72, 45, 0.12);
 
   /* ---- Tooltip ---- */
-  --tooltip-bg:     #0F0A07;
-  --tooltip-text:   #F2E8DC;
+  --tooltip-bg:     #08482D;
+  --tooltip-text:   #F5F8EF;
 
-  /* ---- Dropdown (popover) ---- */
-  --dropdown-bg:        #2D1F16;
-  --dropdown-border:    #3E2B1F;
-  --dropdown-item-hover:rgba(212, 165, 116, 0.14);
-  --dropdown-text:      #F2E8DC;
+  /* ---- Dropdown ---- */
+  --dropdown-bg:        #FFFFFF;
+  --dropdown-border:    rgba(8, 72, 45, 0.15);
+  --dropdown-item-hover:rgba(8, 72, 45, 0.08);
+  --dropdown-text:      #101410;
 
   /* ---- Modal ---- */
-  --modal-bg:       #1F1611;
-  --modal-border:   #3E2B1F;
-  --modal-overlay:  rgba(0, 0, 0, 0.7);
+  --modal-bg:       #FFFFFF;
+  --modal-border:   rgba(8, 72, 45, 0.18);
+  --modal-overlay:  rgba(8, 72, 45, 0.4);
 
   /* ---- Table ---- */
-  --table-bg:       transparent;
-  --table-header-bg:rgba(212, 165, 116, 0.08);
-  --table-row-hover:rgba(212, 165, 116, 0.06);
-  --table-border:   #3E2B1F;
+  --table-bg:       #FFFFFF;
+  --table-header-bg:#EDF2E4;
+  --table-row-hover:#F7FAF1;
+  --table-border:   rgba(8, 72, 45, 0.10);
 
-  /* ---- Login hero text (always cream on dark image) ---- */
-  --hero-text:      #FFF7EC;
-  --hero-text-soft: rgba(255, 247, 236, 0.72);
-  --hero-accent:    #D4A574;
+  /* ---- Login hero text ---- */
+  --hero-text:      #FFFFFF;
+  --hero-text-soft: rgba(255, 255, 255, 0.85);
+  --hero-accent:    #DAE7C7;
 }
 
 /* ============================================================

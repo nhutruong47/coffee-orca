@@ -58,7 +58,7 @@ export default function AuthHero({
                 <p className="login-hero-desc">{description}</p>
 
                 <div className="login-brands">
-                    <p className="login-brands-label">Đối tác & Xưởng cà phê nổi bật</p>
+                    <p className="login-brands-label">Thủ phủ & Vùng cà phê bản sắc</p>
                     <div className="login-brands-list">
                         {brands.map((brand, i) => {
                             const logo = brandLogos[i];

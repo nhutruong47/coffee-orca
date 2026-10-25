@@ -572,7 +572,7 @@
 .login-hero-overlay {
   position: absolute;
   inset: 0;
-  background: var(--overlay-bg);
+  background: linear-gradient(135deg, rgba(8, 72, 45, 0.88) 0%, rgba(6, 43, 27, 0.94) 100%);
   z-index: 1;
 }
 
@@ -599,12 +599,12 @@
 .login-hero-badge {
   display: inline-block;
   padding: 6px 16px;
-  background: var(--primary-soft);
-  border: 1px solid var(--border-strong);
+  background: #DAE7C7;
+  border: 1px solid rgba(8, 72, 45, 0.2);
   border-radius: 20px;
   font-size: 12px;
-  font-weight: 600;
-  color: var(--primary);
+  font-weight: 700;
+  color: #08482D;
   letter-spacing: 1px;
   margin-bottom: 16px;
 }
@@ -816,14 +816,14 @@
 }
 
 .auth-tab--active {
-  background: var(--primary);
-  color: var(--text-on-accent);
-  box-shadow: 0 2px 6px -2px color-mix(in srgb, var(--primary) 60%, transparent);
+  background: #08482D;
+  color: #ffffff;
+  box-shadow: 0 2px 6px -2px rgba(8, 72, 45, 0.4);
 }
 
 .auth-tab--active:hover {
-  color: var(--text-on-accent);
-  background: var(--primary);
+  color: #ffffff;
+  background: #0b5e3a;
 }
 
 .login-input-wrap {
@@ -884,24 +884,26 @@
 .login-btn-primary {
   width: 100%;
   padding: 13px;
-  background: var(--accent-gradient);
+  background: #08482D;
   border: none;
   border-radius: 10px;
-  color: var(--text-on-accent);
+  color: #ffffff;
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 700;
   font-family: var(--font);
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all 0.2s;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
+  box-shadow: 0 4px 14px rgba(8, 72, 45, 0.25);
 }
 
 .login-btn-primary:hover:not(:disabled) {
+  background: #0b5e3a;
   transform: translateY(-1px);
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 6px 18px rgba(8, 72, 45, 0.35);
 }
 
 .login-btn-primary:disabled {
@@ -1225,11 +1227,11 @@
 }
 
 .nav-item.active {
-  background: linear-gradient(90deg, rgba(212, 165, 116, 0.18) 0%, rgba(212, 165, 116, 0.06) 100%);
-  color: var(--primary);
+  background: linear-gradient(90deg, rgba(8, 72, 45, 0.15) 0%, rgba(218, 231, 199, 0.25) 100%);
+  color: #08482D;
   font-weight: 700;
-  border-color: rgba(212, 165, 116, 0.35);
-  box-shadow: 0 2px 12px rgba(212, 165, 116, 0.22);
+  border-color: rgba(8, 72, 45, 0.35);
+  box-shadow: 0 2px 12px rgba(8, 72, 45, 0.12);
 }
 
 .nav-item.active::before {
@@ -1240,9 +1242,9 @@
   transform: translateY(-50%);
   width: 4px;
   height: 28px;
-  background: var(--accent-gradient);
+  background: #08482D;
   border-radius: 0 4px 4px 0;
-  box-shadow: 0 2px 10px rgba(212, 165, 116, 0.5);
+  box-shadow: 0 2px 10px rgba(8, 72, 45, 0.3);
 }
 
 .nav-icon {

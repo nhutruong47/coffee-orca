@@ -105,9 +105,9 @@
 .pricing-card.featured {
     transform: scale(1.04);
     z-index: 10;
-    box-shadow: var(--shadow-lg), var(--shadow-glow);
-    border-color: var(--secondary) !important;
-    background: linear-gradient(180deg, rgba(212, 165, 116, 0.05) 0%, var(--bg-card) 100%) !important;
+    box-shadow: 0 12px 32px rgba(8, 72, 45, 0.12);
+    border-color: #08482D !important;
+    background: linear-gradient(180deg, rgba(218, 231, 199, 0.25) 0%, var(--bg-card) 100%) !important;
 }
 
 .pricing-card.featured:hover {
@@ -119,14 +119,14 @@
     top: -14px;
     left: 50%;
     transform: translateX(-50%);
-    background: var(--accent-gradient);
-    color: #fff;
+    background: #08482D;
+    color: #DAE7C7;
     padding: 6px 16px;
     border-radius: 20px;
     font-size: 12px;
     font-weight: 700;
     white-space: nowrap;
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 2px 8px rgba(8, 72, 45, 0.25);
 }
 
 .pricing-card h2 {
@@ -263,8 +263,8 @@
 
 /* Theme overrides for specific cards if needed (Enterprise Card) */
 .pricing-card.theme-dark {
-    background: #0f1c2e !important;
-    border-color: #1a2a40 !important;
+    background: #062b1b !important;
+    border-color: #08482D !important;
 }
 .pricing-card.theme-dark h2,
 .pricing-card.theme-dark .pricing-price strong,
@@ -274,22 +274,23 @@
 .pricing-card.theme-dark .pricing-price span,
 .pricing-card.theme-dark .pricing-subtitle span,
 .pricing-card.theme-dark .pricing-features li {
-    color: #849bb3 !important;
+    color: #a3c4b2 !important;
 }
 .pricing-card.theme-dark .pricing-action {
-    background: #ffffff !important;
-    color: #0f1c2e !important;
-    border-color: #ffffff !important;
+    background: #DAE7C7 !important;
+    color: #08482D !important;
+    border-color: #DAE7C7 !important;
+    font-weight: 700 !important;
 }
 .pricing-card.theme-dark .pricing-action:hover {
-    background: #f0f4f8 !important;
-    box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+    background: #ffffff !important;
+    box-shadow: 0 0 15px rgba(218, 231, 199, 0.4);
 }
 .pricing-card.theme-dark .pricing-action::before {
-    background: linear-gradient(to right, transparent, rgba(15, 28, 46, 0.15), transparent);
+    background: linear-gradient(to right, transparent, rgba(8, 72, 45, 0.15), transparent);
 }
 .pricing-card.theme-dark .check-icon {
-    color: #62dbcb !important;
+    color: #6ee7b7 !important;
 }
 
 @media (max-width: 960px) {

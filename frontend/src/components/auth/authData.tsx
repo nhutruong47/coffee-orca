@@ -12,12 +12,12 @@ export interface BrandLogo {
 }
 
 export const COFFEE_BRANDS: BrandInfo[] = [
-    { name: 'Trung Nguyên Legend', desc: 'Thương hiệu cà phê số 1 Việt Nam', emoji: 'TN' },
-    { name: 'Highlands Coffee', desc: 'Chuỗi cà phê hiện đại hàng đầu', emoji: 'HC' },
-    { name: 'Phúc Long Heritage', desc: 'Di sản cà phê & trà Việt', emoji: 'PL' },
-    { name: 'The Coffee House', desc: 'Không gian cà phê sáng tạo', emoji: 'CH' },
-    { name: 'Cà Phê Đắk Lắk', desc: 'Thủ phủ cà phê Tây Nguyên', emoji: 'DL' },
-    { name: 'Lavazza (Italy)', desc: 'Hương vị Espresso đỉnh cao', emoji: 'LV' },
+    { name: 'Arabica Cầu Đất', desc: '1.500m · Hương hoa quả mọng SCAA 85.5+', emoji: 'CD' },
+    { name: 'Robusta Buôn Ma Thuột', desc: 'Thủ phủ cà phê, vị đậm đà chocolate', emoji: 'BM' },
+    { name: 'Bourbon Tây Bắc', desc: 'Sơn La 1.200m · Ngọt hậu thanh tao', emoji: 'SL' },
+    { name: 'Typica Khe Sanh', desc: 'Quảng Trị · Hương vị di sản nguyên bản', emoji: 'KS' },
+    { name: 'Fine Robusta Pleiku', desc: 'Gia Lai · Thể chất dày, đượm caramel', emoji: 'GL' },
+    { name: 'Culi Đơn Hạt Đắk Nông', desc: 'Núi lửa Nâm Nung · Hậu vị lắng sâu', emoji: 'DN' },
 ];
 
 export const COFFEE_BRAND_LOGOS: BrandLogo[] = [

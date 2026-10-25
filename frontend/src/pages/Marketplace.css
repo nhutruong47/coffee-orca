@@ -81,8 +81,8 @@
 /* Hero */
 .mp-hero {
     padding: 4rem 4rem 3rem;
-    background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
-    border-bottom: 1px solid var(--border);
+    background: linear-gradient(135deg, #F5F8EF 0%, #EDF2E4 100%);
+    border-bottom: 1px solid rgba(8, 72, 45, 0.12);
 }
 
 .mp-hero-content {
@@ -94,10 +94,9 @@
     font-weight: 800;
     line-height: 1.2;
     margin-bottom: 0.8rem;
-    background: var(--accent-gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: #08482D;
+    font-family: 'Inter Tight', var(--font), sans-serif;
+    letter-spacing: -0.02em;
 }
 
 .mp-hero p {
@@ -286,13 +285,14 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 4px 8px;
+    padding: 4px 10px;
     border-radius: 999px;
-    background: rgba(20, 154, 95, 0.11);
-    color: #087c4b;
+    background: #DAE7C7;
+    color: #08482D;
     font-size: 11px;
     font-weight: 700;
     white-space: nowrap;
+    border: 1px solid rgba(8, 72, 45, 0.2);
 }
 
 .mp-pub-badge > span {
