@@ -12,8 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import org.springframework.context.annotation.Profile;
 
 @Component
+@Profile({"dev", "local", "qa"})
 public class DataFixerRunner6 implements CommandLineRunner {
 
     @Autowired

@@ -8,8 +8,10 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import org.springframework.context.annotation.Profile;
 
 @Component
+@Profile({"dev", "local", "qa"})
 public class UserStatsFixRunner implements CommandLineRunner {
 
     private final UserRepository userRepository;

@@ -11,8 +11,10 @@ import java.text.Normalizer;
 import java.util.List;
 import java.util.UUID;
 import java.util.regex.Pattern;
+import org.springframework.context.annotation.Profile;
 
 @Component
+@Profile({"dev", "local", "qa"})
 public class DataFixerRunner7 implements CommandLineRunner {
 
     @Autowired
