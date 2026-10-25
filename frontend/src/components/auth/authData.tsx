@@ -77,7 +77,7 @@ export const HERO_TITLE = (
     <>
         Nền tảng quản lý
         <br />
-        <span className="login-hero-highlight">xưởng cà phê</span>
+        <span className="login-hero-highlight" style={{ color: '#DAE7C7' }}>xưởng cà phê bản sắc</span>
         <br />
         thông minh
     </>
