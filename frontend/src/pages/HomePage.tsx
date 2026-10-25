@@ -1,14 +1,70 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { 
+  TrendingUp, 
+  MapPin, 
+  Sparkles, 
+  Layers, 
+  ShieldCheck, 
+  Send, 
+  X, 
+  Bot, 
+  Coffee
+} from 'lucide-react';
 import './ReelmarkHero.css';
 
 const GRID_POSTER = 'https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/b7ebb74a-8c8a-4f7e-8f80-55e2d74ecd05.webp';
 const GRID_VIDEO = 'https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/04fd3d5f-99d7-476e-98a4-46c08518ffb3.mp4';
 
+interface ChatMessage {
+  role: 'assistant' | 'user';
+  text: string;
+}
+
 export const HomePage: React.FC = () => {
   const stageRef = useRef<HTMLDivElement>(null);
   const carouselRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
+
+  // AI Sommelier State
+  const [isAiOpen, setIsAiOpen] = useState(false);
+  const [messages, setMessages] = useState<ChatMessage[]>([
+    {
+      role: 'assistant',
+      text: 'Xin chào! Tôi là ORCA Coffee Sommelier AI. Hãy chia sẻ hương vị, độ cao hoặc gu pha chế bạn tìm kiếm, tôi sẽ gợi ý loại hạt hoàn hảo nhất.'
+    }
+  ]);
+  const [inputVal, setInputVal] = useState('');
+  const [isThinking, setIsThinking] = useState(false);
+
+  const handleSendAi = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inputVal.trim()) return;
+
+    const userText = inputVal.trim();
+    const newMsgs = [...messages, { role: 'user' as const, text: userText }];
+    setMessages(newMsgs);
+    setInputVal('');
+    setIsThinking(true);
+
+    setTimeout(() => {
+      let reply = 'Dựa trên tri thức vùng trồng và sàn giao dịch ORCA, tôi gợi ý cho bạn: ';
+      const lower = userText.toLowerCase();
+
+      if (lower.includes('chua') || lower.includes('hoa') || lower.includes('cold brew') || lower.includes('arabica')) {
+        reply += '🌾 **Arabica Cầu Đất (Washed Process)**: Độ cao 1.600m, đạt chuẩn SCAA 85.5 với nốt hương hoa cam, quả mọng nhiệt đới và hậu vị mật ong rừng. Rất lý tưởng cho Pour-over hoặc Cold Brew.';
+      } else if (lower.includes('đậm') || lower.includes('mạnh') || lower.includes('phin') || lower.includes('robusta')) {
+        reply += '🍫 **Fine Robusta Buôn Ma Thuột (Honey Process)**: Thể chất dày dặn (heavy body), hương vị socola đen, hạnh nhân nướng, caffeine tự nhiên 2.5% giúp bừng tỉnh năng lượng pha Phin hoặc Espresso.';
+      } else if (lower.includes('giá') || lower.includes('dự báo') || lower.includes('thị trường')) {
+        reply += '📊 **Tín hiệu AI Lead-Lag hôm nay**: Giá London Robusta đang tác động kéo giá thu mua Đắk Lắk quanh mức 88.500 - 89.500 đ/kg. Khuyến nghị xưởng nên chốt hợp đồng gia công kỳ hạn tháng tới.';
+      } else {
+        reply += '✨ **Liberica Quảng Trị (Anaerobic)**: Dòng cà phê Mít độc bản với hương thơm mít chín, hoa tiêu và vị chua thanh tao nhã độc nhất vô nhị.';
+      }
+
+      setMessages([...newMsgs, { role: 'assistant', text: reply }]);
+      setIsThinking(false);
+    }, 800);
+  };
 
   // Update scale factor --u based on viewport (1440x1080 design space)
   useEffect(() => {
@@ -324,6 +380,185 @@ export const HomePage: React.FC = () => {
             Make a Reel
           </Link>
         </div>
+      </div>
+
+      {/* SECTION 2: 3-PILLAR ENTERPRISE CAPABILITIES */}
+      <section className="landing-section">
+        <div className="section-tag">
+          <Sparkles className="w-4 h-4" /> Hệ Sinh Thái ORCA
+        </div>
+        <h2 className="section-title">Hạ Tầng Vận Hành Cà Phê Chuyên Sâu</h2>
+        <p className="section-desc">
+          Kết hợp hoàn hảo giữa công nghệ số hóa xưởng rang xay, dự báo dẫn truyền giá theo thời gian thực và sàn giao dịch gia công nguyên bản.
+        </p>
+
+        <div className="features-grid">
+          <div className="feature-card">
+            <div className="feature-icon-box">
+              <TrendingUp className="w-6 h-6" />
+            </div>
+            <h3 className="feature-card-title">AI Price Intelligence</h3>
+            <p className="feature-card-text">
+              Mô hình Huber Lead-Lag dự báo độ trễ truyền dẫn giá từ sàn ICE London Robusta về các nông trường Tây Nguyên với độ chuẩn xác R² đạt 94%.
+            </p>
+          </div>
+
+          <div className="feature-card">
+            <div className="feature-icon-box">
+              <Layers className="w-6 h-6" />
+            </div>
+            <h3 className="feature-card-title">Điều Hành Xưởng Thông Minh</h3>
+            <p className="feature-card-text">
+              Quản lý định mức hao hụt rang, truy vết lô nhân xanh theo mẻ (Lot tracking), số hóa tiến độ đơn hàng và tự động giải phóng tồn kho.
+            </p>
+          </div>
+
+          <div className="feature-card">
+            <div className="feature-icon-box">
+              <ShieldCheck className="w-6 h-6" />
+            </div>
+            <h3 className="feature-card-title">Sàn Gia Công Minh Bạch</h3>
+            <p className="feature-card-text">
+              Liên kết hàng trăm xưởng sơ chế, nhà rang và chuỗi F&B với hợp đồng điện tử thông minh, đánh giá Trust Score và kiểm định chất lượng SCAA.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 3: 8 VÙNG NGUYÊN LIỆU BẢN SẮC */}
+      <section className="landing-section" style={{ background: '#f0f4ea', borderRadius: '32px', margin: '20px 0' }}>
+        <div className="section-tag">
+          <MapPin className="w-4 h-4" /> Bản Sắc Thổ Nhưỡng
+        </div>
+        <h2 className="section-title">8 Thủ Phủ Cà Phê Đặc Sản Việt Nam</h2>
+        <p className="section-desc">
+          Từ những cánh rừng nguyên sinh Cầu Đất đến đất đỏ bazan Buôn Ma Thuột — mỗi mẻ rang đều mang đậm dấu ấn thổ nhưỡng độc bản.
+        </p>
+
+        <div className="regions-grid">
+          <div className="region-box">
+            <span className="region-altitude">1.600m · Lâm Đồng</span>
+            <h4 className="region-name">Arabica Cầu Đất</h4>
+            <p className="region-flavor">Hương hoa cam, quả mọng nhiệt đới, vị chua thanh thanh tao nhã.</p>
+            <span className="region-badge">SCAA 85.5+</span>
+          </div>
+
+          <div className="region-box">
+            <span className="region-altitude">800m · Đắk Lắk</span>
+            <h4 className="region-name">Robusta Buôn Ma Thuột</h4>
+            <p className="region-flavor">Chocolate đen nguyên chất, hạt phỉ nướng, thể chất dày đượm đà.</p>
+            <span className="region-badge">Fine Robusta</span>
+          </div>
+
+          <div className="region-box">
+            <span className="region-altitude">600m · Quảng Trị</span>
+            <h4 className="region-name">Liberica Mít</h4>
+            <p className="region-flavor">Mùi mít chín đặc trưng, hoa tiêu hoang dã, vị chua dịu độc bản.</p>
+            <span className="region-badge">Hiếm & Quý</span>
+          </div>
+
+          <div className="region-box">
+            <span className="region-altitude">1.200m · Sơn La</span>
+            <h4 className="region-name">Bourbon Tây Bắc</h4>
+            <p className="region-flavor">Hương thảo mộc vùng cao, mật ong hoa rừng, hậu vị thanh tao.</p>
+            <span className="region-badge">Single Origin</span>
+          </div>
+        </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer className="landing-footer">
+        <div className="footer-inner">
+          <div>
+            <div className="footer-brand">ORCA Platform</div>
+            <p className="footer-desc">
+              Hệ điều hành số hóa vận hành và giao dịch cà phê đặc sản hàng đầu Việt Nam. Nâng tầm giá trị nông sản bản sắc trên thị trường toàn cầu.
+            </p>
+          </div>
+          <div>
+            <div className="footer-col-title">Giải Pháp</div>
+            <ul className="footer-links">
+              <li><Link to="/marketplace">Sàn Gia Công Cà Phê</Link></li>
+              <li><Link to="/forecast">AI Dự Báo Thị Trường</Link></li>
+              <li><Link to="/dashboard">Quản Trị Nhóm Xưởng</Link></li>
+              <li><Link to="/orders">Hợp Đồng Thông Minh</Link></li>
+            </ul>
+          </div>
+          <div>
+            <div className="footer-col-title">Doanh Nghiệp</div>
+            <ul className="footer-links">
+              <li><Link to="/upgrade">Bảng Giá Dịch Vụ</Link></li>
+              <li><Link to="/admin">Cổng Quản Trị Hệ Thống</Link></li>
+              <li><Link to="/settings">Quy Chuẩn Bảo Mật</Link></li>
+            </ul>
+          </div>
+          <div>
+            <div className="footer-col-title">Liên Hệ</div>
+            <ul className="footer-links">
+              <li><a href="mailto:contact@orca.coffee">contact@orca.coffee</a></li>
+              <li><a href="#">Tây Nguyên · TP. Hồ Chí Minh</a></li>
+              <li><a href="#">Hotline: 1900 8888</a></li>
+            </ul>
+          </div>
+        </div>
+        <div className="footer-bottom">
+          <span>© 2026 ORCA Specialty Coffee Operating System. All rights reserved.</span>
+          <span>Bảo mật dữ liệu chuẩn Enterprise & Truy vết phân tán</span>
+        </div>
+      </footer>
+
+      {/* FLOATING AI SOMMELIER WIDGET */}
+      <div className="floating-ai-sommelier">
+        {!isAiOpen ? (
+          <button 
+            className="btn-ai-sommelier"
+            onClick={() => setIsAiOpen(true)}
+          >
+            <Bot className="w-5 h-5" />
+            <span>AI Sommelier</span>
+          </button>
+        ) : (
+          <div className="ai-chat-window">
+            <div className="ai-chat-header">
+              <div className="ai-chat-title">
+                <Coffee className="w-5 h-5" />
+                <span>ORCA Coffee Sommelier</span>
+              </div>
+              <button 
+                onClick={() => setIsAiOpen(false)}
+                style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer' }}
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="ai-chat-body">
+              {messages.map((m, idx) => (
+                <div key={idx} className={`chat-bubble ${m.role}`}>
+                  {m.text}
+                </div>
+              ))}
+              {isThinking && (
+                <div className="chat-bubble assistant" style={{ fontStyle: 'italic', color: '#888' }}>
+                  Sommelier AI đang phân tích kho hương vị & sàn nguyên liệu...
+                </div>
+              )}
+            </div>
+
+            <form onSubmit={handleSendAi} className="ai-chat-footer">
+              <input
+                type="text"
+                className="ai-chat-input"
+                placeholder="Hỏi về hương vị, cách pha, giá hạt..."
+                value={inputVal}
+                onChange={(e) => setInputVal(e.target.value)}
+              />
+              <button type="submit" className="ai-chat-send">
+                <Send className="w-4 h-4" />
+              </button>
+            </form>
+          </div>
+        )}
       </div>
     </div>
   );
