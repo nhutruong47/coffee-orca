@@ -1,0 +1,311 @@
+/* Style chuyên dụng cho CoffeeForecastPage - CSS thuần không phụ thuộc Tailwind */
+
+.forecast-container {
+  padding: 32px 24px;
+  max-width: 1240px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  color: #f3f4f6;
+  font-family: var(--font, 'Inter', sans-serif);
+}
+
+.forecast-header {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 24px;
+}
+
+@media (min-width: 768px) {
+  .forecast-header {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.forecast-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  background: rgba(217, 119, 6, 0.15);
+  border: 1px solid rgba(217, 119, 6, 0.35);
+  color: #f59e0b;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.forecast-title {
+  font-size: 28px;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.forecast-subtitle {
+  color: #9ca3af;
+  font-size: 14px;
+  margin-top: 6px;
+  margin-bottom: 0;
+  max-width: 640px;
+  line-height: 1.5;
+}
+
+.btn-forecast-refresh {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: #08482D;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-forecast-refresh:hover:not(:disabled) {
+  background: #0b5e3a;
+  transform: translateY(-1px);
+}
+
+.btn-forecast-refresh:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Key Metrics 3 Cards */
+.forecast-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 20px;
+}
+
+@media (min-width: 768px) {
+  .forecast-metrics-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.metric-card {
+  background: #181c19;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.metric-card:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.metric-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.metric-label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #9ca3af;
+}
+
+.metric-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #f59e0b;
+}
+
+.metric-value-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.metric-main-value {
+  font-size: 32px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.metric-unit {
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.metric-subtext {
+  font-size: 13px;
+  color: #9ca3af;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Signal Badges */
+.badge-signal-sell {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  padding: 3px 10px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.badge-signal-buy {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  padding: 3px 10px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.badge-signal-neutral {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  padding: 3px 10px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+/* Regional Prices 4 Cards */
+.regions-section {
+  background: #181c19;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+
+.regions-section-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.regions-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 16px;
+}
+
+@media (min-width: 640px) {
+  .regions-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .regions-cards-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.region-card-item {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 14px;
+  padding: 18px;
+  transition: all 0.2s ease;
+}
+
+.region-card-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(217, 119, 6, 0.4);
+}
+
+.region-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.region-card-province {
+  font-size: 14px;
+  font-weight: 600;
+  color: #d1d5db;
+}
+
+.region-card-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: rgba(8, 72, 45, 0.4);
+  color: #6ee7b7;
+  border: 1px solid rgba(110, 231, 183, 0.2);
+}
+
+.region-card-price {
+  font-size: 24px;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 10px 0 6px 0;
+}
+
+.region-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* Compliance Card */
+.compliance-section {
+  background: rgba(24, 28, 25, 0.6);
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+  border-radius: 18px;
+  padding: 24px;
+}
+
+.compliance-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #e5e7eb;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.compliance-desc {
+  font-size: 13px;
+  color: #9ca3af;
+  line-height: 1.6;
+  margin: 0;
+}
