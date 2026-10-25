@@ -346,7 +346,7 @@
 .landing-section {
   width: 100%;
   max-width: 1240px;
-  padding: 80px 24px;
+  padding: 80px 24px 100px 24px;
   box-sizing: border-box;
 }
 

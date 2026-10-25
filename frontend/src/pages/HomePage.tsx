@@ -430,7 +430,7 @@ export const HomePage: React.FC = () => {
         <div className="section-tag">
           <MapPin className="w-4 h-4" /> Bản Sắc Thổ Nhưỡng
         </div>
-        <h2 className="section-title">8 Thủ Phủ Cà Phê Đặc Sản Việt Nam</h2>
+        <h2 className="section-title">{'8 Thủ Phủ Cà Phê Đặc Sản Việt Nam'}</h2>
         <p className="section-desc">
           Từ những cánh rừng nguyên sinh Cầu Đất đến đất đỏ bazan Buôn Ma Thuột — mỗi mẻ rang đều mang đậm dấu ấn thổ nhưỡng độc bản.
         </p>
@@ -481,7 +481,7 @@ export const HomePage: React.FC = () => {
           <div className="region-box">
             <span className="region-altitude">1.500m · Cầu Đất</span>
             <h4 className="region-name">Moka Hoàng Gia</h4>
-            <p className="region-flavor">Vua của cà phê Việt, quý hiếm, hương hoa quý phái, vị chua thanh thoát.</p>
+            <p className="region-flavor">Vua cà phê Việt quý hiếm, hương hoa quý phái, vị chua thanh nhẹ.</p>
             <span className="region-badge">Tuyệt Phẩm Hiếm</span>
           </div>
 
