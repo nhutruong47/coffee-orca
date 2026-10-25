@@ -24,7 +24,7 @@
 :root {
   font-family: 'SF Pro', Arial, sans-serif;
   color: #fff;
-  background: #090807;
+  background: #0f0a06;
   font-synthesis: none;
 }
 
@@ -49,7 +49,7 @@ html, body, button, a, .portal {
   height: 100%;
   min-height: 540px;
   overflow: hidden;
-  background: #0a0908;
+  background: radial-gradient(circle at 50% 30%, #1e130b 0%, #0d0805 70%, #070402 100%);
 }
 
 .backgrounds,
@@ -113,34 +113,43 @@ html, body, button, a, .portal {
   align-items: center;
   height: 42px;
   padding: 4px 5px;
-  border: 1px solid rgba(255, 255, 255, 0.45);
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(12px);
+  border: 1px solid rgba(220, 160, 100, 0.35);
+  background: rgba(30, 18, 10, 0.45);
+  backdrop-filter: blur(14px);
   border-radius: 999px;
 }
 
 .nav a {
-  color: #fff;
+  color: #f5e6d3;
   text-decoration: none;
   padding: 8px 19px;
   border-radius: 999px;
   line-height: 1;
+  font-size: 14px;
+  transition: all 0.3s ease;
 }
 
 .nav a.active {
-  background: #fff;
-  color: #000;
+  background: #c88a4b;
+  color: #120904;
+  font-weight: 600;
 }
 
 .menu {
   height: 42px;
-  padding: 0 20px;
+  padding: 0 22px;
   border: 0;
   border-radius: 999px;
-  background: #fff;
-  color: #000;
+  background: #c88a4b;
+  color: #120904;
   cursor: pointer;
-  font-weight: 500;
+  font-weight: 600;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.menu:hover {
+  background: #e2a05e;
+  transform: scale(1.03);
 }
 
 /* SIDEBAR PLANET LIST */
@@ -166,15 +175,16 @@ html, body, button, a, .portal {
   font-size: 18px;
   font-weight: 700;
   gap: 8px;
-  color: #fff;
+  color: #f7d2a3;
 }
 
 .planet-item.active:before {
   content: '';
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
-  background: #fff;
+  background: #c88a4b;
+  box-shadow: 0 0 10px rgba(200, 138, 75, 0.8);
 }
 
 /* PORTAL */
@@ -263,10 +273,10 @@ html, body, button, a, .portal {
 
 .fact {
   display: grid;
-  grid-template-columns: 138px 1fr;
+  grid-template-columns: 160px 1fr;
   gap: 18px;
-  padding: 8px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.48);
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(220, 160, 100, 0.25);
   opacity: 0;
 }
 
@@ -276,10 +286,14 @@ html, body, button, a, .portal {
 
 .fact dt {
   font-weight: 700;
+  color: #c88a4b;
+  font-size: 15px;
 }
 
 .fact dd {
   margin: 0;
+  color: #f0e2d3;
+  line-height: 1.4;
 }
 
 /* MISC LAYOUT */
@@ -360,8 +374,10 @@ html, body, button, a, .portal {
   z-index: 22;
   left: 50%;
   top: 50%;
-  width: 59px;
-  height: 58px;
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 12px rgba(200, 138, 75, 0.4));
   transform: translate(-50%, -50%);
   will-change: left, top, width, height, transform;
   transition: left 2s cubic-bezier(0.16, 1, 0.3, 1),
@@ -374,8 +390,8 @@ html, body, button, a, .portal {
 .floating-logo.is-docked {
   left: clamp(18px, 1.95vw, 28px);
   top: clamp(18px, 3.1vh, 28px);
-  width: 37px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   transform: none;
 }
 
@@ -453,19 +469,21 @@ body:not(.preload-complete) .custom-cursor {
 .cursor-dot {
   width: 12px;
   height: 12px;
-  background: #fff;
+  background: #c88a4b;
 }
 
 .cursor-orbit {
   width: 36px;
   height: 36px;
-  border: 1px solid #fff;
-  background: rgba(255, 255, 255, 0.4);
+  border: 1px solid #c88a4b;
+  background: rgba(200, 138, 75, 0.35);
   transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .custom-cursor.is-enter .cursor-orbit {
   transform: translate(-50%, -50%) scale(1.16);
+  border-color: #f7d2a3;
+  background: rgba(200, 138, 75, 0.5);
 }
 
 .cursor-label {
@@ -474,6 +492,8 @@ body:not(.preload-complete) .custom-cursor {
   left: 0;
   transform: translateX(-50%) translateY(-4px);
   font: 16px / 1.2 'SF Pro', Arial, sans-serif;
+  font-weight: 600;
+  color: #f7d2a3;
   white-space: nowrap;
   opacity: 0;
   transition: opacity 0.2s ease, transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);

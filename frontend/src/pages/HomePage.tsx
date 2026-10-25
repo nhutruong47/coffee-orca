@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import orcaLogo from '../assets/orca-logo.png';
 import './PlanetJumping.css';
 
 const BASE = 'https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P';
@@ -7,9 +8,17 @@ const TO_EARTH = `${BASE}/fc3ded42-e845-41f3-a830-5cab512d79cd.mp4`;
 const TO_VENUS = `${BASE}/b30f64d9-1637-477a-83df-d0fc6461a422.mp4`;
 const TO_MARS = `${BASE}/5fc5651c-3b5d-4171-b507-87f7e635d1b4.mp4`;
 const MERCURY = `${BASE}/d6fb8b6b-c15e-4aaa-9cf7-45bbb5e33372.jpg`;
-const LOGO = `${BASE}/eb7e0f53-50cd-4af5-abc4-8b9a52cdc01b.svg`;
 
-const planets = ['Mercury', 'Venus', 'Earth', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune'];
+const planets = [
+  'Arabica Cầu Đất',
+  'Robusta Buôn Ma Thuột',
+  'Liberica Quảng Trị',
+  'Typica Khe Sanh',
+  'Bourbon Sơn La',
+  'Catimor Điện Biên',
+  'Moka Cầu Đất',
+  'Culi Đặc Biệt'
+];
 
 interface PlanetState {
   name: string;
@@ -23,42 +32,42 @@ interface PlanetState {
 
 const states: Record<string, PlanetState> = {
   mars: {
-    name: 'Mars',
-    next: 'Earth',
-    number: '[03]',
+    name: 'Arabica',
+    next: 'Robusta',
+    number: '[01]',
     portal: TO_EARTH,
     background: 'mars-background',
     facts: [
-      ['Distance:', 'About 228 million km (1.5 astronomical units).'],
-      ['Year:', 'One Martian year is equal to 687 Earth days.'],
-      ['Temperature:', 'Around -60 °C, dropping to -125 °C at the poles in winter.'],
-      ['Atmosphere:', 'Very thin, consisting of 95% carbon dioxide, with frequent dust storms.']
+      ['Độ cao:', 'Vùng núi cao 1.200 - 1.600m tại Cầu Đất (Đà Lạt).'],
+      ['Hương vị:', 'Chua thanh tao nhã, hương hoa cam, quả mọng và mật ong rừng.'],
+      ['Hàm lượng Caffeine:', '1.2% - 1.5%, hậu vị ngọt dịu lưu luyến kéo dài.'],
+      ['Chế biến:', 'Chế biến ướt (Washed process) chuẩn Specialty Quốc tế SCAA.']
     ]
   },
   earth: {
-    name: 'Earth',
-    next: 'Venus',
+    name: 'Robusta',
+    next: 'Liberica',
     number: '[02]',
     portal: TO_VENUS,
     background: 'earth-background',
     facts: [
-      ['Distance:', '149.6 million km from the Sun.'],
-      ['Year:', '365.25 Earth days.'],
-      ['Temperature:', 'Average surface temperature around 15 °C.'],
-      ['Atmosphere:', 'Mostly nitrogen and oxygen, supporting life and liquid water.']
+      ['Độ cao:', 'Vùng đất đỏ bazan màu mỡ 600 - 900m tại Buôn Ma Thuột.'],
+      ['Hương vị:', 'Đậm đà mãnh liệt, chocolate đen, hạt hạnh nhân nướng và gỗ sồi.'],
+      ['Hàm lượng Caffeine:', '2.2% - 2.7%, thể chất dày (heavy body), bừng tỉnh năng lượng.'],
+      ['Chế biến:', 'Chế biến tự nhiên (Natural Honey) tuyển chọn 100% trái chín đỏ.']
     ]
   },
   venus: {
-    name: 'Venus',
-    next: 'Mercury',
-    number: '[06]',
+    name: 'Liberica',
+    next: 'Culicui',
+    number: '[03]',
     image: MERCURY,
     background: 'venus-background',
     facts: [
-      ['Distance:', '108.2 million km from the Sun.'],
-      ['Year:', '225 Earth days.'],
-      ['Temperature:', 'Around 465 °C — the hottest planet in the Solar System.'],
-      ['Atmosphere:', 'Extremely dense, mostly carbon dioxide, with clouds of sulfuric acid.']
+      ['Độ cao:', 'Cà phê Mít huyền thoại vùng đất đỏ Quảng Trị & Lâm Đồng.'],
+      ['Hương vị:', 'Hương thơm nồng nàn thảo mộc hoang dã, mít chín và hoa tiêu.'],
+      ['Hàm lượng Caffeine:', '1.0% - 1.3%, vị chua thanh tự nhiên độc bản khác lạ.'],
+      ['Chế biến:', 'Ủ lên men kỵ khí (Anaerobic fermentation) số lượng giới hạn.']
     ]
   }
 };
@@ -221,7 +230,10 @@ export default function HomePage() {
       // Build planet-list
       if (planetList) {
         planetList.innerHTML = planets
-          .map(p => `<span class="planet-item${p.toLowerCase() === current ? ' active' : ''}">${p}</span>`)
+          .map((p, idx) => {
+            const isMatch = (current === 'mars' && idx === 0) || (current === 'earth' && idx === 1) || (current === 'venus' && idx === 2);
+            return `<span class="planet-item${isMatch ? ' active' : ''}">${p}</span>`;
+          })
           .join('');
 
         if (!isFirstRender) {
@@ -554,7 +566,7 @@ export default function HomePage() {
           portalCtx.closePath();
           portalCtx.clip();
 
-          portalCtx.fillStyle = '#030303';
+          portalCtx.fillStyle = '#090807';
           portalCtx.fillRect(0, 0, sw, sh);
 
           const curState = states[current];
@@ -565,6 +577,10 @@ export default function HomePage() {
           } else if (portalVideo) {
             drawCover(portalCtx, portalVideo);
           }
+
+          // Subtle warm amber coffee tint overlay inside portal
+          portalCtx.fillStyle = 'rgba(40, 20, 10, 0.15)';
+          portalCtx.fillRect(0, 0, sw, sh);
 
           if (transitionActive) {
             drawShade(portalCtx);
@@ -674,12 +690,12 @@ export default function HomePage() {
         <video id="venus-background" className="background" src={TO_VENUS} muted playsInline preload="auto" />
       </div>
 
-      <div className="preloader" id="preloader" aria-label="Loading Mars">
+      <div className="preloader" id="preloader" aria-label="Khởi động hành trình cà phê">
         <video id="preloader-video" src={TO_MARS} muted playsInline preload="auto" />
         <div className="preloader-shade" />
       </div>
 
-      <img className="floating-logo" id="floating-logo" src={LOGO} alt="Ubernatural" />
+      <img className="floating-logo" id="floating-logo" src={orcaLogo} alt="ORCA Coffee" />
 
       <div className="preloader-count" id="preloader-count" aria-live="polite">
         <span id="preloader-value">0</span>
@@ -693,36 +709,36 @@ export default function HomePage() {
         <div className="header-actions">
           <nav className="nav" aria-label="Primary navigation">
             <a className="active" href="#about">
-              About
+              Cà Phê Bản Sắc
             </a>
-            <a href="#explore">Explore</a>
-            <a href="#planets">Planets</a>
+            <a href="#explore">Vùng Trồng</a>
+            <a href="#planets">Bộ Sưu Tập</a>
           </nav>
           <button className="menu" type="button" onClick={() => (window.location.href = '/dashboard')}>
-            Menu
+            Vào Xưởng ORCA
           </button>
         </div>
       </header>
 
-      <aside className="planet-list chrome" aria-label="Planets" />
+      <aside className="planet-list chrome" aria-label="Bộ sưu tập cà phê" />
 
       <canvas id="portal-canvas" className="portal-canvas" aria-hidden="true" />
 
-      <section className="portal-wrap chrome" aria-label="Next destination">
+      <section className="portal-wrap chrome" aria-label="Tiếp theo">
         <div className="portal-heading">
-          <span>Next:</span>
+          <span>Tiếp theo:</span>
           <span>
-            <span id="next-number">[03]</span> <strong id="next-name">Earth</strong>
+            <span id="next-number">[02]</span> <strong id="next-name">Robusta</strong>
           </span>
         </div>
-        <button className="portal" id="portal" type="button" aria-label="Travel to Earth">
+        <button className="portal" id="portal" type="button" aria-label="Khám phá dòng cà phê tiếp theo">
           <video id="portal-video" src={TO_EARTH} muted playsInline preload="auto" />
           <img id="portal-image" src={MERCURY} alt="Mercury" />
         </button>
       </section>
 
       <section className="planet-content chrome" aria-live="polite">
-        <h1 id="planet-title">MARS</h1>
+        <h1 id="planet-title">ARABICA</h1>
         <dl id="facts" />
       </section>
 
@@ -731,13 +747,13 @@ export default function HomePage() {
       </div>
 
       <div className="loading" aria-hidden="true">
-        Preparing orbit…
+        Đang rang mẻ mới…
       </div>
 
       <div className="custom-cursor" aria-hidden="true">
         <span className="cursor-orbit" />
         <span className="cursor-dot" />
-        <span className="cursor-label">Enter</span>
+        <span className="cursor-label">Khám phá</span>
       </div>
     </main>
   );
