@@ -788,6 +788,10 @@ export default function MarketplacePage() {
     };
 
     const handleOrderClick = (seller?: Team) => {
+        if (!user) {
+            navigate('/login?returnUrl=/marketplace');
+            return;
+        }
         setSelectedSeller(seller || null);
         if (!buyerTeamId) {
             setBuyerTeamId(myTeams[0]?.id || '');
@@ -1661,7 +1665,7 @@ export default function MarketplacePage() {
                                             ) : (
                                                 <>
                                                     <button onClick={() => { setSelectedFactory(factory); setActiveProfileTab('overview'); }} style={{background: 'var(--bg-input)', color: 'var(--text-primary)', padding: '8px', borderRadius: 8, border: 'none', cursor: 'pointer', fontWeight: 600, height: 38, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>{t.viewCapacity}</button>
-                                                    <button onClick={() => { const fact = factory; handleOrderClick(fact); }} style={{background: '#b97820', color: '#fff', padding: '8px', borderRadius: 8, border: 'none', cursor: 'pointer', fontWeight: 600, height: 38, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>{t.sendRequest}</button>
+                                                    <button onClick={() => { const fact = factory; handleOrderClick(fact); }} style={{background: '#08482D', color: '#fff', padding: '8px', borderRadius: 8, border: 'none', cursor: 'pointer', fontWeight: 600, height: 38, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>{t.sendRequest}</button>
                                                 </>
                                             )}
                                         </div>
