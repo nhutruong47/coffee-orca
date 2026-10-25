@@ -463,6 +463,34 @@ export const HomePage: React.FC = () => {
             <p className="region-flavor">Hương thảo mộc vùng cao, mật ong hoa rừng, hậu vị thanh tao.</p>
             <span className="region-badge">Single Origin</span>
           </div>
+
+          <div className="region-box">
+            <span className="region-altitude">1.400m · Khe Sanh</span>
+            <h4 className="region-name">Typica Cổ Điển</h4>
+            <p className="region-flavor">Hương hoa nhài, vị ngọt cam thảo, axit malic táo xanh thanh khiết.</p>
+            <span className="region-badge">SCAA 86+</span>
+          </div>
+
+          <div className="region-box">
+            <span className="region-altitude">750m · Gia Lai</span>
+            <h4 className="region-name">Robusta Pleiku</h4>
+            <p className="region-flavor">Gỗ trầm hương, caramel cháy, hậu vị ngọt đậm đà khó quên.</p>
+            <span className="region-badge">Đặc Sản Bazan</span>
+          </div>
+
+          <div className="region-box">
+            <span className="region-altitude">1.500m · Cầu Đất</span>
+            <h4 className="region-name">Moka Hoàng Gia</h4>
+            <p className="region-flavor">Vua của cà phê Việt, quý hiếm, hương hoa quý phái, vị chua thanh thoát.</p>
+            <span className="region-badge">Tuyệt Phẩm Hiếm</span>
+          </div>
+
+          <div className="region-box">
+            <span className="region-altitude">900m · Đắk Nông</span>
+            <h4 className="region-name">Culi Đơn Hạt</h4>
+            <p className="region-flavor">Tròn trịa tích tụ tinh hoa, độ đậm gấp đôi, body tròn trịa quyến rũ.</p>
+            <span className="region-badge">Đột Biến Tự Nhiên</span>
+          </div>
         </div>
       </section>
 

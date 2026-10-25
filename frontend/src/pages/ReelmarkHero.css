@@ -370,7 +370,7 @@
   font-size: clamp(32px, 4vw, 48px);
   font-weight: 700;
   line-height: 1.15;
-  color: var(--text-dark);
+  color: #08482D !important;
   letter-spacing: -0.025em;
   margin: 0 0 16px 0;
 }
@@ -603,7 +603,9 @@
 
 .ai-chat-input {
   flex: 1;
-  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: #ffffff;
+  color: #101410;
+  border: 1px solid rgba(8, 72, 45, 0.2);
   border-radius: 9999px;
   padding: 10px 16px;
   font-size: 14px;
