@@ -37,7 +37,8 @@ export const HomePage: React.FC = () => {
     let lastDragX = 0;
     let lastTime = performance.now();
 
-    const cardPitch = 196;
+    const isMobile = window.innerWidth <= 820;
+    const cardPitch = isMobile ? 180 : 196;
     const totalCards = 10;
     const totalWidth = totalCards * cardPitch;
 
@@ -65,6 +66,16 @@ export const HomePage: React.FC = () => {
         let pos = (i * cardPitch - offset) % totalWidth;
         if (pos < -totalWidth / 2) pos += totalWidth;
         if (pos > totalWidth / 2) pos -= totalWidth;
+
+        if (window.innerWidth <= 820) {
+          // Mobile specific geometry: large cards, prominent 9:16 reels, peek sides
+          const centerOffset = window.innerWidth / 2;
+          const left = centerOffset + pos - 80;
+          card.style.transform = `translate3d(${left}px, 15px, 0)`;
+          card.style.width = '160px';
+          card.style.height = '270px';
+          return;
+        }
 
         // Normalized distance d from center (720u)
         const t = pos;
