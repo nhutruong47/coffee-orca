@@ -12,12 +12,12 @@ export interface BrandLogo {
 }
 
 export const COFFEE_BRANDS: BrandInfo[] = [
-    { name: 'Arabica Cầu Đất', desc: '1.500m · Hương hoa quả mọng SCAA 85.5+', emoji: 'CD' },
+    { name: 'Arabica Cầu Đất', desc: '1.500m · Hương quả mọng SCAA 85.5+', emoji: 'CD' },
     { name: 'Robusta Buôn Ma Thuột', desc: 'Thủ phủ cà phê, vị đậm đà chocolate', emoji: 'BM' },
-    { name: 'Bourbon Tây Bắc', desc: 'Sơn La 1.200m · Ngọt hậu thanh tao', emoji: 'SL' },
-    { name: 'Typica Khe Sanh', desc: 'Quảng Trị · Hương vị di sản nguyên bản', emoji: 'KS' },
-    { name: 'Fine Robusta Pleiku', desc: 'Gia Lai · Thể chất dày, đượm caramel', emoji: 'GL' },
-    { name: 'Culi Đơn Hạt Đắk Nông', desc: 'Núi lửa Nâm Nung · Hậu vị lắng sâu', emoji: 'DN' },
+    { name: 'Bourbon Sơn La', desc: 'Tây Bắc 1.200m · Ngọt hậu thanh tao', emoji: 'SL' },
+    { name: 'Typica Khe Sanh', desc: 'Quảng Trị · Hương di sản nguyên bản', emoji: 'KS' },
+    { name: 'Fine Robusta Gia Lai', desc: 'Pleiku · Thể chất dày, đượm caramel', emoji: 'GL' },
+    { name: 'Culi Đơn Hạt Đắk Nông', desc: 'Núi lửa Nâm Nung · Hậu vị sâu', emoji: 'DN' },
 ];
 
 export const COFFEE_BRAND_LOGOS: BrandLogo[] = [

@@ -545,9 +545,7 @@
 .login-split {
   display: flex;
   min-height: 100vh;
-  height: 100%;
   width: 100%;
-  overflow: hidden;
   background: var(--bg-primary);
 }
 
@@ -555,9 +553,10 @@
 .login-hero {
   flex: 1.2;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
+  justify-content: center;
 }
 
 .login-hero-img {
@@ -743,11 +742,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: clamp(20px, 3vw, 40px);
+  padding: 48px;
   background: var(--bg-secondary);
   border-left: 1px solid var(--border);
-  overflow-y: auto;
-  max-height: 100vh;
+  overflow-y: visible;
 }
 
 .login-form-container {
@@ -3878,7 +3876,8 @@
 .login-hero {
   min-height: 100vh;
   align-items: center;
-  padding: clamp(16px, 2.5vw, 32px);
+  padding: clamp(20px, 3vw, 40px);
+  box-sizing: border-box;
 }
 
 .login-hero-img {
@@ -3984,7 +3983,9 @@
 }
 
 .login-form-side {
-  padding: 24px 20px;
+  padding: clamp(24px, 4vw, 48px);
+  min-height: 100vh;
+  box-sizing: border-box;
 }
 
 .login-brand-logo {
