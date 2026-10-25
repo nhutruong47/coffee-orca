@@ -1,0 +1,55 @@
+{
+  "status": "evaluated_statistically_significant",
+  "model_name": "Huber Lead-Lag International Transmission Model",
+  "description": "Mô hình dẫn truyền giá quốc tế: sử dụng bước nhảy sàn London (ICE Robusta) đêm qua + tỷ giá USD/VND + độ lệch Basis để dự báo giá Đắk Lắk.",
+  "backtest_metrics": {
+    "validation_2025": {
+      "period": "2025-01-02 -> 2025-12-31",
+      "samples": 224,
+      "persistence_mae_vnd_kg": 1908.4,
+      "model_mae_vnd_kg": 1372.9,
+      "persistence_rmse_vnd_kg": 2998.5,
+      "model_rmse_vnd_kg": 2502.4,
+      "skill_pct": 28.1,
+      "skill_95_ci_pct": [
+        19.5,
+        36.4
+      ],
+      "direction_accuracy_when_called_pct": 82.5,
+      "direction_calls": 206,
+      "diebold_mariano_stat": 7.09,
+      "diebold_mariano_p_value": 0.0
+    },
+    "test_2026": {
+      "period": "2026-01-02 -> 2026-10-24",
+      "samples": 110,
+      "persistence_mae_vnd_kg": 1087.0,
+      "model_mae_vnd_kg": 729.9,
+      "persistence_rmse_vnd_kg": 1559.3,
+      "model_rmse_vnd_kg": 1233.7,
+      "skill_pct": 32.8,
+      "skill_95_ci_pct": [
+        19.1,
+        46.2
+      ],
+      "direction_accuracy_when_called_pct": 86.5,
+      "direction_calls": 96,
+      "diebold_mariano_stat": 5.7,
+      "diebold_mariano_p_value": 0.0
+    }
+  },
+  "live_signal": {
+    "forecast_origin_date": "2026-10-24",
+    "current_local_price_vnd_kg": 89500.0,
+    "london_latest_close_usd_ton": 3228.0,
+    "london_overnight_change_usd": -60.0,
+    "london_overnight_change_pct": -1.82,
+    "fx_usd_vnd": 25840.0,
+    "predicted_local_price_vnd_kg": 88758,
+    "predicted_change_vnd_kg": -742,
+    "directional_signal": "GIẢM",
+    "method": "Lead-Lag Huber International Transmission Model",
+    "rationale": "Sàn London chốt phiên 2026-10-24 ở mức 3228 USD/tấn (-60 USD/tấn, -1.82%). Tín hiệu dẫn truyền chỉ ra giá Đắk Lắk có xu hướng GIẢM (ước tính thay đổi -742 đ/kg)."
+  },
+  "updated_at_utc": "2026-10-25T13:45:33.975410+00:00"
+}

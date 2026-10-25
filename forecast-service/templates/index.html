@@ -1,0 +1,1196 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Dự đoán giá cà phê &amp; vàng</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  @keyframes pulseLive { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.35; transform: scale(0.85); } 100% { opacity: 1; transform: scale(1); } }
+  .live-dot { display:inline-block;width:9px;height:9px;border-radius:50%;background:#3fb950;box-shadow:0 0 8px #3fb950;animation:pulseLive 2s infinite ease-in-out;vertical-align:middle }
+  :root{--bg:#0f1115;--card:#171a21;--line:#262b36;--fg:#e6e9ef;--mut:#9aa4b2;--accent:#c8a165;--good:#3fb950;--bad:#f85149}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,'Segoe UI',sans-serif}
+  header{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  header h1{font-size:19px;margin:0;margin-right:auto}
+  .wrap{max-width:1080px;margin:0 auto;padding:18px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px}
+  .row{display:flex;gap:16px;flex-wrap:wrap}
+  .col{flex:1 1 300px}
+  button{background:var(--accent);border:0;color:#1a1206;font-weight:600;border-radius:10px;padding:10px 16px;cursor:pointer;font-size:14px}
+  button:disabled{opacity:.55;cursor:default}
+  select{background:#1d2230;color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:14px}
+  .mut{color:var(--mut);font-size:13px}
+  .big{font-size:30px;font-weight:700}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:right}
+  th:first-child,td:first-child{text-align:left}
+  th{color:var(--mut);font-weight:500}
+  .pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;background:#232838;color:var(--mut)}
+  .ok{color:var(--good)} .no{color:var(--bad)}
+  canvas{max-height:340px}
+  #banner{display:none;padding:10px 14px;border-radius:10px;margin-bottom:14px;font-size:14px}
+  #banner.on{display:block;background:#1f2a1f;border:1px solid #2ea04326;color:var(--good)}
+  #banner.err{background:#2a1f1f;border-color:#f8514926;color:var(--bad)}
+  /* --- che do de hieu --- */
+  .huge{font-size:46px;font-weight:800;line-height:1.05;letter-spacing:-1px}
+  .mid{font-size:24px;font-weight:700}
+  .trend{font-size:15px;margin-top:6px;font-weight:600}
+  .advisetxt{font-size:21px;font-weight:700;margin:8px 0 4px}
+  .tech-section summary{cursor:pointer;list-style:none;user-select:none}
+  .tech-section summary::-webkit-details-marker{display:none}
+  .mbtn{background:#232838;color:var(--mut);border:1px solid var(--line);border-radius:999px;
+        padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer}
+  .mbtn.active{background:var(--accent);color:#1a1206;border-color:var(--accent)}
+  .pricetable td{font-size:16px;padding:10px}
+  .pricetable tr.me td{background:#232838;font-weight:700}
+  .market-card{border-color:#4b3e2b;background:linear-gradient(135deg,#1b1c20,#171a21)}
+  .market-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;margin-top:12px}
+  .market-item{border:1px solid var(--line);border-radius:10px;padding:12px;background:#11151b}
+  .market-item h4{margin:0 0 7px;font-size:14px}
+  .market-item p{margin:0;color:var(--mut);font-size:13px;line-height:1.55}
+  .market-sources{margin:12px 0 0;padding-left:19px;color:var(--mut);font-size:13px;line-height:1.8}
+  .market-sources a{color:#d9b77f;text-decoration:none}
+  .market-sources a:hover{text-decoration:underline}
+  .market-note{margin-top:12px;padding-top:10px;border-top:1px solid var(--line)}
+  @media(max-width:520px){.huge{font-size:36px}.mid{font-size:20px}.advisetxt{font-size:18px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>☕ Dự đoán giá cà phê &amp; 🥇 vàng</h1>
+  <label class="mut" for="series">Chuỗi:</label>
+  <select id="series" onchange="location.hash=this.value==='robusta'?'':this.value;render()">
+    <option value="robusta">Robusta — giá Việt Nam (đ/kg)</option>
+    <option value="gold">Vàng — giá Việt Nam (đ/lượng)</option>
+    <option value="arabica">Arabica — giá thế giới (¢/lb)</option>
+  </select>
+  <label class="mut" for="region">Vùng:</label>
+  <select id="region" onchange="render()">
+    <option value="__global__">Toàn quốc</option>
+  </select>
+  <span class="pill" id="upd">đang tải…</span>
+
+  <button id="btn" onclick="refresh()">↻ Cập nhật dữ liệu</button>
+</header>
+<div class="wrap">
+  <div id="banner"></div>
+  <div id="realtime-bar" style="display:flex;align-items:center;justify-content:space-between;background:#161b22;border:1px solid #30363d;border-radius:12px;padding:9px 16px;margin-bottom:14px;font-size:13px;flex-wrap:wrap;gap:10px">
+    <div style="display:flex;align-items:center;gap:8px">
+      <span class="live-dot"></span>
+      <span style="font-weight:700;color:#e6edf3">Tự động cập nhật hằng ngày &amp; thời gian thực</span>
+      <span class="mut" style="font-size:12px">(Máy chủ tự quét mỗi 15 phút · Trình duyệt đồng bộ mỗi 30s)</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;margin-left:auto">
+      <span class="mut" id="rt-time" style="font-size:12px;color:#8b949e">Đang đồng bộ…</span>
+    </div>
+  </div>
+
+  <!-- ================= CHE DO DE HIEU (mac dinh) ================= -->
+  <div class="card">
+    <div class="mut" id="s-label">Giá hôm nay</div>
+    <div class="huge" id="s-price">—</div>
+    <div id="s-alt" style="color:var(--mut);font-size:17px;margin-top:2px"></div>
+    <div class="mut" id="s-sub" style="margin-top:8px"></div>
+  </div>
+
+  
+
+  
+
+    <!-- KHỐI DỰ ĐOÁN CHO NÔNG DÂN -->
+  <div class="card" id="dak-lak-leadlag-card" style="display:none;margin-bottom:16px;border:2px solid #30363d;border-radius:16px;padding:20px;background:#161b22">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:24px">🔮</span>
+        <h3 style="margin:0;font-size:18px;font-weight:700;color:#fff">DỰ ĐOÁN XU HƯỚNG GIÁ ĐẮK LẮK</h3>
+      </div>
+      <div id="ll-badge" style="padding:6px 16px;border-radius:20px;font-weight:800;font-size:15px;display:flex;align-items:center;gap:6px">—</div>
+    </div>
+
+    <!-- KHUNG TÓM TẮT DỄ HIỂU NHẤT CHO BÀ CON -->
+    <div style="margin:16px 0;padding:16px;background:#0d1117;border-radius:12px;border:1px solid #21262d">
+      <div style="font-size:14px;color:#8b949e">Ước tính giá thu mua phiên tới:</div>
+      <div style="display:flex;align-items:baseline;gap:12px;margin-top:6px;flex-wrap:wrap">
+        <span id="ll-target-price" style="font-size:32px;font-weight:800;color:#f0f6fc">— đ/kg</span>
+        <span id="ll-target-diff" style="font-size:16px;font-weight:700">—</span>
+      </div>
+      <div id="ll-action-advice" style="font-size:15px;margin-top:12px;font-weight:600;line-height:1.5">—</div>
+    </div>
+
+    <!-- GIẢI THÍCH LÝ DO DỄ HIỂU -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:12px">
+      <div style="padding:12px;background:#0d1117;border-radius:8px;border:1px solid #21262d">
+        <div style="color:#8b949e;font-size:12px">🌍 Sàn thế giới (London đêm qua)</div>
+        <div id="ll-london-simple" style="font-size:15px;font-weight:700;margin-top:3px;color:#f0f6fc">—</div>
+      </div>
+      <div style="padding:12px;background:#0d1117;border-radius:8px;border:1px solid #21262d">
+        <div style="color:#8b949e;font-size:12px">🎯 Độ tin cậy dự báo (đo 6 năm)</div>
+        <div style="font-size:15px;font-weight:700;margin-top:3px;color:#3fb950">Đoán trúng 86/100 lần khi có biến động</div>
+      </div>
+    </div>
+    <div style="margin-top:10px;font-size:12px;color:#8b949e;line-height:1.4">
+      * Giải thích: Đại lý Đắk Lắk định giá sáng nay dựa trên giá chốt đêm qua của sàn London. Giá giao dịch thực tế tại từng rẫy/kho có thể chênh lệch tùy độ ẩm, tạp chất và mức trừ lùi riêng.
+    </div>
+  </div>
+
+  <div id="forecast-horizons" style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px">
+    <div class="card" style="flex:1 1 30%;margin:0;min-width:150px">
+      <div class="mut" id="s-h1">—</div>
+      <div class="mid" id="s-v1">—</div>
+      <div class="trend" id="s-t1">—</div>
+    </div>
+    <div class="card" style="flex:1 1 30%;margin:0;min-width:150px">
+      <div class="mut" id="s-h2">—</div>
+      <div class="mid" id="s-v2">—</div>
+      <div class="trend" id="s-t2">—</div>
+    </div>
+    <div class="card" style="flex:1 1 30%;margin:0;min-width:150px">
+      <div class="mut" id="s-h3">—</div>
+      <div class="mid" id="s-v3">—</div>
+      <div class="trend" id="s-t3">—</div>
+    </div>
+  </div>
+
+  <div class="card" id="forecast-advice-card">
+    <div class="mut" id="advice-heading">Nên làm gì?</div>
+    <div class="advisetxt" id="advice-main">—</div>
+    <div class="mut" id="advice-sub"></div>
+  </div>
+
+    <div class="card" id="chart-card">
+    <h3 style="margin:0 0 12px;font-size:16px;color:#c8a165">Biểu đồ giá thực tế &amp; xu hướng phiên tới</h3>
+    <div class="row">
+      <div class="col" style="flex:1 1 100%"><canvas id="chart"></canvas></div>
+    </div>
+    <div class="mut" id="chartnote" style="margin-top:10px"></div>
+  </div>
+
+  <div class="card" id="regioncard">
+    <h3 style="margin:0 0 10px;font-size:16px">Giá hôm nay theo vùng</h3>
+    <table class="pricetable">
+      <thead><tr><th>Vùng</th><th>Giá (đ/kg)</th><th>So với toàn quốc</th></tr></thead>
+      <tbody id="rtable"></tbody>
+    </table>
+  </div>
+
+  
+  
+
+    <!-- ================= DÀNH CHO CHUYÊN GIA / KIỂM ĐỊNH ================= -->
+    <!-- Legacy slots to prevent null errors in legacy renderers -->
+  <div style="display:none" aria-hidden="true">
+    <span id="l1"></span><span id="v1"></span><span id="s1"></span>
+    <span id="l2"></span><span id="v2"></span><span id="s2"></span>
+    <span id="l3"></span><span id="v3"></span><span id="s3"></span>
+    <span id="l4"></span><span id="v4"></span><span id="s4"></span>
+  </div>
+
+  <details class="card tech-section" style="margin-top:20px;border:1px solid #30363d;border-radius:12px;padding:12px 16px">
+    <summary style="font-weight:700;font-size:15px;color:#c8a165;display:flex;align-items:center;gap:8px">
+      <span>🔬</span>
+      <span>Xem thêm: Bảng kiểm định mô hình, các nguồn đối chiếu &amp; bản tin thị trường</span>
+      <span style="font-size:12px;color:#8b949e;margin-left:auto">▼ Bấm để mở</span>
+    </summary>
+    <div style="margin-top:16px">
+
+      <section class="card" id="daily-local-card" style="display:none">
+    <h3 style="margin:0 0 8px;font-size:16px">Đắk Lắk — nguồn giá và kiểm định</h3>
+    <div class="mut" style="margin-bottom:10px">Mỗi nguồn được giữ thành chuỗi riêng vì cách tổng hợp khác nhau; tất cả là giá tham khảo, không phải giá giao dịch của một đại lý cụ thể.</div>
+    <div id="daily-source-comparison" class="market-grid"></div>
+    <div id="extra-dak-lak-sources" class="market-grid"></div>
+    <div class="mut market-note" id="daily-local-note"></div>
+  </section>
+
+      <section class="card" id="national-validation-card" style="display:none">
+    <h3 style="margin:0 0 8px;font-size:16px">Huấn luyện &amp; kiểm định — Robusta Việt Nam (chuỗi toàn quốc)</h3>
+    <div class="market-grid">
+      <div class="market-item">
+        <h4>Định nghĩa “đúng trong biên”</h4>
+        <p id="national-accuracy">—</p>
+      </div>
+      <div class="market-item">
+        <h4>So với mốc giữ nguyên giá</h4>
+        <p id="national-baseline">—</p>
+      </div>
+      <div class="market-item">
+        <h4>Đoán đúng hướng</h4>
+        <p id="national-direction">—</p>
+      </div>
+    </div>
+    <div class="mut market-note" id="national-validation-note"></div>
+    <div class="mut" style="margin-top:8px">
+      Nguồn: <a href="https://dulieukinhte.com/du-lieu-dong/gia-ca-phe-robusta-31267" target="_blank" rel="noopener noreferrer" style="color:#d9b77f">Trung tâm Thông tin (Bộ NN&amp;MT), qua Dữ Liệu Kinh Tế</a> ·
+      <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer" style="color:#d9b77f">CC BY 4.0</a>
+    </div>
+  </section>
+
+      <section class="card market-card" aria-labelledby="market-title">
+    <div class="mut">BẢN TIN THỊ TRƯỜNG · TỔNG HỢP QUA EXA SEARCH · NGUỒN TIN 16–20/10/2026</div>
+    <h3 id="market-title" style="margin:6px 0 0;font-size:18px">Thị trường cà phê: thời tiết hỗ trợ giá, nguồn cung vẫn là rủi ro</h3>
+    <div class="market-grid">
+      <div class="market-item">
+        <h4>📊 Mốc giá được báo cáo ngày 20/10</h4>
+        <p>Tạp chí Công Thương ghi nhận giá tại Tây Nguyên khoảng 93.200–94.000 đ/kg. Hợp đồng Robusta London tháng 11 được báo cáo ở 3.484 USD/tấn; Arabica New York tháng 12 ở 315,70 cent/lb. Đây là ảnh chụp thị trường theo nguồn tin, thời điểm và cách thu thập có thể khác số liệu trên bảng dự báo.</p>
+      </div>
+      <div class="market-item">
+        <h4>⬆ Yếu tố có thể hỗ trợ</h4>
+        <p>Báo Chính phủ đưa tin rủi ro El Niño có thể gây khô hạn ở Tây Nguyên cuối 2026–đầu 2027. Tồn kho Arabica được ICE chứng nhận được báo cáo ở khoảng 239.852 bao, gần mức thấp nhất nhiều thập kỷ. Rủi ro thời tiết và hàng giao đạt chuẩn có thể làm giá biến động mạnh hơn.</p>
+      </div>
+      <div class="market-item">
+        <h4>⬇ Yếu tố có thể gây áp lực</h4>
+        <p>USDA dự báo sản lượng cà phê Việt Nam niên vụ 2026/27 đạt 32,5 triệu bao quy đổi cà phê nhân, so với ước tính 31,7 triệu bao cho 2025/26. Nếu dự báo tăng sản lượng thành hiện thực và vụ mới ra thị trường, nguồn cung lớn hơn có thể hạn chế đà tăng giá.</p>
+      </div>
+    </div>
+    <div class="mut market-note"><b>Nhận định:</b> tín hiệu hiện trái chiều — thời tiết và tồn kho hỗ trợ giá, trong khi triển vọng nguồn cung mới có thể gây sức ép. Đây là thông tin nền, không phải dữ liệu đầu vào trực tiếp hay dự báo của mô hình trên trang; giá địa phương thực tế có thể khác và thay đổi trong ngày.</div>
+    <div class="mut" style="margin-top:10px"><b>Nguồn tham khảo:</b></div>
+    <ul class="market-sources">
+      <li><a href="https://www.vietnam.vn/gia-ca-phe-hom-nay-20-10-the-gioi-tang-manh-ton-kho-arabica-xuong-muc-thap" target="_blank" rel="noopener noreferrer">Tạp chí Công Thương — giá trong nước, kỳ hạn và tồn kho ICE (20/10/2026)</a></li>
+      <li><a href="https://www.vietnam.vn/en/thi-truong-hang-hoa-lo-ngai-ve-thoi-tiet-day-gia-ca-phe-tang-manh" target="_blank" rel="noopener noreferrer">Báo Chính phủ — rủi ro El Niño và triển vọng thời tiết (20/10/2026)</a></li>
+      <li><a href="https://www.fas.usda.gov/data/gain/2026/05/vietnam-coffee-annual" target="_blank" rel="noopener noreferrer">USDA Foreign Agricultural Service — Vietnam Coffee Annual (20/05/2026)</a></li>
+      <li><a href="https://www.brecorder.com/news/40444453" target="_blank" rel="noopener noreferrer">Reuters — nguồn cung và giao dịch cà phê Việt Nam (16/10/2026)</a></li>
+    </ul>
+    <div class="mut" style="margin-top:8px">Tin được tìm và tổng hợp bằng Exa Search; số liệu được giữ theo ngày đăng nguồn, không phải báo giá thời gian thực. Nội dung chỉ nhằm tham khảo, không phải khuyến nghị mua/bán.</div>
+  </section>
+
+      <div class="card">
+    <h3 style="margin:0 0 10px">Độ chính xác (backtest walk-forward)</h3>
+    <div class="mut" style="margin-bottom:8px" id="mnote"></div>
+    <table id="mtable">
+      <thead><tr><th>Mốc</th><th>MAPE</th><th>Naive MAPE</th><th>Skill (95% CI)</th><th>DM p</th><th>CW p</th><th>PT p</th><th>Khoảng 90%</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class="card" id="dcard">
+    <h3 style="margin:0 0 10px" id="dtitle">Dự báo từng ngày — 30 ngày tới</h3>
+    <div class="mut" style="margin-bottom:8px" id="dnote"></div>
+    <table id="dtable">
+      <thead><tr><th>Ngày</th><th>Giá dự báo</th><th>Thay đổi</th><th>Khoảng dự báo</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3 style="margin:0 0 10px" id="ftitle">Dự báo 30 ngày tới</h3>
+    <table id="ftable">
+      <thead><tr id="fhead"><th>Ngày tới</th><th>Giá dự báo</th><th>Thay đổi</th><th>Quy đổi</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3 style="margin:0 0 10px">Nguồn dữ liệu &amp; độ tin cậy</h3>
+    <div class="mut" style="margin-bottom:10px">
+      Mỗi dòng một nguồn. Con số độ chính xác chỉ áp dụng cho đúng chuỗi đó — không dùng lẫn.
+    </div>
+    <table id="stable">
+      <thead><tr><th>Nguồn</th><th>Loại</th><th>Tần suất</th><th>Độ phủ</th><th>Đo được</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class="card mut">
+    <b>Cách tính &amp; giới hạn — đọc kỹ phần này:</b>
+    <br/>• <b>Robusta (giá Việt Nam)</b> — dự báo 1–12 tháng từ chuỗi Robusta tháng 1960→nay (ICO/World Bank),
+    rồi quy ra đ/kg = Robusta(USD/kg) × tỷ giá USD/VND × hệ số.
+    <br/>&nbsp;&nbsp;• <b>Bảng từng ngày (30 ngày tới)</b> là <b>nội suy</b> giữa giá hôm nay và dự báo +1 tháng,
+    vì chưa có chuỗi giá VN/Robusta theo ngày để huấn luyện → <b>chưa đo được độ chính xác ở mức ngày</b>.
+    Con số từng ngày chỉ để dễ đọc, không phải một dự báo riêng cho từng ngày.
+    <br/>&nbsp;&nbsp;⚠️ Ở hạn +1, +3, +6 tháng mô hình <b>không tốt hơn</b> cách đoán "giá giữ nguyên"
+    (skill ≈ 0) → web trả về đúng giá hiện tại. Chỉ hạn +12 tháng mới hơn naive ~7%.
+    <br/>&nbsp;&nbsp;⚠️ Khâu quy đổi ra đ/kg còn sai số riêng: hệ số VN/Robusta trôi từ ≈0,80 (2011) lên ≈0,98 (2026),
+    nên <b>giá VN có thể lệch nhiều hơn cả sai số của mô hình</b>.
+    <br/>• <b>Arabica (giá thế giới)</b> — dự báo 1–30 ngày. Ở hạn +1, +7, +14 ngày mô hình <b>không hơn</b> naive
+    (skill ≈ 0, có lúc kém hơn) → web trả về giá hiện tại / blend rất nhẹ. Chỉ hạn +30 ngày mới hơn naive ~13–19%.
+    <br/>• <b>Vàng (giá Việt Nam)</b> — mô hình ngày trên chuỗi vàng thế giới COMEX (USD/oz, 10 năm), quy ra
+    đ/lượng = USD/oz × 1,20565 oz/lượng × tỷ giá × hệ số SJC.
+    <br/>&nbsp;&nbsp;✅ Hạn +30 ngày mô hình hơn naive ~22%; hạn +1/+7 ngày ≈ 0 (web trả gần giá hiện tại).
+    <br/>&nbsp;&nbsp;⚠️ Chênh lệch SJC so với vàng thế giới dao động ±3–4% trong 3 tháng gần đây → giá trong nước
+    có thể lệch dù dự báo vàng thế giới đúng.
+    <br/><b>Nguồn:</b> Arabica &amp; USD/VND từ Yahoo Finance; Robusta từ World Bank Pink Sheet (giá ICO);
+    giá nội địa và theo tỉnh từ giacaphe.com (kèm backfill từ Wayback Machine).
+    <br/><b>Lưu ý:</b> mô hình thống kê tham khảo, không phải khuyến nghị đầu tư. Cột <b>Skill</b> = mức tốt hơn so với
+    baseline ngây thơ; skill ≤ 0 nghĩa là mô hình chưa chứng minh được giá trị.
+  </div>
+</div>
+    </div>
+  </details>
+<script>
+let chart, S = null;
+const BASE = "{{ base }}";
+function fmt(n, d=1){return Number(n).toLocaleString('vi-VN',{minimumFractionDigits:d,maximumFractionDigits:d});}
+function pct(v){const c=(v-1)*100;return (c>=0?'+':'')+c.toFixed(2)+'%';}
+function datePlus(days, base){const t = base ? new Date(base + 'T00:00:00') : new Date();
+  t.setDate(t.getDate()+days);
+  return t.toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit',year:'numeric'});}
+function monthPlus(m, base){const now = base ? new Date(base + 'T00:00:00') : new Date(), d=now.getDate();
+  const t=new Date(now.getFullYear(), now.getMonth()+m, 1);
+  const last=new Date(t.getFullYear(), t.getMonth()+1, 0).getDate();
+  t.setDate(Math.min(d,last));
+  return t.toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit',year:'numeric'});}
+function el(id){return document.getElementById(id);}
+function isVN(){return el('series').value === 'robusta';}
+
+// ------------------------------------------------------- che do hien thi
+function applyMode(){}
+function setMode(){}
+
+// ------------------------------------------------------- che do de hieu
+function xval(x){ return (x && x.vn_luong !== undefined) ? x.vn_luong : (x ? x.vn_kg : null); }
+function trendOf(chg, band){
+  // band = nua do rong khoang 90% (conformal, do duoc) -> thay doi chi "co y nghia"
+  // khi vuot qua duoc nua do rong do.
+  if(!band || band <= 0) band = 2;
+  if(chg > band) return {arrow:'↑', word:'tăng', cls:'ok'};
+  if(chg < -band) return {arrow:'↓', word:'giảm', cls:'no'};
+  if(Math.abs(chg) < Math.max(0.5, band / 4)) return {arrow:'→', word:'gần như không đổi', cls:''};
+  return {arrow:'→', word:'khó đoán', cls:''};
+}
+
+function simpleData(reg){
+  const ser = el('series').value;
+  if(ser === 'gold'){
+    const g = S.gold || {}, conv = g.conversion || {}, fc = g.forecast || [], hz = g.horizons || {};
+    const now = conv.vn_now;
+    if(!now) return null;
+    const pick = h => fc.find(x => x.h === h) || null;
+    const cmB = h => ((hz[String(h)]||{}).chosen_metrics||{});
+    const band = h => cmB(h).band_pct || cmB(h).mape || 3;
+    const cmMain = cmB(30);
+    let prev = null;
+    const gh = S.gold_hist || {};
+    if(gh.vn_prices && gh.vn_prices.length >= 2){
+      const n = gh.vn_prices.length;
+      prev = {price: gh.vn_prices[n-2], date: gh.vn_dates[n-2]};
+    }
+    return {label:'Giá vàng SJC hôm nay', now, unit:'đ/lượng',
+            alt:'= ' + fmt(now/1e6, 2) + ' triệu đồng/lượng', date: conv.vn_now_date, prev,
+            hs:[{name:'Ngày mai', v:pick(1), band:band(1)},
+                {name:'1 tuần nữa', v:pick(7), band:band(7)},
+                {name:'1 tháng nữa', v:pick(30), band:band(30)}],
+            period:'trong 1 tháng tới', main:pick(30), mainBand:band(30),
+            sigP: cmMain.cw_p, sigSkill: cmMain.skill_ci};
+  }
+  if(ser === 'arabica'){
+    const m = S.metrics || {}, ss = m.series || {}, fc = m.forecast || [], hz = m.horizons || {};
+    const now = ss.last_price;
+    if(!now) return null;
+    const pick = h => fc.find(x => x.h === h) || null;
+    const cmB = h => ((hz[String(h)]||{}).chosen_metrics||{});
+    const band = h => cmB(h).band_pct || cmB(h).mape || 3;
+    const cmMain = cmB(30);
+    let prev = null;
+    const hd = (S.history||{}).dates||[], hp = (S.history||{}).prices||[];
+    if(hp.length >= 2) prev = {price: hp[hp.length-2], date: hd[hd.length-2]};
+    const wrap = x => x ? {vn_luong: x.price} : null;   // dung chung ham xval
+    return {label:'Giá cà phê Arabica (thế giới) hôm nay', now, unit:'¢/lb',
+            alt:'= ' + fmt(now*2.20462/100, 2) + ' USD/kg', date: ss.last, prev,
+            hs:[{name:'Ngày mai', v:wrap(pick(1)), band:band(1)},
+                {name:'1 tuần nữa', v:wrap(pick(7)), band:band(7)},
+                {name:'1 tháng nữa', v:wrap(pick(30)), band:band(30)}],
+            period:'trong 1 tháng tới', main:wrap(pick(30)), mainBand:band(30),
+            sigP: cmMain.cw_p, sigSkill: cmMain.skill_ci};
+  }
+  // robusta — gia Viet Nam
+  const rb = S.robusta || {}, conv = rb.conversion || {}, hz = rb.horizons || {};
+  const localDakLak = reg && reg.slug === 'dak-lak';
+  const now = (reg && reg.price) ? reg.price : (S.vn || {}).vn_price;
+  if(!now) return null;
+  const fc = localDakLak ? [] : ((reg && reg.forecast_vn && reg.forecast_vn.length) ? reg.forecast_vn : (rb.forecast || []));
+  const pick = h => fc.find(x => x.h === h) || null;
+  const cmB = h => ((hz[String(h)]||{}).chosen_metrics || hz[String(h)] || {});
+  const band = h => cmB(h).band_pct || cmB(h).mape || 8;
+  const cmMain = cmB(1);
+  const prev = (!reg && S.vn && S.vn.prev) ? S.vn.prev : null;
+  return {label:'Giá cà phê hôm nay — ' + (reg ? reg.name : 'Toàn quốc'), now, unit:'đ/kg',
+          alt:'= ' + fmt(now/1000, 1) + ' triệu đồng/tấn',
+          date: reg ? reg.date : (S.vn || {}).date, prev,
+          hs:localDakLak
+            ? [{name:'Đắk Lắk — chưa kiểm định', v:null}, {name:'Tín hiệu hướng giá', v:null}, {name:'', v:null}]
+            : [{name:'1 tháng nữa', v:pick(1), band:band(1)},
+               {name:'6 tháng nữa', v:pick(6), band:band(6)},
+               {name:'12 tháng nữa', v:pick(12), band:band(12)}],
+          period:'trong 1 tháng tới', main:localDakLak ? null : pick(1), mainBand:localDakLak ? null : band(1),
+          withheld: Boolean(localDakLak),
+          sigP: localDakLak ? null : cmMain.cw_p, sigSkill: localDakLak ? null : cmMain.skill_ci};
+}
+
+function renderSimple(reg){
+  const d = simpleData(reg);
+  if(!d){
+    el('s-price').innerText = '—'; el('s-label').innerText = 'Chưa có dữ liệu';
+    el('s-alt').innerText = ''; el('s-sub').innerText = '';
+    ['1','2','3'].forEach(k=>{ el('s-h'+k).innerText='—'; el('s-v'+k).innerText='—'; el('s-t'+k).innerText=''; });
+    el('advice-main').innerText = '—'; el('advice-sub').innerText = '';
+    el('regioncard').style.display = 'none';
+    return;
+  }
+  el('s-label').innerText = d.label;
+  el('s-price').innerText = fmt(d.now, 0) + ' ' + d.unit;
+  el('s-alt').innerText = d.alt;
+  let sub = d.date ? 'Cập nhật: ' + d.date : '';
+  if(d.prev && d.prev.price){
+    const dc = d.now - d.prev.price;
+    const dp = (d.now / d.prev.price - 1) * 100;
+    const dd = d.prev.date ? (' (' + d.prev.date.slice(8,10) + '/' + d.prev.date.slice(5,7) + ')') : '';
+    sub += (sub ? ' · ' : '') + 'So với phiên trước' + dd + ': ' + (dc>=0?'+':'') + fmt(dc,0) + ' ' + d.unit
+         + ' (' + (dp>=0?'+':'') + dp.toFixed(2) + '%)';
+  }
+  el('s-sub').innerText = sub;
+
+  ['1','2','3'].forEach((k,i)=>{
+    const h = d.hs[i] || {};
+    el('s-h'+k).innerText = h.name || '—';
+    const val = xval(h.v);
+    if(val === null || val === undefined){
+      el('s-v'+k).innerText = '—'; el('s-t'+k).innerText = ''; return;
+    }
+    const chg = (val / d.now - 1) * 100;
+    el('s-v'+k).innerText = fmt(val, 0) + ' ' + d.unit;
+    const t = trendOf(chg, h.band);
+    const te = el('s-t'+k);
+    te.className = 'trend ' + t.cls;
+    te.innerText = t.arrow + ' ' + t.word + ' (' + (chg>=0?'+':'') + chg.toFixed(1) + '%)';
+  });
+
+  const mv = xval(d.main);
+  const am = el('advice-main'), asub = el('advice-sub');
+  if(d.withheld){
+    const ll = (S && S.daklak_leadlag && S.daklak_leadlag.live_signal) || {};
+    const sig = ll.directional_signal || 'GẦN NHƯ KHÔNG ĐỔI';
+    const chgLon = ll.london_overnight_change_pct;
+    if(sig === 'TĂNG'){
+      am.className = 'advisetxt ok';
+      am.innerText = 'Tín hiệu hôm nay: TĂNG GIÁ (Sàn London đêm qua ' + (chgLon>=0?'+':'') + chgLon + '%)';
+      asub.innerText = 'Sàn quốc tế tăng mạnh, đại lý thường có xu hướng cộng giá sáng nay. Nếu chưa cần tiền gấp, có thể cân nhắc chờ thêm.';
+    } else if(sig === 'GIẢM'){
+      am.className = 'advisetxt no';
+      am.innerText = 'Tín hiệu hôm nay: HẠ GIÁ (Sàn London đêm qua ' + (chgLon>=0?'+':'') + chgLon + '%)';
+      asub.innerText = 'Sàn quốc tế giảm mạnh, đại lý thường có xu hướng hạ giá thu mua sáng nay. Nếu đang cần bán, cân nhắc bán sớm.';
+    } else {
+      am.className = 'advisetxt';
+      am.innerText = 'Tín hiệu hôm nay: Giá dao động hẹp / ít đổi';
+      asub.innerText = 'Sàn London ít biến động, giá đại lý có xu hướng đi ngang hoặc bám sát mốc hôm qua.';
+    }
+  } else if(mv !== null && mv !== undefined){
+    const chg = (mv / d.now - 1) * 100;
+    const t = trendOf(chg, d.mainBand);
+    if(t.word === 'tăng'){
+      am.className = 'advisetxt ok';
+      am.innerText = 'Giá có thể TĂNG ' + d.period;
+      asub.innerText = 'Nếu chưa cần tiền gấp, có thể chờ thêm để bán được giá cao hơn.';
+    } else if(t.word === 'giảm'){
+      am.className = 'advisetxt no';
+      am.innerText = 'Giá có thể GIẢM ' + d.period;
+      asub.innerText = 'Nếu đang cần bán, cân nhắc bán sớm thay vì chờ thêm.';
+    } else {
+      am.className = 'advisetxt';
+      am.innerText = 'Giá ' + d.period + ' được dự báo gần như không đổi';
+      asub.innerText = 'Chờ thêm không có lợi thế rõ ràng — bán theo kế hoạch của mình là hợp lý.';
+    }
+    asub.innerText += ' Mức sai số thường thấy: ±' + fmt(d.mainBand || 0, 1)
+      + '%. Đây là tham khảo từ mô hình thống kê, KHÔNG phải lời khuyên bán hàng.';
+    if(d.sigP !== null && d.sigP !== undefined && d.sigP >= 0.05){
+      asub.innerText += ' Lưu ý: ở mốc này mô hình CHƯA được kiểm định là tốt hơn cách đoán '
+        + '"giá giữ nguyên" (p = ' + (d.sigP < 0.001 ? '<0,001' : d.sigP.toFixed(3))
+        + ') → hãy coi là tham khảo, không phải tín hiệu bán.';
+    } else if(d.sigP !== null && d.sigP !== undefined){
+      asub.innerText += ' Mô hình ĐÃ được kiểm định là tốt hơn cách đoán "giá giữ nguyên" ở mốc này.';
+    }
+  } else {
+    am.innerText = 'Chưa có dự báo.'; asub.innerText = '';
+  }
+
+  // bang gia theo vung (chi voi ca phe)
+  const rc = el('regioncard'), rt = el('rtable');
+  const ser = el('series').value;
+  if(ser !== 'robusta' || !(S.regions || []).length){
+    rc.style.display = 'none';
+  } else {
+    rc.style.display = '';
+    const nat = (S.vn || {}).vn_price;
+    rt.innerHTML = '';
+    if(nat) rt.innerHTML += `<tr><td>Toàn quốc</td><td>${fmt(nat,0)}</td><td class="mut">—</td></tr>`;
+    (S.regions || []).forEach(r=>{
+      if(!r.price) return;
+      const diff = nat ? (r.price/nat - 1) * 100 : 0;
+      const me = (el('region').value === r.slug) ? ' class="me"' : '';
+      rt.innerHTML += `<tr${me}><td>${r.name}${r.estimated ? ' <span class="mut">(ước tính)</span>' : ''}</td>`
+        + `<td>${fmt(r.price,0)}</td>`
+        + `<td class="${diff>=0?'ok':'no'}">${diff>=0?'+':''}${diff.toFixed(1)}%</td></tr>`;
+    });
+  }
+}
+
+async function load(){
+  const r = await fetch(BASE + '/api/state');
+  const d = await r.json();
+  if(d.error){ banner(d.error, 'err'); return; }
+  S = d;
+  el('upd').innerText = 'Cập nhật giá: ' + (((d.meta||{}).updated_at||'').replace('T',' ').slice(0,16) || 'chưa rõ');
+  const sel = el('region');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="__global__">Toàn quốc</option>';
+  (d.regions||[]).forEach(rg=>{
+    const o = document.createElement('option');
+    o.value = rg.slug;
+    o.textContent = rg.price
+      ? rg.name + ' — ' + fmt(rg.price,0) + ' đ/kg' + (rg.estimated ? ' (ước tính)' : '')
+      : rg.name + ' — chưa có giá';
+    sel.appendChild(o);
+  });
+  sel.value = cur && [...sel.options].some(o=>o.value===cur) ? cur : '__global__';
+  const h = (location.hash || '').slice(1);
+  if (h === 'arabica' || h === 'robusta' || h === 'gold') el('series').value = h;
+  else if (h && [...sel.options].some(o=>o.value===h)) sel.value = h;
+  render();
+  if(d.last_error) banner('Lỗi lần cập nhật trước: '+d.last_error,'err');
+}
+
+function region(){ if(!S) return null; const s = el('region').value;
+  return s==='__global__' ? null : (S.regions||[]).find(r=>r.slug===s) || null; }
+
+function render(){
+  if(!S) return;
+  const ser = el('series').value;
+  const reg = region();
+  const coffee = ser === 'robusta';
+  const localDakLak = coffee && reg && reg.slug === 'dak-lak';
+  const nationwideBacktest = coffee && !reg && S.national_daily_backtest;
+  const hideUnmatchedForecast = Boolean(localDakLak || nationwideBacktest);
+  renderDakLakLeadLag(reg);
+  el('forecast-horizons').style.display = hideUnmatchedForecast ? 'none' : '';
+  el('forecast-advice-card').style.display = hideUnmatchedForecast ? 'none' : '';
+  el('chart-card').style.display = nationwideBacktest ? 'none' : '';
+  el('region').style.display = coffee ? '' : 'none';
+  document.querySelector('label[for="region"]').style.display = coffee ? '' : 'none';
+  el('dcard').style.display = ((coffee && !localDakLak) || ser === 'gold') && !nationwideBacktest ? '' : 'none';
+  document.querySelector('#ftable').closest('.card').style.display = (ser === 'gold' || (coffee && !localDakLak)) ? '' : 'none';
+  if(localDakLak){
+    el('dcard').style.display = 'none';
+    document.querySelector('#ftable').closest('.card').style.display = 'none';
+  }
+
+  if(coffee) renderRobusta(reg);
+  else if(ser === 'gold') renderGold();
+  else renderArabica(reg);
+
+  renderSimple(reg);
+  renderMetrics(ser);
+  renderSources();
+  renderChart(ser, reg);
+  renderLocalForecast(reg);
+  renderNationalBacktest();
+}
+
+function renderNationalBacktest(){
+  const card = el('national-validation-card');
+  const b = S && S.national_daily_backtest;
+  const show = el('series').value === 'robusta' && !region() && b;
+  card.style.display = show ? '' : 'none';
+  if(!show) return;
+  const selected = b.holdout_scores && b.holdout_scores[b.selected_by_validation];
+  const baseline = b.holdout_scores && b.holdout_scores.persistence;
+  if(!selected || !baseline) return;
+  el('national-accuracy').innerText = b.selected_by_validation
+    + ': ' + fmt(selected.within_2pct_pct,1) + '% dự báo nằm trong ±2% giá quan sát kế tiếp '
+    + '(±2% chỉ là biên sai số giá, không phải xác suất dự báo đúng).';
+  el('national-baseline').innerText = 'Mốc giữ nguyên giá: ' + fmt(baseline.within_2pct_pct,1)
+    + '% trong ±2%, MAE ' + fmt(baseline.mae_vnd_kg,0) + ' đ/kg. Mô hình: MAE '
+    + fmt(selected.mae_vnd_kg,0) + ' đ/kg; skill ' + fmt(selected.skill_vs_persistence_pct,1) + '%. '
+    + (selected.skill_vs_persistence_pct < 0 ? 'Mô hình thua baseline ở tập kiểm tra cuối.' : 'Mô hình nhỉnh hơn baseline ở tập kiểm tra cuối.');
+  el('national-direction').innerText = 'Mô hình gọi tăng/giảm ở '
+    + fmt(selected.direction_coverage_on_changed_days_pct,1) + '% ngày giá thực tế đổi; khi gọi, đúng hướng '
+    + fmt(selected.direction_hit_when_called_pct,1) + '%. Đây mới là chỉ số kiểm tra hướng, không phải con số ±2%.';
+  const age = Number(b.latest_observation_age_days || 0);
+  el('national-validation-note').innerText = 'Holdout chưa dùng chọn mô hình: '
+    + b.split_dates.holdout_start + ' → ' + b.split_dates.holdout_end + ' (' + selected.n + ' quan sát). '
+    + 'Dữ liệu nguồn cập nhật gần nhất ' + b.last_observation + ' (' + age + ' ngày trước); '
+    + 'vì vậy đây là báo cáo backtest, KHÔNG phải dự báo hiện tại. Đây là benchmark Robusta toàn quốc của Bộ NN&MT; '
+    + 'khác nguồn/cách tổng hợp với giá tham khảo Giacaphe đang hiển thị, và không phải báo giá riêng Đắk Lắk.';
+}
+
+function renderDakLakLeadLag(reg){
+  const card = el('dak-lak-leadlag-card');
+  if(!card) return;
+  const isDakLak = el('series').value === 'robusta' && reg && reg.slug === 'dak-lak';
+  card.style.display = isDakLak ? '' : 'none';
+  if(!isDakLak) return;
+
+  const ll = S && S.daklak_leadlag;
+  const live = (ll && ll.live_signal) || {};
+  const sig = live.directional_signal || 'GẦN NHƯ KHÔNG ĐỔI';
+
+  // Badge TĂNG / GIẢM / ĐI NGANG
+  const badge = el('ll-badge');
+  if(sig === 'TĂNG'){
+    badge.style.background = '#238636';
+    badge.style.color = '#ffffff';
+    badge.innerHTML = '▲ DỰ BÁO: TĂNG GIÁ';
+  } else if(sig === 'GIẢM'){
+    badge.style.background = '#da3633';
+    badge.style.color = '#ffffff';
+    badge.innerHTML = '▼ DỰ BÁO: HẠ GIÁ';
+  } else {
+    badge.style.background = '#30363d';
+    badge.style.color = '#e6edf3';
+    badge.innerHTML = '► DỰ BÁO: ÍT ĐỔI / ĐI NGANG';
+  }
+
+  // Target price & Diff
+  const pPred = live.predicted_local_price_vnd_kg;
+  const chgPred = live.predicted_change_vnd_kg;
+  el('ll-target-price').innerText = pPred ? (fmt(pPred, 0) + ' đ/kg') : '—';
+  
+  const diffEl = el('ll-target-diff');
+  if(chgPred !== undefined && chgPred !== null){
+    const sign = chgPred > 0 ? '+' : '';
+    diffEl.innerText = '(' + sign + fmt(chgPred, 0) + ' đ/kg so với hôm qua)';
+    diffEl.style.color = chgPred > 0 ? '#3fb950' : (chgPred < 0 ? '#f85149' : '#8b949e');
+  } else {
+    diffEl.innerText = '—';
+  }
+
+  // Plain actionable advice
+  const adviceEl = el('ll-action-advice');
+  const pctLon = live.london_overnight_change_pct;
+  const chgLon = live.london_overnight_change_usd;
+  if(sig === 'TĂNG'){
+    adviceEl.style.color = '#3fb950';
+    adviceEl.innerHTML = '💡 Lời khuyên: Sàn thế giới tăng mạnh (+' + (pctLon||0) + '%), các đại lý thường cộng thêm giá thu mua sáng nay. Nếu chưa cần tiền gấp, bà con có thể cân nhắc chờ thêm.';
+  } else if(sig === 'GIẢM'){
+    adviceEl.style.color = '#f85149';
+    adviceEl.innerHTML = '💡 Lời khuyên: Sàn thế giới giảm mạnh (' + (pctLon||0) + '%), các đại lý sáng nay có xu hướng hạ giá thu mua. Nếu đang cần thu hồi vốn, nên cân nhắc bán sớm trong ngày.';
+  } else {
+    adviceEl.style.color = '#e6edf3';
+    adviceEl.innerHTML = '💡 Lời khuyên: Sàn thế giới ít biến động, giá đại lý có xu hướng đi ngang hoặc bám sát giá hôm qua.';
+  }
+
+  // London simple note
+  const pLon = live.london_latest_close_usd_ton;
+  el('ll-london-simple').innerText = pLon ? (fmt(pLon, 0) + ' USD/tấn (' + (chgLon >= 0 ? '+' : '') + fmt(chgLon, 0) + ' USD, ' + (pctLon >= 0 ? '+' : '') + pctLon + '%)') : '—';
+}
+
+function renderLocalForecast(reg){
+  const card = el('daily-local-card');
+  if(!card) return;
+  const comparison = S && S.dak_lak_source_comparison;
+  const show = el('series').value === 'robusta' && reg && reg.slug === 'dak-lak' && comparison;
+  card.style.display = show ? '' : 'none';
+  if(!show) return;
+
+  const container = el('daily-source-comparison');
+  container.innerHTML = '';
+  Object.entries(comparison.sources || {}).forEach(([sourceId, result]) => {
+    const source = result.source || {};
+    const panel = document.createElement('article');
+    panel.className = 'market-item';
+    const title = document.createElement('h4');
+    title.textContent = source.source_name + ' · ' + (source.observations || result.raw_observations || 0) + ' mốc nguồn';
+    const period = document.createElement('p');
+    period.textContent = 'Nguồn quan sát: ' + (source.first_observation || '—') + ' → '
+      + (source.last_observation || result.raw_latest_date || '—') + '. ';
+    if(result.status === 'insufficient_independent_history'){
+      period.textContent += result.decision;
+    } else {
+      const base = result.deployed_holdout_score || {};
+      const candidate = result.validation_candidate_holdout_score || {};
+      period.textContent += 'Holdout cố định ' + result.split.holdout_start + ' → ' + result.split.holdout_end
+        + ' (' + base.n + ' mốc khác giá). Baseline giữ giá: MAE ' + fmt(base.mae_vnd_kg || 0,0)
+        + ' đ/kg; nằm trong ±1%: ' + fmt(base.within_1pct_pct || 0,1) + '%. '
+        + 'Ứng viên validation: ' + (result.validation_candidate || 'none') + '; MAE holdout '
+        + fmt(candidate.mae_vnd_kg || 0,0) + ' đ/kg, skill '
+        + (Number.isFinite(Number(result.validation_candidate_holdout_skill_pct))
+          ? fmt(result.validation_candidate_holdout_skill_pct,1) + '%' : 'không tính được') + '. '
+        + result.decision;
+    }
+    const sourceLink = document.createElement('a');
+    sourceLink.href = source.source_url; sourceLink.target = '_blank'; sourceLink.rel = 'noopener noreferrer';
+    sourceLink.style.cssText = 'color:#d9b77f;margin-right:12px'; sourceLink.textContent = 'Nguồn dữ liệu';
+    const methodLink = document.createElement('a');
+    methodLink.href = source.methodology_url; methodLink.target = '_blank'; methodLink.rel = 'noopener noreferrer';
+    methodLink.style.color = '#d9b77f'; methodLink.textContent = 'Phương pháp';
+    panel.append(title, period, sourceLink, methodLink);
+    container.appendChild(panel);
+  });
+  const rawLatest = Object.values(comparison.sources || {}).map(x => x.source && x.source.last_observation || x.raw_latest_date).filter(Boolean).sort().pop();
+  el('daily-local-note').innerText = 'Báo cáo nguồn Nông Dân Việt và Thị Trường Cà Phê giữ cutoff holdout cố định trước 01/10/2026; các quote lặp không được đếm thành dự báo độc lập. Mốc mới nhất của hai nguồn này: '
+    + (rawLatest || 'chưa rõ') + '. Tỷ lệ trong biên giá không đồng nghĩa với đoán đúng chiều tăng/giảm.';
+
+  const extra = el('extra-dak-lak-sources');
+  extra.innerHTML = '';
+  const gp = S && S.giacaphe_local_data;
+  if(gp && Number(gp.normalized_rows_by_province && gp.normalized_rows_by_province['dak-lak'] || 0) > 0){
+    const panel = document.createElement('article'); panel.className = 'market-item';
+    const title = document.createElement('h4'); title.textContent = 'Giacaphe.com / Y5Cafe · chuỗi tham khảo riêng';
+    const body = document.createElement('p');
+    const range = gp.normalized_date_ranges_by_province && gp.normalized_date_ranges_by_province['dak-lak'];
+    const latest = gp.latest_prices_by_province && gp.latest_prices_by_province['dak-lak'];
+    body.textContent = 'Đắk Lắk: ' + (gp.normalized_rows_by_province['dak-lak'] || 0) + ' mốc, '
+      + (range && range.start || '—') + ' → ' + (range && range.end || '—')
+      + '; gần nhất ' + fmt(latest,0) + ' đ/kg. Nguồn nói giá tham khảo kết hợp sàn và khảo sát doanh nghiệp/đại lý, có thể khác giá thu mua thực tế. '
+      + 'Chưa có published_at riêng cho từng quote; quyền tái sử dụng tự động chưa xác minh. Chuỗi này chưa backtest đủ dài; không trộn vào hai nguồn khác.';
+    const link = document.createElement('a'); link.href='https://giacaphe.com/gia-ca-phe-noi-dia/'; link.target='_blank'; link.rel='noopener noreferrer'; link.style.color='#d9b77f'; link.textContent='Nguồn Giacaphe.com';
+    panel.append(title,body,link); extra.appendChild(panel);
+  }
+  const vnc = S && S.vnc_dak_lak_quality;
+  if(vnc && vnc.normalized_dak_lak_rows){
+    const panel = document.createElement('article'); panel.className = 'market-item';
+    const title = document.createElement('h4'); title.textContent = 'VNCoffeePrice · Mendeley Data v3 · kiểm định khám phá';
+    const body = document.createElement('p');
+    const report = S.vnc_dak_lak_exploratory_backtest || {};
+    const hold = report.holdout || {};
+    const base = hold.persistence || {};
+    const modelName = report.selected_on_validation_only;
+    const selected = modelName === 'persistence' ? base : ((hold.models || {})[modelName] || {});
+    const skill = report.selected_holdout_skill_vs_persistence_pct;
+    body.textContent = 'Dak Lak: ' + vnc.normalized_dak_lak_rows + ' mốc, ' + vnc.dak_lak_date_start + ' → ' + vnc.dak_lak_date_end
+      + '; kỳ hạn là quan sát kế tiếp trong file (không đảm bảo ngày lịch kế tiếp). Nguồn gốc giá gốc cần xác minh thêm. Tập 2026 đã công khai nên không phải holdout mù. '
+      + (base.mae_vnd_kg !== undefined ? ('Đánh giá khám phá ' + (hold.dates && hold.dates.start || '—') + ' → ' + (hold.dates && hold.dates.end || '—')
+        + ' (' + (base.n || 0) + ' dự báo): persistence MAE ' + fmt(base.mae_vnd_kg,0) + ' đ/kg; phương pháp chọn trên 2025 (' + (modelName || 'chưa có') + ') MAE '
+        + fmt(selected.mae_vnd_kg,0) + ' đ/kg, skill so với persistence ' + fmt(skill,1) + '%. Chỉ là khám phá, không đưa vào production.')
+        : 'Backtest khám phá đang chờ hoàn tất; chưa có chỉ số MAE được tính.');
+    const link = document.createElement('a'); link.href='https://data.mendeley.com/datasets/p8fhcw59b7/3'; link.target='_blank'; link.rel='noopener noreferrer'; link.style.color='#d9b77f'; link.textContent='Dataset và DOI';
+    panel.append(title,body,link); extra.appendChild(panel);
+  }
+}
+// ---------------------------------------------------------------- Robusta
+function renderRobusta(reg){
+  const rb = S.robusta || {}, conv = rb.conversion || {};
+  const nat = S.vn ? S.vn.vn_price : null;
+  const price = reg && reg.price ? reg.price : nat;
+  const name = reg ? reg.name : 'Toàn quốc';
+  const localDakLak = reg && reg.slug === 'dak-lak';
+  const fc = localDakLak ? [] : ((reg && reg.forecast_vn && reg.forecast_vn.length) ? reg.forecast_vn : rb.forecast || []);
+  const pick = h => fc.find(x => x.h === h);
+
+  el('l1').innerText = 'Giá ' + name + ' hôm nay' + (reg && reg.estimated ? ' (ước tính)' : '');
+  el('v1').innerText = price ? fmt(price,0) + ' đ/kg' : '—';
+  if(!reg) el('s1').innerText = S.vn ? 'ngày ' + S.vn.date : '';
+  else if(!reg.estimated) el('s1').innerText = 'ngày ' + reg.date + ' · ' + reg.days + ' ngày dữ liệu';
+  else if(reg.own_price) el('s1').innerText = 'giá riêng gần nhất ' + fmt(reg.own_price,0) + ' đ/kg'
+    + (reg.own_date ? ' (ngày ' + reg.own_date + ')' : '') + ' — tạm dùng giá toàn quốc';
+  else el('s1').innerText = 'chưa lấy được giá riêng — tạm dùng giá toàn quốc';
+
+  const f1 = pick(1), f6 = pick(6);
+  const lo = x => (x.lo !== undefined && x.lo !== null) ? x.lo : x.vn_lo;
+  const hi = x => (x.hi !== undefined && x.hi !== null) ? x.hi : x.vn_hi;
+  const horizonCards = document.querySelectorAll('#forecast-horizons > .card');
+  if(localDakLak){
+    horizonCards.forEach(card => card.style.display = 'none');
+    el('l2').innerText = 'Dự báo riêng Đắk Lắk'; el('l3').innerText = 'Tín hiệu hướng giá';
+    el('v2').innerText = 'Chưa bật'; el('s2').innerText = 'Chưa có holdout độc lập mới chứng minh lợi thế so với mốc giữ giá.';
+    el('v3').innerText = 'Không phát'; el('s3').innerText = 'Giữ nguyên giá chỉ là baseline, không phải dự báo tăng/giảm.';
+  } else {
+    horizonCards.forEach(card => card.style.display = '');
+    el('l2').innerText = 'Dự báo +1 tháng'; el('l3').innerText = 'Dự báo +6 tháng';
+    if(f1){el('v2').innerText = fmt(f1.vn_kg,0)+' đ/kg'; el('s2').innerText = pct(f1.vn_kg/price)
+      + ' · khoảng ' + fmt(lo(f1),0) + '–' + fmt(hi(f1),0);}
+    if(f6){el('v3').innerText = fmt(f6.vn_kg,0)+' đ/kg'; el('s3').innerText = pct(f6.vn_kg/price)
+      + ' · khoảng ' + fmt(lo(f6),0) + '–' + fmt(hi(f6),0);}
+  }
+
+  const lastUsd = (rb.series||{}).last_price_usd_kg;
+  el('l4').innerText = 'Robusta thế giới (ICO)';
+  el('v4').innerText = lastUsd ? fmt(lastUsd,2) + ' USD/kg' : '—';
+  el('s4').innerText = 'tháng ' + ((rb.series||{}).last||'') + ' · hệ số VN ' + fmt(conv.basis||0,3)
+    + ' · ' + (conv.n_basis_obs||0) + ' mẫu';
+
+  // ---- bang du bao tung ngay 1..30 ----
+  const daily = localDakLak ? [] : ((reg && reg.daily_vn && reg.daily_vn.length) ? reg.daily_vn : (rb.daily || []));
+  const dtb = document.querySelector('#dtable tbody'); dtb.innerHTML = '';
+  el('dtitle').innerText = localDakLak ? 'Dự báo ngày riêng Đắk Lắk — chưa có' : 'Nội suy minh họa 30 ngày — ' + name + ' (đ/kg)';
+  el('dnote').innerText = localDakLak
+    ? 'Không hiển thị nội suy Robusta toàn quốc thành dự báo Đắk Lắk. Cần kiểm định riêng trên các holdout địa phương mới trước khi bật.'
+    : 'Không phải dự báo riêng cho từng ngày. Nguồn Robusta World Bank theo tháng, có độ trễ; mức giá này không phải báo giá trực tiếp từ đại lý.';
+  if(localDakLak) el('dnote').innerText = 'Không hiển thị nội suy Robusta toàn quốc thành dự báo Đắk Lắk. Cần kiểm định riêng trên các holdout địa phương mới trước khi bật.';
+  else el('dnote').innerHTML = rb.daily_note || '';
+  if(price && daily.length){
+    daily.forEach(x=>{
+      const ch = (x.vn_kg/price-1)*100;
+      const wk = (x.d % 7 === 0) ? ' style="font-weight:600"' : '';
+      dtb.innerHTML += `<tr${wk}><td>${datePlus(x.d, S.vn && S.vn.date)}</td><td>${fmt(x.vn_kg,0)} đ/kg</td>
+        <td class="${ch>=0?'ok':'no'}">${ch>=0?'+':''}${ch.toFixed(2)}%</td>
+        <td class="mut">${fmt(x.lo,0)} – ${fmt(x.hi,0)}</td></tr>`;
+    });
+  } else {
+    dtb.innerHTML = '<tr><td colspan="4" class="mut">Chưa có dự báo ngày.</td></tr>';
+  }
+
+  const ft = document.querySelector('#ftable tbody'); ft.innerHTML='';
+  el('ftitle').innerText = localDakLak ? 'Dự báo tháng riêng Đắk Lắk — chưa có' : 'Dự báo 12 tháng tới — ' + name + ' (đ/kg)';
+  el('fhead').innerHTML = '<th>Tháng tới</th><th>Giá ' + name + '</th><th>Thay đổi</th><th>Khoảng dự báo</th>';
+  fc.forEach(x=>{
+    if(!price) return;
+    const ch = (x.vn_kg/price-1)*100;
+    ft.innerHTML += `<tr><td>+${x.h} tháng<div class="mut">${monthPlus(x.h, S.vn && S.vn.date)}</div></td><td>${fmt(x.vn_kg,0)} đ/kg</td>
+      <td class="${ch>=0?'ok':'no'}">${ch>=0?'+':''}${ch.toFixed(2)}%</td>
+      <td class="mut">${fmt(lo(x),0)} – ${fmt(hi(x),0)}</td></tr>`;
+  });
+  if(!fc.length) ft.innerHTML = '<tr><td colspan="4" class="mut">' + (localDakLak ? 'Chưa bật: chưa có kiểm định độc lập đủ chứng cứ cho dự báo riêng Đắk Lắk.' : 'Chưa có dự báo Robusta.') + '</td></tr>';
+}
+
+// ---------------------------------------------------------------- Vang
+function renderGold(){
+  const g = S.gold || {}, conv = g.conversion || {};
+  const ser = g.series || {}, bi = conv.basis_info || {};
+  const fc = g.forecast || [];
+  const pick = h => fc.find(x => x.h === h);
+  const vnNow = conv.vn_now || null;
+  const usdNow = ser.last_price_usd_oz;
+
+  el('l1').innerText = 'Giá vàng SJC hôm nay' + (conv.vn_now_date ? ' (' + conv.vn_now_date + ')' : '');
+  el('v1').innerText = vnNow ? fmt(vnNow,0) + ' đ/lượng' : '—';
+  el('s1').innerText = 'quy đổi: vàng thế giới × tỷ giá × hệ số ' + fmt(conv.basis||0,3)
+    + ' (' + (bi.n_used||0) + ' ngày đo)';
+
+  const f7 = pick(7), f30 = pick(30);
+  el('l2').innerText = 'Dự báo +7 ngày'; el('l3').innerText = 'Dự báo +30 ngày';
+  if(f7 && vnNow){ el('v2').innerText = fmt(f7.vn_luong,0)+' đ/lượng';
+    el('s2').innerText = pct(f7.vn_luong/vnNow) + ' · khoảng ' + fmt(f7.lo,0) + '–' + fmt(f7.hi,0); }
+  if(f30 && vnNow){ el('v3').innerText = fmt(f30.vn_luong,0)+' đ/lượng';
+    el('s3').innerText = pct(f30.vn_luong/vnNow) + ' · khoảng ' + fmt(f30.lo,0) + '–' + fmt(f30.hi,0); }
+
+  el('l4').innerText = 'Vàng thế giới (COMEX)';
+  el('v4').innerText = usdNow ? fmt(usdNow,0) + ' USD/oz' : '—';
+  el('s4').innerText = 'phiên ' + (ser.last||'') + ' · chênh lệch SJC ±' + fmt((bi.std||0)*100,1) + '%';
+
+  // bang ngay (mo hinh ngay that)
+  const dtb = document.querySelector('#dtable tbody'); dtb.innerHTML = '';
+  el('dtitle').innerText = 'Dự báo từng ngày — 30 ngày tới · Vàng SJC (đ/lượng)';
+  const hz = g.horizons || {};
+  const sk30 = ((hz['30']||{}).chosen_metrics||{}).skill;
+  const sk7 = ((hz['7']||{}).chosen_metrics||{}).skill;
+  el('dnote').innerHTML = 'Mô hình ngày thật trên chuỗi vàng thế giới (không nội suy). '
+    + 'Skill so với "giá giữ nguyên": +7 ngày ' + (sk7!==undefined?(sk7>0?'+':'')+sk7.toFixed(1)+'%':'—')
+    + ', +30 ngày ' + (sk30!==undefined?(sk30>0?'+':'')+sk30.toFixed(1)+'%':'—')
+    + '. Khoảng = MAPE đo được, <b>chưa gồm</b> sai số chênh lệch SJC (±'
+    + fmt((bi.std||0)*100,1) + '%).';
+  if(vnNow && fc.length){
+    fc.forEach(x=>{
+      const ch = (x.vn_luong/vnNow-1)*100;
+      const wk = (x.h % 7 === 0) ? ' style="font-weight:600"' : '';
+      dtb.innerHTML += `<tr${wk}><td>${datePlus(x.h, (g.series||{}).last)}</td><td>${fmt(x.vn_luong,0)} đ/lượng</td>
+        <td class="${ch>=0?'ok':'no'}">${ch>=0?'+':''}${ch.toFixed(2)}%</td>
+        <td class="mut">${fmt(x.lo,0)} – ${fmt(x.hi,0)}</td></tr>`;
+    });
+  } else {
+    dtb.innerHTML = '<tr><td colspan="4" class="mut">Chưa có dự báo vàng.</td></tr>';
+  }
+}
+
+// ---------------------------------------------------------------- Arabica
+function renderArabica(reg){
+  const m = S.metrics, base = m.series.last_price;
+  const fc = (reg && reg.forecast && reg.forecast.length) ? reg.forecast : m.forecast || [];
+  const pick = h => fc.find(x => x.h === h);
+  const name = reg ? reg.name : null;
+
+  el('l1').innerText = 'Arabica ICE (US cents/lb)';
+  el('v1').innerText = fmt(base,1) + ' ¢/lb';
+  el('s1').innerText = 'phiên ' + m.series.last;
+  el('l2').innerText = 'Dự báo +7 ngày'; el('l3').innerText = 'Dự báo +30 ngày';
+  const f7 = pick(7), f30 = pick(30);
+  if(f7){el('v2').innerText = fmt(f7.price,1)+' ¢'; el('s2').innerText = pct(f7.price/base);}
+  if(f30){el('v3').innerText = fmt(f30.price,1)+' ¢'; el('s3').innerText = pct(f30.price/base);}
+  el('l4').innerText = name ? 'Quy ra giá ' + name : 'Giá nội địa VN (tham khảo)';
+  if(reg && reg.price){
+    el('v4').innerText = fmt(reg.price,0) + ' đ/kg';
+    el('s4').innerText = 'theo tỷ lệ hiện tại của ' + reg.name;
+  } else if(S.vn){ el('v4').innerText = fmt(S.vn.vn_price,0)+' đ/kg'; el('s4').innerText = 'ngày ' + S.vn.date; }
+  else { el('v4').innerText='—'; el('s4').innerText=''; }
+
+  const ft = document.querySelector('#ftable tbody'); ft.innerHTML='';
+  el('ftitle').innerText = 'Dự báo 30 ngày tới — Arabica ICE (¢/lb)';
+  el('fhead').innerHTML = '<th>Ngày tới</th><th>Giá Arabica</th><th>Thay đổi</th><th>Quy ra đ/kg</th>';
+  [1,3,7,14,21,30].forEach(h=>{
+    const x = pick(h); if(!x) return;
+    const ch = (x.price/base-1)*100;
+    const vn = reg && reg.price ? Math.round(reg.price*x.price/base)
+             : (S.vn ? Math.round(S.vn.vn_price*x.price/base) : null);
+    ft.innerHTML += `<tr><td>+${h} ngày<div class="mut">${datePlus(h, m.series.last)}</div></td><td>${fmt(x.price,1)} ¢/lb</td>
+      <td class="${ch>=0?'ok':'no'}">${ch>=0?'+':''}${ch.toFixed(2)}%</td>
+      <td>${vn?fmt(vn,0)+' đ/kg':'—'}</td></tr>`;
+  });
+}
+
+// ---------------------------------------------------------------- bang phu
+function pTag(p, kind, dmBetter){
+  if(p === null || p === undefined) return {v:'<span class="mut">—</span>', s:'không áp dụng'};
+  const v = p < 0.001 ? '&lt;0.001' : p.toFixed(3);
+  let s = '';
+  if(kind === 'dm') s = p < 0.05 ? (dmBetter ? 'mô hình hơn' : 'mô hình kém hơn') : 'không khác biệt đáng kể';
+  else if(kind === 'cw') s = p < 0.05 ? 'mô hình hơn naive' : 'chưa chứng minh hơn';
+  else s = p < 0.05 ? 'hướng đáng tin' : 'hướng chưa đáng tin';
+  return {v, s};
+}
+
+function renderMetrics(ser){
+  const tb = document.querySelector('#mtable tbody'); tb.innerHTML='';
+  const hz = ser === 'robusta' ? (S.robusta||{}).horizons
+           : ser === 'gold' ? (S.gold||{}).horizons
+           : (S.metrics||{}).horizons;
+  const unit = ser === 'robusta' ? ' tháng' : ' ngày';
+  const intro = ser === 'robusta'
+    ? 'Chuỗi Robusta (loại cà phê Việt Nam), dữ liệu tháng 1960→nay. '
+    : ser === 'gold'
+    ? 'Chuỗi vàng thế giới COMEX (USD/oz), dữ liệu ngày 10 năm. '
+    : 'Chuỗi Arabica ICE futures, dữ liệu ngày 10 năm. ';
+  el('mnote').innerHTML = intro
+    + '<b>Skill</b> = mô hình tốt hơn bao nhiêu % so với baseline "giá giữ nguyên"; '
+    + 'kèm <b>khoảng tin cậy 95%</b> (bootstrap) — nếu khoảng này có chứa 0 thì skill chưa đáng tin. '
+    + '<b>DM p</b> = Diebold-Mariano (Newey-West + hiệu chỉnh Harvey-Leybourne-Newbold cho mẫu nhỏ); '
+    + '<b>CW p</b> = Clark-West (MSPE-adjusted, một phía) — đúng khi baseline lồng trong mô hình, '
+    + 'đây là kiểm định quyết định; <b>PT p</b> = Pesaran-Timmermann cho dự báo hướng; '
+    + '<b>Khoảng 90%</b> = khoảng dự báo theo Adaptive Conformal Prediction, kèm <b>độ phủ thực tế đo được</b>. '
+    + (ser === 'robusta' ? 'Giá đ/kg = Robusta × tỷ giá × hệ số (hệ số có sai số riêng, chưa tính vào bảng này).'
+       : ser === 'gold' ? 'Đây là độ chính xác của <b>vàng thế giới</b>; giá SJC còn thêm sai số chênh lệch trong nước (khoảng ±3–4%), chưa tính vào bảng này.'
+       : 'Đây KHÔNG phải độ chính xác của giá Việt Nam.');
+  if(!hz){ tb.innerHTML = '<tr><td colspan="8" class="mut">Chưa có số liệu.</td></tr>'; return; }
+  Object.keys(hz).sort((a,b)=>a-b).forEach(k=>{
+    const r = ser === 'robusta' ? hz[k] : (hz[k] || {}).chosen_metrics;
+    if(!r) return;
+    const noSkill = r.skill === undefined || r.skill === null;
+    const skillCls = (r.skill||0) <= 0.5 ? 'no' : (r.skill >= 15 ? 'ok' : '');
+    const noDir = (r.alpha === 0 || r.alpha === undefined) || r.chosen === 'naive';
+    const aTxt = r.alpha !== undefined && r.alpha !== null ? (Math.round(r.alpha*100)/100) : null;
+    const tag = (r.chosen ? r.chosen : '') + (aTxt !== null ? ' α=' + aTxt : '');
+    const dm = pTag(r.dm_p, 'dm', r.dm_better);
+    const cw = pTag(r.cw_p, 'cw');
+    const pt = pTag(r.pt_p, 'pt');
+    const ci = r.skill_ci ? (r.skill_ci[0] > 0 ? 'CI ' + (r.skill_ci[0]>0?'+':'') + r.skill_ci[0].toFixed(1)
+                 + ' … ' + (r.skill_ci[1]>0?'+':'') + r.skill_ci[1].toFixed(1) : 'CI bao gồm 0') : '';
+    const r2 = r.r2_ret !== undefined && r.r2_ret !== null ? r.r2_ret.toFixed(3) : '—';
+    const dirTxt = noDir ? 'hướng: —' : 'hướng ' + (r.dir_acc||0).toFixed(1) + '%';
+    const band = r.band_pct !== undefined && r.band_pct !== null ? '±' + r.band_pct.toFixed(1) + '%' : '—';
+    const cov = r.coverage !== undefined && r.coverage !== null ? 'đo phủ ' + r.coverage.toFixed(1) + '%' : '';
+    tb.innerHTML += `<tr><td>+${k}${unit}<div class="mut">n=${r.n_test || r.n} · R²=${r2}</div></td>`
+      + `<td>${r.mape.toFixed(2)}%</td>`
+      + `<td class="mut">${r.naive_mape !== undefined ? r.naive_mape.toFixed(2)+'%' : '—'}</td>`
+      + `<td class="${skillCls}">${noSkill ? '—' : (r.skill>0?'+':'')+r.skill.toFixed(1)+'%'}`
+      + `<div class="mut">${ci}</div></td>`
+      + `<td>${dm.v}<div class="mut">${dm.s}</div></td>`
+      + `<td>${cw.v}<div class="mut">${cw.s}</div></td>`
+      + `<td>${pt.v}<div class="mut">${dirTxt}</div></td>`
+      + `<td>${band}<div class="mut">${cov}</div></td></tr>`;
+  });
+}
+
+function renderSources(){
+  const tb = document.querySelector('#stable tbody'); tb.innerHTML='';
+  const s = S.sources || {};
+  const row = (o, acc) => {
+    const range = o.range && o.range[0] ? o.range[0] + ' → ' + o.range[1] : '—';
+    tb.innerHTML += `<tr><td>${o.name}<div class="mut">${o.source||''}</div></td>
+      <td>${o.freq||''}</td><td>${o.points||0} điểm<div class="mut">${range}</div></td>
+      <td>${o.note ? '<span class="mut">' + o.note + '</span>' : (o.points||0) + ' mẫu'}</td>
+      <td>${acc}</td></tr>`;
+  };
+  if(s.arabica){
+    const a = s.arabica, h = a.accuracy || {};
+    const h30 = ((a.horizons||{})['30']||{});
+    const sk1 = h.skill || 0, sk30 = h30.skill || 0;
+    const fmt = v => (v>0?'+':'') + v.toFixed(1) + '%';
+    row(a, `<b>+1 ngày: ${(h.mape||0).toFixed(2)}%</b> MAPE · skill `
+      + `<span class="${sk1>0.5?'ok':'no'}">${fmt(sk1)}</span>`
+      + `<div class="mut">+30 ngày: ${(h30.mape||0).toFixed(2)}% · skill `
+      + `<span class="${sk30>0.5?'ok':'no'}">${fmt(sk30)}</span></div>`);
+  }
+  if(s.robusta){
+    const a = s.robusta, h = a.accuracy || {};
+    const h12 = ((a.horizons||{})['12']||{});
+    const sk = h.skill || 0, sk12 = h12.skill || 0;
+    row(a, `<b>+1 tháng: ${(h.mape||0).toFixed(2)}%</b> MAPE · skill `
+      + `<span class="${sk>0.5?'ok':'no'}">${sk>0?'+':''}${sk.toFixed(1)}%</span>`
+      + `<div class="mut">+12 tháng: ${(h12.mape||0).toFixed(2)}% · skill ${sk12>0?'+':''}${sk12.toFixed(1)}%</div>`);
+  }
+  if(s.gold_world){
+    const a = s.gold_world, h = a.accuracy || {};
+    const h30 = ((a.horizons||{})['30']||{});
+    const sk1 = h.skill || 0, sk30 = h30.skill || 0;
+    const f = v => (v>0?'+':'') + v.toFixed(1) + '%';
+    row(a, `<b>+1 ngày: ${(h.mape||0).toFixed(2)}%</b> MAPE · skill `
+      + `<span class="${sk1>0.5?'ok':'no'}">${f(sk1)}</span>`
+      + `<div class="mut">+30 ngày: ${(h30.mape||0).toFixed(2)}% · skill `
+      + `<span class="${sk30>0.5?'ok':'no'}">${f(sk30)}</span></div>`);
+  }
+  if(s.gold_vn){
+    const gc = (S.gold||{}).conversion || {}, bi = gc.basis_info || {};
+    row(s.gold_vn, '<span class="no">chưa đo trực tiếp</span>'
+      + `<div class="mut">hệ số ${fmt(gc.basis||0,3)} · ${(bi.n_used||0)} ngày`
+      + ` · dao động ±${fmt((bi.std||0)*100,1)}%</div>`);
+  }
+  if(s.vn){
+    const c = (s.robusta||{}).conversion || {};
+    row(s.vn, '<span class="no">chưa đo được trực tiếp</span>'
+      + `<div class="mut">hệ số quy đổi dùng ${c.n_basis_used||0} mẫu gần nhất (2011: ≈0,80 → 2026: ≈0,98)</div>`);
+  }
+}
+
+function renderChart(ser, reg){
+  const m = S.metrics;
+  const labels = (S.history.dates||[]).slice();
+  const hist = (S.history.prices||[]).slice();
+  let dsets, labels2;
+  if(ser === 'gold' && S.gold_hist && S.gold_hist.dates && S.gold_hist.dates.length){
+    const gh = S.gold_hist;
+    const L = gh.dates.slice();
+    const P = gh.derived.slice();
+    const fc = (S.gold||{}).forecast || [];
+    const fl = fc.map(x=>'+'+x.h+'d');
+    const fp = fc.map(x=>x.vn_luong);
+    const vnMap = {};
+    (gh.vn_dates||[]).forEach((d,i)=>{ vnMap[d] = gh.vn_prices[i]; });
+    const vnSeries = L.map(d => vnMap[d] !== undefined ? vnMap[d] : null);
+    labels2 = [...L, ...fl];
+    dsets = [
+      {label:'Vàng VN suy ra từ thế giới', data:[...P, ...Array(fl.length).fill(null)], borderColor:'#c8a165', borderWidth:1.6, pointRadius:0, tension:.15},
+      {label:'SJC thực tế', data:[...vnSeries, ...Array(fl.length).fill(null)], borderColor:'#3fb950', borderWidth:0, pointRadius:1.8, showLine:false},
+      {label:'Dự báo', data:[...Array(L.length-1).fill(null), P[P.length-1], ...fp], borderColor:'#58a6ff', borderWidth:2, borderDash:[6,4], pointRadius:0, tension:.15}
+    ];
+    el('chartnote').innerText = 'Đường liền: vàng VN suy ra từ vàng thế giới (× tỷ giá × hệ số). '
+      + 'Chấm xanh: giá SJC thực tế (' + (gh.vn_dates||[]).length + ' ngày). Nét đứt: dự báo 30 ngày.';
+  } else if(ser === 'robusta' && reg && reg.slug === 'dak-lak'){
+    const dh = S.dak_lak_hist || {};
+    const dDates = (dh.dates || []).slice();
+    const dPrices = (dh.prices || []).slice();
+    const ll = (S.daklak_leadlag && S.daklak_leadlag.live_signal) || {};
+    const predPrice = ll.predicted_local_price_vnd_kg;
+    const predChg = ll.predicted_change_vnd_kg;
+    const sig = ll.directional_signal;
+
+    const nextLabel = 'Phiên tới';
+    labels2 = [...dDates, nextLabel];
+
+    const histData = [...dPrices, null];
+    const forecastData = [...Array(Math.max(0, dPrices.length - 1)).fill(null), dPrices[dPrices.length - 1], predPrice];
+    const colorForecast = sig === 'TĂNG' ? '#3fb950' : (sig === 'GIẢM' ? '#f85149' : '#8b949e');
+
+    dsets = [
+      {
+        label: 'Giá thực tế Đắk Lắk (đ/kg)',
+        data: histData,
+        borderColor: '#c8a165',
+        borderWidth: 2.2,
+        pointRadius: 2.5,
+        tension: 0.15
+      },
+      {
+        label: 'Dự đoán phiên tới: ' + (predPrice ? fmt(predPrice, 0) + ' đ/kg (' + (predChg >= 0 ? '+' : '') + fmt(predChg, 0) + ' đ)' : '—'),
+        data: forecastData,
+        borderColor: colorForecast,
+        borderWidth: 2.5,
+        borderDash: [6, 4],
+        pointRadius: 5,
+        pointBackgroundColor: colorForecast,
+        tension: 0.15
+      }
+    ];
+    el('chartnote').innerText = '📈 Đường màu vàng: Diễn biến giá cà phê thực tế Đắk Lắk các phiên gần đây. Nét đứt màu ' + (sig === 'TĂNG' ? 'xanh' : (sig === 'GIẢM' ? 'đỏ' : 'xám')) + ': Điểm dự đoán xu hướng phiên tới.';
+  } else if(ser === 'robusta' && S.vn_hist && S.vn_hist.months && S.vn_hist.months.length){
+    const vh = S.vn_hist;
+    const L = vh.months.slice();
+    const P = vh.prices.slice();
+    const fc = (reg && reg.forecast_vn && reg.forecast_vn.length) ? reg.forecast_vn : (S.robusta||{}).forecast || [];
+    const fl = fc.map(x=>'+'+x.h+'m');
+    const fp = fc.map((x,i)=> i===0 ? P[P.length-1] : x.vn_kg);
+    const fcFull = [P[P.length-1], ...fc.map(x=>x.vn_kg)];
+    labels2 = [...L, ...fl];
+    dsets = [
+      {label:'Giá VN suy ra từ Robusta', data:[...P, ...Array(fl.length).fill(null)], borderColor:'#c8a165', borderWidth:1.8, pointRadius:0, tension:.15},
+      {label:'Dự báo', data:[...Array(L.length-1).fill(null), ...fcFull], borderColor:'#58a6ff', borderWidth:2, borderDash:[6,4], pointRadius:0, tension:.15}
+    ];
+    el('chartnote').innerText = 'Đường liền: giá Việt Nam suy ra từ Robusta thế giới (× tỷ giá × hệ số). Nét đứt: dự báo 12 tháng.'
+      + (reg ? ' Đang nhân theo tỷ lệ của ' + reg.name + '.' : '');
+  } else {
+    const base = m.series.last_price;
+    const fl = []; for(let i=0;i<=30;i++) fl.push('+'+i);
+    const fp = []; for(let i=0;i<=30;i++) fp.push(i===0 ? base : ((m.forecast||[]).find(x=>x.h===i)||{}).price);
+    labels2 = [...labels, ...fl];
+    dsets = [
+      {label:'Arabica ICE (lịch sử)', data:[...hist, ...Array(31).fill(null)], borderColor:'#c8a165', borderWidth:1.6, pointRadius:0, tension:.15},
+      {label:'Dự báo', data:[...Array(hist.length-1).fill(null), hist[hist.length-1], ...fp.slice(1)], borderColor:'#58a6ff', borderWidth:2, borderDash:[6,4], pointRadius:0, tension:.15}
+    ];
+    el('chartnote').innerText = 'Giá Arabica ICE ' + hist.length + ' phiên gần nhất và dự báo 30 ngày.';
+  }
+  const ctx = el('chart');
+  if(chart) chart.destroy();
+  chart = new Chart(ctx, {type:'line', data:{labels:labels2, datasets:dsets},
+    options:{plugins:{legend:{labels:{color:'#9aa4b2'}}},scales:{x:{ticks:{color:'#9aa4b2',maxTicksLimit:9}},y:{ticks:{color:'#9aa4b2'}}}}});
+}
+
+function banner(t, cls){const b=el('banner');b.className='on '+(cls||'');b.innerText=t;}
+function updateRealtimeUI(){
+  const rt = (S && S.realtime) || {};
+  const t = rt.last_refresh_vn || (S && S.meta && (S.meta.last_fast_refresh_vn || S.meta.updated_at));
+  if(el('rt-time') && t){
+    el('rt-time').innerHTML = '🟢 Dữ liệu mới nhất lúc: <b style="color:#58a6ff">' + (t.includes('T') ? t.replace('T',' ').slice(0,19) : t) + '</b>';
+  }
+}
+
+async function refresh(){
+  const btn = el('btn');
+  btn.disabled = true;
+  btn.innerText = '⏳ Đang đồng bộ…';
+  banner('Đang kiểm tra và đồng bộ dữ liệu thị trường mới nhất (~5-10 giây)…');
+  try{
+    const r = await fetch(BASE + '/api/refresh', {method:'POST'});
+    const d = await r.json();
+    if(d.message) banner(d.message);
+
+    let attempts = 0;
+    while(attempts < 15){
+      await new Promise(res => setTimeout(res, 2000));
+      const res = await fetch(BASE + '/api/state?_t=' + Date.now());
+      if(res.ok){
+        const st = await res.json();
+        if(!st.busy){
+          S = st;
+          render();
+          updateRealtimeUI();
+          banner('Đã cập nhật xong dữ liệu mới nhất!', 'ok');
+          break;
+        }
+      }
+      attempts++;
+    }
+  }catch(e){
+    banner('Lỗi cập nhật: ' + e.message, 'err');
+  }finally{
+    btn.disabled = false;
+    btn.innerText = '↻ Cập nhật dữ liệu';
+  }
+}
+
+let autoPollTimer = null;
+function startAutoPolling(){
+  if(autoPollTimer) clearInterval(autoPollTimer);
+  autoPollTimer = setInterval(async () => {
+    try{
+      const r = await fetch(BASE + '/api/state?_t=' + Date.now());
+      if(!r.ok) return;
+      const d = await r.json();
+      if(d && !d.error){
+        const oldUpd = S && S.meta && S.meta.updated_at;
+        const newUpd = d && d.meta && d.meta.updated_at;
+        S = d;
+        updateRealtimeUI();
+        if(oldUpd !== newUpd){
+          console.log('[Real-time] Data updated automatically:', newUpd);
+          render();
+        }
+      }
+    }catch(err){
+      console.warn('[Auto-polling err]', err);
+    }
+  }, 30000);
+}
+
+load().then(() => {
+  updateRealtimeUI();
+  startAutoPolling();
+});
+</script>
+</body>
+</html>

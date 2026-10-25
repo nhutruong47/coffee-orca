@@ -1,0 +1,210 @@
+{
+  "dataset": "VNCoffeePrice: A Multi-Source Dataset for Robusta Coffee Price Forecasting in Vietnam",
+  "dataset_url": "https://data.mendeley.com/datasets/p8fhcw59b7/3",
+  "doi": "10.17632/p8fhcw59b7.3",
+  "version": 3,
+  "dataset_published_at": "2026-07-23T22:18:46.605Z",
+  "target_observation_published_at": "Not supplied per historical quote; dataset-level publication time is not the original quote publication time.",
+  "license": {
+    "id": "01d9c749-3c4d-4431-9df3-620b2dcfe144",
+    "description": "You can share, copy and modify this dataset so long as you give appropriate credit, provide a link to the CC BY license, and indicate if changes were made, but you may not do so in a way that suggests the rights holder has endorsed you or your use of the dataset. Note that further permission may be required for any content within the dataset that is identified as belonging to a third party.",
+    "url": "http://creativecommons.org/licenses/by/4.0",
+    "category": "Creative",
+    "short_name": "CC BY 4.0",
+    "full_name": "Creative Commons Attribution 4.0 International"
+  },
+  "attribution": "Nguyen Duc, Tan; Nguyen Chi, Hai. VNCoffeePrice, Mendeley Data, v3 (2026), DOI 10.17632/p8fhcw59b7.3, CC BY 4.0.",
+  "archive_filename": "VNCoffeePrice_mendeley_package_ENv2.zip",
+  "archive_bytes": 473770,
+  "archive_sha256": "04c2be944c8b31b78beb180f78412be9967232e9c1ddb3083962c04274b4b7d2",
+  "archive_expected_sha256": "04c2be944c8b31b78beb180f78412be9967232e9c1ddb3083962c04274b4b7d2",
+  "archive_sha256_verified": true,
+  "archive_integrity_test": "passed",
+  "processed_csv_member_sha256": "d6c18f2bee64a94df61205586e3fe58530116e681aedede7c7d1fc722f2497c2",
+  "archive_members": [
+    "VNCoffeePrice_mendeley_package_EN_v5/",
+    "VNCoffeePrice_mendeley_package_EN_v5/ablation_results.csv",
+    "VNCoffeePrice_mendeley_package_EN_v5/code/",
+    "VNCoffeePrice_mendeley_package_EN_v5/code/build_dataset.py",
+    "VNCoffeePrice_mendeley_package_EN_v5/code/experiment.py",
+    "VNCoffeePrice_mendeley_package_EN_v5/code/requirements.txt",
+    "VNCoffeePrice_mendeley_package_EN_v5/correlation_analysis.csv",
+    "VNCoffeePrice_mendeley_package_EN_v5/diagnostic_decomposition_oil_vs_fuel.csv",
+    "VNCoffeePrice_mendeley_package_EN_v5/raw_data/",
+    "VNCoffeePrice_mendeley_package_EN_v5/raw_data/coffee_price_test.csv",
+    "VNCoffeePrice_mendeley_package_EN_v5/raw_data/coffee_price_train.csv",
+    "VNCoffeePrice_mendeley_package_EN_v5/raw_data/coffee_price_val.csv",
+    "VNCoffeePrice_mendeley_package_EN_v5/raw_data/london_robusta_futures_historical.csv",
+    "VNCoffeePrice_mendeley_package_EN_v5/raw_data/usd_vnd_exchange_rate_historical.csv",
+    "VNCoffeePrice_mendeley_package_EN_v5/raw_data/vietnam_fuel_prices_2020_2026.csv",
+    "VNCoffeePrice_mendeley_package_EN_v5/raw_data/world_crude_oil_prices_2020_2026.csv",
+    "VNCoffeePrice_mendeley_package_EN_v5/README.md",
+    "VNCoffeePrice_mendeley_package_EN_v5/vietnam_coffee_price_dataset.csv"
+  ],
+  "normalized_all_provinces_rows": 5445,
+  "normalized_dak_lak_rows": 1613,
+  "dak_lak_date_start": "2020-01-01",
+  "dak_lak_date_end": "2026-05-22",
+  "dak_lak_split_counts": {
+    "train": 1280,
+    "validation": 236,
+    "test": 97
+  },
+  "dataset_reported_full_coverage": "2020-01-01 through 2026-05-22",
+  "source_provenance_caveat_from_dataset_readme": "Provenance of the original domestic coffee price and Vietnam retail fuel price series (prior to being provided for this project) should be independently verified by users requiring official-statistics-grade traceability.",
+  "known_limitations_from_dataset_readme": "- Three provinces (Gia Lai, Kon Tum, Dak Nong) have shorter history, starting March 2021, versus Dak Lak and Lam Dong which start January 2020. - Weather variables are recorded at a single representative coordinate per province (centroid), not at the exact farm-gate/collection-point location. - Provenance of the original domestic coffee price and Vietnam retail fuel price series (prior to being provided for this project) should be independently verified by users requiring official-statistics-grade traceability.",
+  "source_rows_provenance": "The packaged README identifies Investing.com for London/FX data; the provider/source trail for original domestic coffee prices and VN retail fuel before dataset deposit is not specified in the raw rows.",
+  "assessment": "Downloaded and checksum verified. Original domestic price-provider/source provenance is explicitly stated as needing independent verification; data are retained as a separate research series and not merged with other local quotes.",
+  "validation": [
+    {
+      "type": "province_quality_summary",
+      "province": "dak-lak",
+      "rows": 1613,
+      "date_start": "2020-01-01",
+      "date_end": "2026-05-22",
+      "duplicate_dates": 0,
+      "observed_interval_days": {
+        "1": 1284,
+        "2": 9,
+        "3": 304,
+        "4": 2,
+        "5": 5,
+        "10": 5,
+        "11": 2,
+        "14": 1
+      },
+      "missing_calendar_dates_not_filled": 721,
+      "price_min_vnd_kg": 29000.0,
+      "price_max_vnd_kg": 135467.0,
+      "fractional_source_values_preserved": 65,
+      "below_30000_values_flagged_not_removed": 18,
+      "source_split_counts": {
+        "train": 1280,
+        "validation": 236,
+        "test": 97
+      }
+    },
+    {
+      "type": "province_quality_summary",
+      "province": "dak-nong",
+      "rows": 721,
+      "date_start": "2021-03-01",
+      "date_end": "2026-01-16",
+      "duplicate_dates": 0,
+      "observed_interval_days": {
+        "1": 573,
+        "2": 4,
+        "3": 130,
+        "4": 1,
+        "5": 4,
+        "10": 4,
+        "11": 2,
+        "14": 1,
+        "711": 1
+      },
+      "missing_calendar_dates_not_filled": 1062,
+      "price_min_vnd_kg": 32050.0,
+      "price_max_vnd_kg": 135450.0,
+      "fractional_source_values_preserved": 5,
+      "below_30000_values_flagged_not_removed": 0,
+      "source_split_counts": {
+        "train": 472,
+        "validation": 237,
+        "test": 12
+      }
+    },
+    {
+      "type": "province_quality_summary",
+      "province": "gia-lai",
+      "rows": 801,
+      "date_start": "2021-03-01",
+      "date_end": "2026-05-22",
+      "duplicate_dates": 0,
+      "observed_interval_days": {
+        "1": 637,
+        "2": 4,
+        "3": 146,
+        "4": 1,
+        "5": 4,
+        "10": 3,
+        "11": 2,
+        "14": 1,
+        "24": 1,
+        "711": 1
+      },
+      "missing_calendar_dates_not_filled": 1108,
+      "price_min_vnd_kg": 31900.0,
+      "price_max_vnd_kg": 135267.0,
+      "fractional_source_values_preserved": 16,
+      "below_30000_values_flagged_not_removed": 0,
+      "source_split_counts": {
+        "train": 472,
+        "validation": 232,
+        "test": 97
+      }
+    },
+    {
+      "type": "province_quality_summary",
+      "province": "kon-tum",
+      "rows": 694,
+      "date_start": "2021-03-01",
+      "date_end": "2026-01-16",
+      "duplicate_dates": 0,
+      "observed_interval_days": {
+        "1": 548,
+        "2": 4,
+        "3": 113,
+        "4": 13,
+        "5": 4,
+        "6": 1,
+        "7": 1,
+        "10": 5,
+        "11": 1,
+        "12": 1,
+        "18": 1,
+        "711": 1
+      },
+      "missing_calendar_dates_not_filled": 1089,
+      "price_min_vnd_kg": 31800.0,
+      "price_max_vnd_kg": 135300.0,
+      "fractional_source_values_preserved": 5,
+      "below_30000_values_flagged_not_removed": 0,
+      "source_split_counts": {
+        "train": 468,
+        "validation": 214,
+        "test": 12
+      }
+    },
+    {
+      "type": "province_quality_summary",
+      "province": "lam-dong",
+      "rows": 1616,
+      "date_start": "2020-01-01",
+      "date_end": "2026-05-22",
+      "duplicate_dates": 0,
+      "observed_interval_days": {
+        "1": 1287,
+        "2": 10,
+        "3": 304,
+        "4": 2,
+        "5": 4,
+        "10": 5,
+        "11": 2,
+        "14": 1
+      },
+      "missing_calendar_dates_not_filled": 718,
+      "price_min_vnd_kg": 28367.0,
+      "price_max_vnd_kg": 134000.0,
+      "fractional_source_values_preserved": 93,
+      "below_30000_values_flagged_not_removed": 29,
+      "source_split_counts": {
+        "train": 1282,
+        "validation": 237,
+        "test": 97
+      }
+    }
+  ],
+  "collected_at_utc": "2026-10-20T19:11:02.918562+00:00",
+  "output_csv": "data/vnc_official_dak_lak_daily.csv",
+  "reuse_note": "Dataset license CC BY 4.0; raw source components may be third-party content and could require additional permissions. Check provenance before redistribution or production display."
+}

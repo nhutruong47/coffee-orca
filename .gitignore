@@ -58,3 +58,7 @@ server_log.txt
 *.class
 *.log
 *.jar
+*.pyc
+__pycache__/
+forecast-service/**/__pycache__/
+forecast-service/**/*.pyc

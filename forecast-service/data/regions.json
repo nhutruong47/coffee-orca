@@ -1,0 +1,30 @@
+{
+  "dak-lak": {
+    "name": "Đắk Lắk",
+    "price": 89500.0,
+    "date": "2026-10-25",
+    "days": 175,
+    "source": "nongdanviet.vn/gia-ca-phe/dak-lak"
+  },
+  "lam-dong": {
+    "name": "Lâm Đồng",
+    "price": 89000.0,
+    "date": "2026-10-25",
+    "days": 173,
+    "source": "nongdanviet.vn/gia-ca-phe/lam-dong"
+  },
+  "gia-lai": {
+    "name": "Gia Lai",
+    "price": 89500.0,
+    "date": "2026-10-25",
+    "days": 169,
+    "source": "nongdanviet.vn/gia-ca-phe/gia-lai"
+  },
+  "dak-nong": {
+    "name": "Đắk Nông",
+    "price": 89500.0,
+    "date": "2026-10-25",
+    "days": 169,
+    "source": "nongdanviet.vn/gia-ca-phe/dak-nong"
+  }
+}

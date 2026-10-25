@@ -1,0 +1,77 @@
+{
+  "source": "Giacaphe.com / Y5Cafe",
+  "source_page_check_date_vn": "2026-10-25",
+  "latest_verified_observation_date": "2026-10-24",
+  "index_url": "https://giacaphe.com/gia-ca-phe-noi-dia/",
+  "archive_base": "https://giacaphe.com/gia-ca-phe-noi-dia-ngay-",
+  "methodology_note": "Giacaphe/Y5Cafe states domestic references combine prices of two global coffee exchanges with ongoing surveys from businesses and buying agents in key growing areas; it warns quoted prices may not match local buying prices. Daily provincial rows are accepted only when the canonical URL and page H1 identify the same date.",
+  "published_at_policy": "No per-observation publication timestamp was verified. Article modified_time is stored separately and is not treated as published_at.",
+  "date_links_found": 14,
+  "verified_archive_dates_this_run": [
+    "2026-10-09",
+    "2026-10-10",
+    "2026-10-12",
+    "2026-10-13",
+    "2026-10-14",
+    "2026-10-15",
+    "2026-10-16",
+    "2026-10-17",
+    "2026-10-19",
+    "2026-10-20",
+    "2026-10-21",
+    "2026-10-22",
+    "2026-10-23",
+    "2026-10-24"
+  ],
+  "all_date_links_require_fetch_each_run": true,
+  "raw_snapshots": 68,
+  "normalized_records": 68,
+  "new_archive_dates_without_verified_rows": [],
+  "quality_reported_error_count": 0,
+  "quality_reported_errors": [],
+  "latest_observation_date": "2026-10-24",
+  "data_quality": {
+    "missing_calendar_days_within_each_province": {
+      "dak-lak": 2,
+      "dak-nong": 2,
+      "gia-lai": 2,
+      "lam-dong": 2
+    },
+    "out_of_range_rows_retained_flagged": 0,
+    "source_published_at_missing_rows": 68
+  },
+  "normalized_rows_by_province": {
+    "dak-lak": 17,
+    "dak-nong": 17,
+    "gia-lai": 17,
+    "lam-dong": 17
+  },
+  "normalized_date_ranges_by_province": {
+    "dak-lak": {
+      "start": "2026-10-06",
+      "end": "2026-10-24"
+    },
+    "dak-nong": {
+      "start": "2026-10-06",
+      "end": "2026-10-24"
+    },
+    "gia-lai": {
+      "start": "2026-10-06",
+      "end": "2026-10-24"
+    },
+    "lam-dong": {
+      "start": "2026-10-06",
+      "end": "2026-10-24"
+    }
+  },
+  "latest_prices_by_province": {
+    "dak-lak": 89500.0,
+    "dak-nong": 89500.0,
+    "gia-lai": 89500.0,
+    "lam-dong": 89000.0
+  },
+  "attribution": "Giacaphe.com / Y5Cafe",
+  "reuse_status": "Public pages fetched for project research; explicit automated reuse/public-display license was not found. Confirm terms or permission before distributing copied historical prices.",
+  "fetched_at_utc": "2026-10-25T02:01:05.947104+00:00",
+  "errors": []
+}

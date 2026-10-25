@@ -46,6 +46,19 @@ services:
         sync: false
 
   - type: web
+    name: orca-forecast-service
+    env: python
+    rootDir: forecast-service
+    buildCommand: pip install -r requirements.txt
+    startCommand: python app.py --port $PORT
+    autoDeploy: true
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: BASE_PATH
+        value: ""
+
+  - type: web
     name: orca-frontend
     env: static
     rootDir: frontend

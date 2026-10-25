@@ -1,0 +1,13 @@
+{
+  "series_id": 31267,
+  "series_name": "Giá nông sản - Cà phê - Cà phê Robusta (đồng/kg)",
+  "unit": "đồng/kg",
+  "count": 1672,
+  "first_date": "2020-01-01",
+  "last_date": "2026-10-02",
+  "latest_price_vnd_kg": 93555.33,
+  "source_url": "https://dulieukinhte.com/du-lieu-dong/gia-ca-phe-robusta-31267",
+  "source_credit": "Trung tâm Thông tin (Bộ NN&MT); accessed via Dữ Liệu Kinh Tế series API",
+  "license_url": "https://creativecommons.org/licenses/by/4.0/",
+  "fetched_at_utc": "2026-10-25T02:01:32.755705+00:00"
+}

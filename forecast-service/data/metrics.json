@@ -1,0 +1,1409 @@
+{
+  "trained_at": "2026-10-25T02:02:39",
+  "series": {
+    "points": 2516,
+    "first": "2016-10-24",
+    "last": "2026-10-23",
+    "last_price": 307.45
+  },
+  "h1": {
+    "alpha": 0.0,
+    "chosen": "naive",
+    "model": {
+      "mape": 2.057,
+      "level_acc": 97.94,
+      "mae": 6.9789,
+      "rmse": 9.3433,
+      "r2": 0.9562,
+      "dir_acc": 49.25,
+      "n": 399,
+      "r2_ret": -0.1421,
+      "naive_mape": 1.914,
+      "skill": -7.5
+    },
+    "naive": {
+      "mape": 1.914,
+      "level_acc": 98.09,
+      "mae": 6.4782,
+      "rmse": 8.7029,
+      "r2": 0.962,
+      "dir_acc": 0.0,
+      "n": 399,
+      "r2_ret": -0.0002,
+      "naive_mape": 1.914,
+      "skill": 0.0
+    },
+    "blend": {
+      "mape": 1.914,
+      "level_acc": 98.09,
+      "mae": 6.4782,
+      "rmse": 8.7029,
+      "r2": 0.962,
+      "dir_acc": 0.0,
+      "n": 399,
+      "r2_ret": -0.0002,
+      "naive_mape": 1.914,
+      "skill": 0.0
+    },
+    "chosen_metrics": {
+      "mape": 1.914,
+      "level_acc": 98.09,
+      "mae": 6.4782,
+      "rmse": 8.7029,
+      "r2": 0.962,
+      "dir_acc": 0.0,
+      "n": 399,
+      "r2_ret": -0.0002,
+      "naive_mape": 1.914,
+      "skill": 0.0,
+      "chosen": "naive",
+      "alpha": 0.0,
+      "dm_p": null,
+      "cw_p": null,
+      "pt_p": null,
+      "dm_better": null,
+      "skill_ci": [
+        0.0,
+        0.0
+      ],
+      "coverage": 91.2,
+      "band_pct": 4.18,
+      "band_width_pct": 8.11,
+      "significant": false,
+      "n_test": 200
+    },
+    "ma7": {
+      "mape": 3.508,
+      "level_acc": 96.49,
+      "mae": 11.7616,
+      "rmse": 14.9934,
+      "r2": 0.8871,
+      "dir_acc": 48.49,
+      "n": 399,
+      "r2_ret": -2.0564,
+      "naive_mape": 1.914,
+      "skill": -83.3
+    },
+    "tests": {
+      "model": {
+        "dm": {
+          "dm": 1.2634,
+          "dm_hln": 1.2603,
+          "p": 0.2091,
+          "T": 200,
+          "h": 1,
+          "mean_loss_diff": 4.669087,
+          "model_better": false,
+          "sig_5pct": false,
+          "sig_1pct": false,
+          "note": "Diebold-Mariano (Newey-West HAC) + hieu chinh Harvey-Leybourne-Newbold, t(T-1)"
+        },
+        "cw": {
+          "cw": 0.5545,
+          "p": 0.2896,
+          "T": 200,
+          "h": 1,
+          "model_better": false,
+          "sig_5pct": false,
+          "sig_10pct": false,
+          "note": "Clark-West MSPE-adjusted, kiem dinh mot phia, Newey-West HAC"
+        },
+        "pt": {
+          "pt": 0.082,
+          "p": 0.9346,
+          "n": 200,
+          "hit_rate": 50.5,
+          "sig_5pct": false,
+          "note": "Pesaran-Timmermann (don bien phan huong, phan phoi chuan)"
+        },
+        "skill": {
+          "skill": -4.6,
+          "skill_ci": [
+            -9.8,
+            0.5
+          ],
+          "skill_p_above_0": 0.05,
+          "n_boot": 500,
+          "block": 1,
+          "T": 200,
+          "note": "moving-block bootstrap, CI 95%"
+        },
+        "conformal": {
+          "coverage": 92.9,
+          "width_pct": 9.29,
+          "q_pct": 4.61,
+          "q_final_pct": 4.61,
+          "target_coverage": 90.0,
+          "alpha_final": 0.089,
+          "n": 170,
+          "note": "Adaptive Conformal Prediction (Gibbs & Candes 2021), khoang tuong doi"
+        },
+        "significant": false
+      },
+      "naive": {
+        "dm": {
+          "dm": null,
+          "p": null,
+          "T": 200,
+          "note": "sai lech loss co phuong sai bang 0"
+        },
+        "cw": {
+          "cw": null,
+          "p": null,
+          "T": 200,
+          "note": "sai lech da dieu chinh co phuong sai bang 0"
+        },
+        "pt": {
+          "pt": null,
+          "p": null,
+          "n": 200,
+          "hit_rate": 0.0,
+          "note": "du bao khong co huong -> khong ap dung duoc kiem dinh huong"
+        },
+        "skill": {
+          "skill": 0.0,
+          "skill_ci": [
+            0.0,
+            0.0
+          ],
+          "skill_p_above_0": 0.0,
+          "n_boot": 500,
+          "block": 1,
+          "T": 200,
+          "note": "moving-block bootstrap, CI 95%"
+        },
+        "conformal": {
+          "coverage": 91.2,
+          "width_pct": 8.11,
+          "q_pct": 4.18,
+          "q_final_pct": 4.18,
+          "target_coverage": 90.0,
+          "alpha_final": 0.089,
+          "n": 170,
+          "note": "Adaptive Conformal Prediction (Gibbs & Candes 2021), khoang tuong doi"
+        },
+        "significant": false
+      },
+      "blend": {
+        "dm": {
+          "dm": null,
+          "p": null,
+          "T": 200,
+          "note": "sai lech loss co phuong sai bang 0"
+        },
+        "cw": {
+          "cw": null,
+          "p": null,
+          "T": 200,
+          "note": "sai lech da dieu chinh co phuong sai bang 0"
+        },
+        "pt": {
+          "pt": null,
+          "p": null,
+          "n": 200,
+          "hit_rate": 0.0,
+          "note": "du bao khong co huong -> khong ap dung duoc kiem dinh huong"
+        },
+        "skill": {
+          "skill": 0.0,
+          "skill_ci": [
+            0.0,
+            0.0
+          ],
+          "skill_p_above_0": 0.0,
+          "n_boot": 500,
+          "block": 1,
+          "T": 200,
+          "note": "moving-block bootstrap, CI 95%"
+        },
+        "conformal": {
+          "coverage": 91.2,
+          "width_pct": 8.11,
+          "q_pct": 4.18,
+          "q_final_pct": 4.18,
+          "target_coverage": 90.0,
+          "alpha_final": 0.089,
+          "n": 170,
+          "note": "Adaptive Conformal Prediction (Gibbs & Candes 2021), khoang tuong doi"
+        },
+        "significant": false
+      }
+    }
+  },
+  "horizons": {
+    "1": {
+      "alpha": 0.0,
+      "chosen": "naive",
+      "model": {
+        "mape": 2.057,
+        "level_acc": 97.94,
+        "mae": 6.9789,
+        "rmse": 9.3433,
+        "r2": 0.9562,
+        "dir_acc": 49.25,
+        "n": 399,
+        "r2_ret": -0.1421,
+        "naive_mape": 1.914,
+        "skill": -7.5
+      },
+      "naive": {
+        "mape": 1.914,
+        "level_acc": 98.09,
+        "mae": 6.4782,
+        "rmse": 8.7029,
+        "r2": 0.962,
+        "dir_acc": 0.0,
+        "n": 399,
+        "r2_ret": -0.0002,
+        "naive_mape": 1.914,
+        "skill": 0.0
+      },
+      "blend": {
+        "mape": 1.914,
+        "level_acc": 98.09,
+        "mae": 6.4782,
+        "rmse": 8.7029,
+        "r2": 0.962,
+        "dir_acc": 0.0,
+        "n": 399,
+        "r2_ret": -0.0002,
+        "naive_mape": 1.914,
+        "skill": 0.0
+      },
+      "chosen_metrics": {
+        "mape": 1.914,
+        "level_acc": 98.09,
+        "mae": 6.4782,
+        "rmse": 8.7029,
+        "r2": 0.962,
+        "dir_acc": 0.0,
+        "n": 399,
+        "r2_ret": -0.0002,
+        "naive_mape": 1.914,
+        "skill": 0.0,
+        "chosen": "naive",
+        "alpha": 0.0,
+        "dm_p": null,
+        "cw_p": null,
+        "pt_p": null,
+        "dm_better": null,
+        "skill_ci": [
+          0.0,
+          0.0
+        ],
+        "coverage": 91.2,
+        "band_pct": 4.18,
+        "band_width_pct": 8.11,
+        "significant": false,
+        "n_test": 200
+      },
+      "ma7": {
+        "mape": 3.508,
+        "level_acc": 96.49,
+        "mae": 11.7616,
+        "rmse": 14.9934,
+        "r2": 0.8871,
+        "dir_acc": 48.49,
+        "n": 399,
+        "r2_ret": -2.0564,
+        "naive_mape": 1.914,
+        "skill": -83.3
+      },
+      "tests": {
+        "model": {
+          "dm": {
+            "dm": 1.2634,
+            "dm_hln": 1.2603,
+            "p": 0.2091,
+            "T": 200,
+            "h": 1,
+            "mean_loss_diff": 4.669087,
+            "model_better": false,
+            "sig_5pct": false,
+            "sig_1pct": false,
+            "note": "Diebold-Mariano (Newey-West HAC) + hieu chinh Harvey-Leybourne-Newbold, t(T-1)"
+          },
+          "cw": {
+            "cw": 0.5545,
+            "p": 0.2896,
+            "T": 200,
+            "h": 1,
+            "model_better": false,
+            "sig_5pct": false,
+            "sig_10pct": false,
+            "note": "Clark-West MSPE-adjusted, kiem dinh mot phia, Newey-West HAC"
+          },
+          "pt": {
+            "pt": 0.082,
+            "p": 0.9346,
+            "n": 200,
+            "hit_rate": 50.5,
+            "sig_5pct": false,
+            "note": "Pesaran-Timmermann (don bien phan huong, phan phoi chuan)"
+          },
+          "skill": {
+            "skill": -4.6,
+            "skill_ci": [
+              -9.8,
+              0.5
+            ],
+            "skill_p_above_0": 0.05,
+            "n_boot": 500,
+            "block": 1,
+            "T": 200,
+            "note": "moving-block bootstrap, CI 95%"
+          },
+          "conformal": {
+            "coverage": 92.9,
+            "width_pct": 9.29,
+            "q_pct": 4.61,
+            "q_final_pct": 4.61,
+            "target_coverage": 90.0,
+            "alpha_final": 0.089,
+            "n": 170,
+            "note": "Adaptive Conformal Prediction (Gibbs & Candes 2021), khoang tuong doi"
+          },
+          "significant": false
+        },
+        "naive": {
+          "dm": {
+            "dm": null,
+            "p": null,
+            "T": 200,
+            "note": "sai lech loss co phuong sai bang 0"
+          },
+          "cw": {
+            "cw": null,
+            "p": null,
+            "T": 200,
+            "note": "sai lech da dieu chinh co phuong sai bang 0"
+          },
+          "pt": {
+            "pt": null,
+            "p": null,
+            "n": 200,
+            "hit_rate": 0.0,
+            "note": "du bao khong co huong -> khong ap dung duoc kiem dinh huong"
+          },
+          "skill": {
+            "skill": 0.0,
+            "skill_ci": [
+              0.0,
+              0.0
+            ],
+            "skill_p_above_0": 0.0,
+            "n_boot": 500,
+            "block": 1,
+            "T": 200,
+            "note": "moving-block bootstrap, CI 95%"
+          },
+          "conformal": {
+            "coverage": 91.2,
+            "width_pct": 8.11,
+            "q_pct": 4.18,
+            "q_final_pct": 4.18,
+            "target_coverage": 90.0,
+            "alpha_final": 0.089,
+            "n": 170,
+            "note": "Adaptive Conformal Prediction (Gibbs & Candes 2021), khoang tuong doi"
+          },
+          "significant": false
+        },
+        "blend": {
+          "dm": {
+            "dm": null,
+            "p": null,
+            "T": 200,
+            "note": "sai lech loss co phuong sai bang 0"
+          },
+          "cw": {
+            "cw": null,
+            "p": null,
+            "T": 200,
+            "note": "sai lech da dieu chinh co phuong sai bang 0"
+          },
+          "pt": {
+            "pt": null,
+            "p": null,
+            "n": 200,
+            "hit_rate": 0.0,
+            "note": "du bao khong co huong -> khong ap dung duoc kiem dinh huong"
+          },
+          "skill": {
+            "skill": 0.0,
+            "skill_ci": [
+              0.0,
+              0.0
+            ],
+            "skill_p_above_0": 0.0,
+            "n_boot": 500,
+            "block": 1,
+            "T": 200,
+            "note": "moving-block bootstrap, CI 95%"
+          },
+          "conformal": {
+            "coverage": 91.2,
+            "width_pct": 8.11,
+            "q_pct": 4.18,
+            "q_final_pct": 4.18,
+            "target_coverage": 90.0,
+            "alpha_final": 0.089,
+            "n": 170,
+            "note": "Adaptive Conformal Prediction (Gibbs & Candes 2021), khoang tuong doi"
+          },
+          "significant": false
+        }
+      }
+    },
+    "7": {
+      "alpha": 0.4,
+      "chosen": "blend",
+      "model": {
+        "mape": 6.209,
+        "level_acc": 93.79,
+        "mae": 20.6244,
+        "rmse": 26.1942,
+        "r2": 0.6544,
+        "dir_acc": 52.67,
+        "n": 393,
+        "r2_ret": -0.2443,
+        "naive_mape": 5.684,
+        "skill": -9.2
+      },
+      "naive": {
+        "mape": 5.684,
+        "level_acc": 94.32,
+        "mae": 18.9656,
+        "rmse": 23.8617,
+        "r2": 0.7132,
+        "dir_acc": 0.0,
+        "n": 393,
+        "r2_ret": -0.0004,
+        "naive_mape": 5.684,
+        "skill": 0.0
+      },
+      "blend": {
+        "mape": 5.634,
+        "level_acc": 94.37,
+        "mae": 18.6896,
+        "rmse": 23.8621,
+        "r2": 0.7132,
+        "dir_acc": 52.67,
+        "n": 393,
+        "r2_ret": -0.0231,
+        "naive_mape": 5.684,
+        "skill": 0.9
+      },
+      "chosen_metrics": {
+        "mape": 5.634,
+        "level_acc": 94.37,
+        "mae": 18.6896,
+        "rmse": 23.8621,
+        "r2": 0.7132,
+        "dir_acc": 52.67,
+        "n": 393,
+        "r2_ret": -0.0231,
+        "naive_mape": 5.684,
+        "skill": 0.9,
+        "chosen": "blend",
+        "alpha": 0.4,
+        "dm_p": 0.3837,
+        "cw_p": 0.5707,
+        "pt_p": 0.4775,
+        "dm_better": false,
+        "skill_ci": [
+          -7.9,
+          4.4
+        ],
+        "coverage": 90.1,
+        "band_pct": 14.2,
+        "band_width_pct": 27.41,
+        "significant": false,
+        "n_test": 197
+      },
+      "ma7": {
+        "mape": 6.432,
+        "level_acc": 93.57,
+        "mae": 21.298,
+        "rmse": 27.3984,
+        "r2": 0.6219,
+        "dir_acc": 46.31,
+        "n": 393,
+        "r2_ret": -0.3459,
+        "naive_mape": 5.684,
+        "skill": -13.2
+      },
+      "tests": {
+        "model": {
+          "dm": {
+            "dm": 1.9718,
+            "dm_hln": 1.9067,
+            "p": 0.058,
+            "T": 197,
+            "h": 7,
+            "mean_loss_diff": 124.392505,
+            "model_better": false,
+            "sig_5pct": false,
+            "sig_1pct": false,
+            "note": "Diebold-Mariano (Newey-West HAC) + hieu chinh Harvey-Leybourne-Newbold, t(T-1)"
+          },
+          "cw": {
+            "cw": -0.1784,
+            "p": 0.5708,
+            "T": 197,
+            "h": 7,
+            "model_better": true,
+            "sig_5pct": false,
+            "sig_10pct": false,
+            "note": "Clark-West MSPE-adjusted, kiem dinh mot phia, Newey-West HAC"
+          },
+          "pt": {
+            "pt": -0.7104,
+            "p": 0.4775,
+            "n": 197,
+            "hit_rate": 48.2,
+            "sig_5pct": false,
+            "note": "Pesaran-Timmermann (don bien phan huong, phan phoi chuan)"
+          },
+          "skill": {
+            "skill": -11.5,
+            "skill_ci": [
+              -24.2,
+              3.1
+            ],
+            "skill_p_above_0": 0.072,
+            "n_boot": 500,
+            "block": 7,
+            "T": 197,
+            "note": "moving-block bootstrap, CI 95%"
+          },
+          "conformal": {
+            "coverage": 91.3,
+            "width_pct": 28.35,
+            "q_pct": 15.73,
+            "q_final_pct": 15.73,
+            "target_coverage": 90.0,
+            "alpha_final": 0.06,
+            "n": 161,
+            "note": "Adaptive Conformal Prediction (Gibbs & Candes 2021), khoang tuong doi"
+          },
+          "significant": false
+        },
+        "naive": {
+          "dm": {
+            "dm": null,
+            "p": null,
+            "T": 197,
+            "note": "sai lech loss co phuong sai bang 0"
+          },
+          "cw": {
+            "cw": null,
+            "p": null,
+            "T": 197,
+            "note": "sai lech da dieu chinh co phuong sai bang 0"
+          },
+          "pt": {
+            "pt": null,
+            "p": null,
+            "n": 197,
+            "hit_rate": 0.0,
+            "note": "du bao khong co huong -> khong ap dung duoc kiem dinh huong"
+          },
+          "skill": {
+            "skill": 0.0,
+            "skill_ci": [
+              0.0,
+              0.0
+            ],
+            "skill_p_above_0": 0.0,
+            "n_boot": 500,
+            "block": 7,
+            "T": 197,
+            "note": "moving-block bootstrap, CI 95%"
+          },
+          "conformal": {
+            "coverage": 89.4,
+            "width_pct": 25.98,
+            "q_pct": 14.31,
+            "q_final_pct": 14.31,
+            "target_coverage": 90.0,
+            "alpha_final": 0.05,
+            "n": 161,
+            "note": "Adaptive Conformal Prediction (Gibbs & Candes 2021), khoang tuong doi"
+          },
+          "significant": false
+        },
+        "blend": {
+          "dm": {
+            "dm": 0.9028,
+            "dm_hln": 0.873,
+            "p": 0.3837,
+            "T": 197,
+            "h": 7,
+            "mean_loss_diff": 22.619495,
+            "model_better": false,
+            "sig_5pct": false,
+            "sig_1pct": false,
+            "note": "Diebold-Mariano (Newey-West HAC) + hieu chinh Harvey-Leybourne-Newbold, t(T-1)"
+          },
+          "cw": {
+            "cw": -0.1782,
+            "p": 0.5707,
+            "T": 197,
+            "h": 7,
+            "model_better": true,
+            "sig_5pct": false,
+            "sig_10pct": false,
+            "note": "Clark-West MSPE-adjusted, kiem dinh mot phia, Newey-West HAC"
+          },
+          "pt": {
+            "pt": -0.7104,
+            "p": 0.4775,
+            "n": 197,
+            "hit_rate": 48.2,
+            "sig_5pct": false,
+            "note": "Pesaran-Timmermann (don bien phan huong, phan phoi chuan)"
+          },
+          "skill": {
+            "skill": -2.1,
+            "skill_ci": [
+              -7.9,
+              4.4
+            ],
+            "skill_p_above_0": 0.304,
+            "n_boot": 500,
+            "block": 7,
+            "T": 197,
+            "note": "moving-block bootstrap, CI 95%"
+          },
+          "conformal": {
+            "coverage": 90.1,
+            "width_pct": 27.41,
+            "q_pct": 14.2,
+            "q_final_pct": 14.2,
+            "target_coverage": 90.0,
+            "alpha_final": 0.05,
+            "n": 161,
+            "note": "Adaptive Conformal Prediction (Gibbs & Candes 2021), khoang tuong doi"
+          },
+          "significant": false
+        }
+      }
+    },
+    "14": {
+      "alpha": 0.30000000000000004,
+      "chosen": "blend",
+      "model": {
+        "mape": 8.955,
+        "level_acc": 91.04,
+        "mae": 29.6196,
+        "rmse": 38.8466,
+        "r2": 0.2495,
+        "dir_acc": 54.4,
+        "n": 386,
+        "r2_ret": -0.2775,
+        "naive_mape": 8.13,
+        "skill": -10.2
+      },
+      "naive": {
+        "mape": 8.13,
+        "level_acc": 91.87,
+        "mae": 26.8585,
+        "rmse": 34.4552,
+        "r2": 0.4096,
+        "dir_acc": 0.0,
+        "n": 386,
+        "r2_ret": -0.0004,
+        "naive_mape": 8.13,
+        "skill": 0.0
+      },
+      "blend": {
+        "mape": 8.003,
+        "level_acc": 92.0,
+        "mae": 26.3691,
+        "rmse": 34.4774,
+        "r2": 0.4088,
+        "dir_acc": 54.4,
+        "n": 386,
+        "r2_ret": -0.0153,
+        "naive_mape": 8.13,
+        "skill": 1.6
+      },
+      "chosen_metrics": {
+        "mape": 8.003,
+        "level_acc": 92.0,
+        "mae": 26.3691,
+        "rmse": 34.4774,
+        "r2": 0.4088,
+        "dir_acc": 54.4,
+        "n": 386,
+        "r2_ret": -0.0153,
+        "naive_mape": 8.13,
+        "skill": 1.6,
+        "chosen": "blend",
+        "alpha": 0.3,
+        "dm_p": 0.937,
+        "cw_p": 0.363,
+        "pt_p": 0.0494,
+        "dm_better": false,
+        "skill_ci": [
+          -3.7,
+          6.5
+        ],
+        "coverage": 91.3,
+        "band_pct": 22.18,
+        "band_width_pct": 43.35,
+        "significant": false,
+        "n_test": 193
+      },
+      "ma7": {
+        "mape": 8.718,
+        "level_acc": 91.28,
+        "mae": 28.7715,
+        "rmse": 37.124,
+        "r2": 0.3146,
+        "dir_acc": 45.34,
+        "n": 386,
+        "r2_ret": -0.1647,
+        "naive_mape": 8.13,
+        "skill": -7.2
+      },
+      "tests": {
+        "model": {
+          "dm": {
+            "dm": 0.9662,
+            "dm_hln": 0.8987,
+            "p": 0.37,
+            "T": 193,
+            "h": 14,
+            "mean_loss_diff": 177.725097,
+            "model_better": false,
+            "sig_5pct": false,
+            "sig_1pct": false,
+            "note": "Diebold-Mariano (Newey-West HAC) + hieu chinh Harvey-Leybourne-Newbold, t(T-1)"
+          },
+          "cw": {
+            "cw": 0.3732,
+            "p": 0.3545,
+            "T": 193,
+            "h": 14,
+            "model_better": false,
+            "sig_5pct": false,
+            "sig_10pct": false,
+            "note": "Clark-West MSPE-adjusted, kiem dinh mot phia, Newey-West HAC"
+          },
+          "pt": {
+            "pt": 1.9648,
+            "p": 0.0494,
+            "n": 193,
+            "hit_rate": 57.0,
+            "sig_5pct": true,
+            "note": "Pesaran-Timmermann (don bien phan huong, phan phoi chuan)"
+          },
+          "skill": {
+            "skill": -6.4,
+            "skill_ci": [
+              -21.3,
+              7.6
+            ],
+            "skill_p_above_0": 0.228,
+            "n_boot": 500,
+            "block": 14,
+            "T": 193,
+            "note": "moving-block bootstrap, CI 95%"
+          },
+          "conformal": {
+            "coverage": 90.0,
+            "width_pct": 48.5,
+            "q_pct": 23.22,
+            "q_final_pct": 23.22,
+            "target_coverage": 90.0,
+            "alpha_final": 0.055,
+            "n": 150,
+            "note": "Adaptive Conformal Prediction (Gibbs & Candes 2021), khoang tuong doi"
+          },
+          "significant": false
+        },
+        "naive": {
+          "dm": {
+            "dm": null,
+            "p": null,
+            "T": 193,
+            "note": "sai lech loss co phuong sai bang 0"
+          },
+          "cw": {
+            "cw": null,
+            "p": null,
+            "T": 193,
+            "note": "sai lech da dieu chinh co phuong sai bang 0"
+          },
+          "pt": {
+            "pt": null,
+            "p": null,
+            "n": 193,
+            "hit_rate": 0.0,
+            "note": "du bao khong co huong -> khong ap dung duoc kiem dinh huong"
+          },
+          "skill": {
+            "skill": 0.0,
+            "skill_ci": [
+              0.0,
+              0.0
+            ],
+            "skill_p_above_0": 0.0,
+            "n_boot": 500,
+            "block": 14,
+            "T": 193,
+            "note": "moving-block bootstrap, CI 95%"
+          },
+          "conformal": {
+            "coverage": 94.0,
+            "width_pct": 42.66,
+            "q_pct": 24.32,
+            "q_final_pct": 24.32,
+            "target_coverage": 90.0,
+            "alpha_final": 0.018,
+            "n": 150,
+            "note": "Adaptive Conformal Prediction (Gibbs & Candes 2021), khoang tuong doi"
+          },
+          "significant": false
+        },
+        "blend": {
+          "dm": {
+            "dm": 0.0851,
+            "dm_hln": 0.0792,
+            "p": 0.937,
+            "T": 193,
+            "h": 14,
+            "mean_loss_diff": 4.280519,
+            "model_better": false,
+            "sig_5pct": false,
+            "sig_1pct": false,
+            "note": "Diebold-Mariano (Newey-West HAC) + hieu chinh Harvey-Leybourne-Newbold, t(T-1)"
+          },
+          "cw": {
+            "cw": 0.3506,
+            "p": 0.363,
+            "T": 193,
+            "h": 14,
+            "model_better": false,
+            "sig_5pct": false,
+            "sig_10pct": false,
+            "note": "Clark-West MSPE-adjusted, kiem dinh mot phia, Newey-West HAC"
+          },
+          "pt": {
+            "pt": 1.9648,
+            "p": 0.0494,
+            "n": 193,
+            "hit_rate": 57.0,
+            "sig_5pct": true,
+            "note": "Pesaran-Timmermann (don bien phan huong, phan phoi chuan)"
+          },
+          "skill": {
+            "skill": 1.1,
+            "skill_ci": [
+              -3.7,
+              6.5
+            ],
+            "skill_p_above_0": 0.704,
+            "n_boot": 500,
+            "block": 14,
+            "T": 193,
+            "note": "moving-block bootstrap, CI 95%"
+          },
+          "conformal": {
+            "coverage": 91.3,
+            "width_pct": 43.35,
+            "q_pct": 22.18,
+            "q_final_pct": 22.18,
+            "target_coverage": 90.0,
+            "alpha_final": 0.036,
+            "n": 150,
+            "note": "Adaptive Conformal Prediction (Gibbs & Candes 2021), khoang tuong doi"
+          },
+          "significant": false
+        }
+      }
+    },
+    "30": {
+      "alpha": 0.8500000000000001,
+      "chosen": "blend",
+      "model": {
+        "mape": 10.64,
+        "level_acc": 89.36,
+        "mae": 34.766,
+        "rmse": 44.7556,
+        "r2": -0.0338,
+        "dir_acc": 69.19,
+        "n": 370,
+        "r2_ret": 0.1219,
+        "naive_mape": 12.099,
+        "skill": 12.1
+      },
+      "naive": {
+        "mape": 12.099,
+        "level_acc": 87.9,
+        "mae": 39.4891,
+        "rmse": 48.1547,
+        "r2": -0.1968,
+        "dir_acc": 0.0,
+        "n": 370,
+        "r2_ret": -0.0049,
+        "naive_mape": 12.099,
+        "skill": 0.0
+      },
+      "blend": {
+        "mape": 10.508,
+        "level_acc": 89.49,
+        "mae": 34.3341,
+        "rmse": 43.1237,
+        "r2": 0.0402,
+        "dir_acc": 69.19,
+        "n": 370,
+        "r2_ret": 0.1885,
+        "naive_mape": 12.099,
+        "skill": 13.1
+      },
+      "chosen_metrics": {
+        "mape": 10.508,
+        "level_acc": 89.49,
+        "mae": 34.3341,
+        "rmse": 43.1237,
+        "r2": 0.0402,
+        "dir_acc": 69.19,
+        "n": 370,
+        "r2_ret": 0.1885,
+        "naive_mape": 12.099,
+        "skill": 13.1,
+        "chosen": "blend",
+        "alpha": 0.85,
+        "dm_p": 0.4317,
+        "cw_p": 0.0036,
+        "pt_p": 0.0,
+        "dm_better": true,
+        "skill_ci": [
+          -63.4,
+          32.7
+        ],
+        "coverage": 97.6,
+        "band_pct": 21.87,
+        "band_width_pct": 48.45,
+        "significant": false,
+        "n_test": 185
+      },
+      "ma7": {
+        "mape": 12.404,
+        "level_acc": 87.6,
+        "mae": 40.4195,
+        "rmse": 49.1338,
+        "r2": -0.2459,
+        "dir_acc": 49.46,
+        "n": 370,
+        "r2_ret": -0.038,
+        "naive_mape": 12.099,
+        "skill": -2.5
+      },
+      "tests": {
+        "model": {
+          "dm": {
+            "dm": -0.5205,
+            "dm_hln": -0.4375,
+            "p": 0.6622,
+            "T": 185,
+            "h": 30,
+            "mean_loss_diff": -384.728157,
+            "model_better": true,
+            "sig_5pct": false,
+            "sig_1pct": false,
+            "note": "Diebold-Mariano (Newey-West HAC) + hieu chinh Harvey-Leybourne-Newbold, t(T-1)"
+          },
+          "cw": {
+            "cw": 2.7091,
+            "p": 0.0034,
+            "T": 185,
+            "h": 30,
+            "model_better": false,
+            "sig_5pct": true,
+            "sig_10pct": true,
+            "note": "Clark-West MSPE-adjusted, kiem dinh mot phia, Newey-West HAC"
+          },
+          "pt": {
+            "pt": 5.7785,
+            "p": 0.0,
+            "n": 185,
+            "hit_rate": 72.4,
+            "sig_5pct": true,
+            "note": "Pesaran-Timmermann (don bien phan huong, phan phoi chuan)"
+          },
+          "skill": {
+            "skill": 11.1,
+            "skill_ci": [
+              -82.2,
+              35.3
+            ],
+            "skill_p_above_0": 0.458,
+            "n_boot": 500,
+            "block": 30,
+            "T": 185,
+            "note": "moving-block bootstrap, CI 95%"
+          },
+          "conformal": {
+            "coverage": 100.0,
+            "width_pct": 54.6,
+            "q_pct": 24.63,
+            "q_final_pct": 24.63,
+            "target_coverage": 90.0,
+            "alpha_final": 0.101,
+            "n": 126,
+            "note": "Adaptive Conformal Prediction (Gibbs & Candes 2021), khoang tuong doi"
+          },
+          "significant": false
+        },
+        "naive": {
+          "dm": {
+            "dm": null,
+            "p": null,
+            "T": 185,
+            "note": "sai lech loss co phuong sai bang 0"
+          },
+          "cw": {
+            "cw": null,
+            "p": null,
+            "T": 185,
+            "note": "sai lech da dieu chinh co phuong sai bang 0"
+          },
+          "pt": {
+            "pt": null,
+            "p": null,
+            "n": 185,
+            "hit_rate": 0.0,
+            "note": "du bao khong co huong -> khong ap dung duoc kiem dinh huong"
+          },
+          "skill": {
+            "skill": 0.0,
+            "skill_ci": [
+              0.0,
+              0.0
+            ],
+            "skill_p_above_0": 0.0,
+            "n_boot": 500,
+            "block": 30,
+            "T": 185,
+            "note": "moving-block bootstrap, CI 95%"
+          },
+          "conformal": {
+            "coverage": 89.7,
+            "width_pct": 53.98,
+            "q_pct": 24.14,
+            "q_final_pct": 24.14,
+            "target_coverage": 90.0,
+            "alpha_final": 0.1,
+            "n": 126,
+            "note": "Adaptive Conformal Prediction (Gibbs & Candes 2021), khoang tuong doi"
+          },
+          "significant": false
+        },
+        "blend": {
+          "dm": {
+            "dm": -0.9375,
+            "dm_hln": -0.788,
+            "p": 0.4317,
+            "T": 185,
+            "h": 30,
+            "mean_loss_diff": -554.416944,
+            "model_better": true,
+            "sig_5pct": false,
+            "sig_1pct": false,
+            "note": "Diebold-Mariano (Newey-West HAC) + hieu chinh Harvey-Leybourne-Newbold, t(T-1)"
+          },
+          "cw": {
+            "cw": 2.6909,
+            "p": 0.0036,
+            "T": 185,
+            "h": 30,
+            "model_better": false,
+            "sig_5pct": true,
+            "sig_10pct": true,
+            "note": "Clark-West MSPE-adjusted, kiem dinh mot phia, Newey-West HAC"
+          },
+          "pt": {
+            "pt": 5.7785,
+            "p": 0.0,
+            "n": 185,
+            "hit_rate": 72.4,
+            "sig_5pct": true,
+            "note": "Pesaran-Timmermann (don bien phan huong, phan phoi chuan)"
+          },
+          "skill": {
+            "skill": 12.9,
+            "skill_ci": [
+              -63.4,
+              32.7
+            ],
+            "skill_p_above_0": 0.512,
+            "n_boot": 500,
+            "block": 30,
+            "T": 185,
+            "note": "moving-block bootstrap, CI 95%"
+          },
+          "conformal": {
+            "coverage": 97.6,
+            "width_pct": 48.45,
+            "q_pct": 21.87,
+            "q_final_pct": 21.87,
+            "target_coverage": 90.0,
+            "alpha_final": 0.081,
+            "n": 126,
+            "note": "Adaptive Conformal Prediction (Gibbs & Candes 2021), khoang tuong doi"
+          },
+          "significant": false
+        }
+      }
+    }
+  },
+  "forecast": [
+    {
+      "h": 1,
+      "return": 0.0,
+      "alpha": 0.0,
+      "chosen": "naive",
+      "price": 307.45
+    },
+    {
+      "h": 2,
+      "return": -0.0,
+      "alpha": 0.0,
+      "chosen": null,
+      "price": 307.45
+    },
+    {
+      "h": 3,
+      "return": -0.0,
+      "alpha": 0.0,
+      "chosen": null,
+      "price": 307.45
+    },
+    {
+      "h": 4,
+      "return": -0.0,
+      "alpha": 0.0,
+      "chosen": null,
+      "price": 307.45
+    },
+    {
+      "h": 5,
+      "return": -0.0,
+      "alpha": 0.0,
+      "chosen": null,
+      "price": 307.45
+    },
+    {
+      "h": 6,
+      "return": -0.0,
+      "alpha": 0.0,
+      "chosen": null,
+      "price": 307.45
+    },
+    {
+      "h": 7,
+      "return": 0.00053,
+      "alpha": 0.4,
+      "chosen": "blend",
+      "price": 307.612
+    },
+    {
+      "h": 8,
+      "return": 0.0,
+      "alpha": 0.0,
+      "chosen": null,
+      "price": 307.45
+    },
+    {
+      "h": 9,
+      "return": 0.0,
+      "alpha": 0.0,
+      "chosen": null,
+      "price": 307.45
+    },
+    {
+      "h": 10,
+      "return": 0.0,
+      "alpha": 0.0,
+      "chosen": null,
+      "price": 307.45
+    },
+    {
+      "h": 11,
+      "return": -0.0,
+      "alpha": 0.0,
+      "chosen": null,
+      "price": 307.45
+    },
+    {
+      "h": 12,
+      "return": -0.0,
+      "alpha": 0.0,
+      "chosen": null,
+      "price": 307.45
+    },
+    {
+      "h": 13,
+      "return": -0.0,
+      "alpha": 0.0,
+      "chosen": null,
+      "price": 307.45
+    },
+    {
+      "h": 14,
+      "return": -0.02622,
+      "alpha": 0.3,
+      "chosen": "blend",
+      "price": 299.495
+    },
+    {
+      "h": 15,
+      "return": -0.0,
+      "alpha": 0.0,
+      "chosen": null,
+      "price": 307.45
+    },
+    {
+      "h": 16,
+      "return": -0.0,
+      "alpha": 0.0,
+      "chosen": null,
+      "price": 307.45
+    },
+    {
+      "h": 17,
+      "return": -0.0,
+      "alpha": 0.0,
+      "chosen": null,
+      "price": 307.45
+    },
+    {
+      "h": 18,
+      "return": -0.0,
+      "alpha": 0.0,
+      "chosen": null,
+      "price": 307.45
+    },
+    {
+      "h": 19,
+      "return": -0.0,
+      "alpha": 0.0,
+      "chosen": null,
+      "price": 307.45
+    },
+    {
+      "h": 20,
+      "return": -0.0,
+      "alpha": 0.0,
+      "chosen": null,
+      "price": 307.45
+    },
+    {
+      "h": 21,
+      "return": -0.0,
+      "alpha": 0.0,
+      "chosen": null,
+      "price": 307.45
+    },
+    {
+      "h": 22,
+      "return": -0.0,
+      "alpha": 0.0,
+      "chosen": null,
+      "price": 307.45
+    },
+    {
+      "h": 23,
+      "return": -0.0,
+      "alpha": 0.0,
+      "chosen": null,
+      "price": 307.45
+    },
+    {
+      "h": 24,
+      "return": -0.0,
+      "alpha": 0.0,
+      "chosen": null,
+      "price": 307.45
+    },
+    {
+      "h": 25,
+      "return": -0.0,
+      "alpha": 0.0,
+      "chosen": null,
+      "price": 307.45
+    },
+    {
+      "h": 26,
+      "return": -0.0,
+      "alpha": 0.0,
+      "chosen": null,
+      "price": 307.45
+    },
+    {
+      "h": 27,
+      "return": -0.0,
+      "alpha": 0.0,
+      "chosen": null,
+      "price": 307.45
+    },
+    {
+      "h": 28,
+      "return": -0.0,
+      "alpha": 0.0,
+      "chosen": null,
+      "price": 307.45
+    },
+    {
+      "h": 29,
+      "return": -0.0,
+      "alpha": 0.0,
+      "chosen": null,
+      "price": 307.45
+    },
+    {
+      "h": 30,
+      "return": -0.01963,
+      "alpha": 0.85,
+      "chosen": "blend",
+      "price": 301.474
+    }
+  ],
+  "feature_names": [
+    "ret_lag1",
+    "ret_lag2",
+    "ret_lag3",
+    "ret_lag4",
+    "ret_lag5",
+    "ret_lag6",
+    "ret_lag7",
+    "ret_lag8",
+    "ret_lag9",
+    "ret_lag10",
+    "px_over_ma5",
+    "px_over_ma10",
+    "px_over_ma20",
+    "px_over_ma60",
+    "px_over_ma120",
+    "px_over_ma250",
+    "vol7",
+    "vol30",
+    "vol90",
+    "mom5",
+    "mom20",
+    "mom60",
+    "mom120",
+    "rsi14",
+    "fx_ret_lag1",
+    "fx_over_ma30",
+    "dow_sin",
+    "dow_cos",
+    "month_sin",
+    "month_cos",
+    "trend"
+  ]
+}

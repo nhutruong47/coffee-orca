@@ -1,0 +1,474 @@
+{
+  "trained_at": "2026-10-25T02:04:18",
+  "series": {
+    "name": "Robusta (ICO/World Bank, tháng)",
+    "points": 801,
+    "first": "1960-01",
+    "last": "2026-09",
+    "last_price_usd_kg": 3.69
+  },
+  "horizons": {
+    "1": {
+      "mape": 3.99,
+      "level_acc": 96.01,
+      "mae": 0.1094,
+      "naive_mape": 3.97,
+      "skill": -0.4,
+      "r2": 0.9706,
+      "r2_ret": -0.0045,
+      "r2_ret_naive": -0.0068,
+      "dir_acc": 53.1,
+      "band": 3.99,
+      "n": 179,
+      "mape_raw": 4.55,
+      "alpha": 0.2,
+      "dm_p": 0.8875,
+      "cw_p": 0.2442,
+      "pt_p": 0.1079,
+      "dm_better": true,
+      "skill_ci": [
+        -2.7,
+        1.7
+      ],
+      "coverage": 87.2,
+      "band_pct": 12.7,
+      "band_width_pct": 16.94,
+      "significant": false,
+      "n_test": 179
+    },
+    "3": {
+      "mape": 8.05,
+      "level_acc": 91.95,
+      "mae": 0.2223,
+      "naive_mape": 8.05,
+      "skill": 0.0,
+      "r2": 0.8915,
+      "r2_ret": -0.0218,
+      "r2_ret_naive": -0.0218,
+      "dir_acc": 2.8,
+      "band": 8.05,
+      "n": 177,
+      "mape_raw": 9.24,
+      "alpha": 0.0,
+      "dm_p": null,
+      "cw_p": null,
+      "pt_p": null,
+      "dm_better": null,
+      "skill_ci": [
+        0.0,
+        0.0
+      ],
+      "coverage": 85.5,
+      "band_pct": 22.6,
+      "band_width_pct": 32.43,
+      "significant": false,
+      "n_test": 177
+    },
+    "6": {
+      "mape": 11.51,
+      "level_acc": 88.49,
+      "mae": 0.3216,
+      "naive_mape": 11.51,
+      "skill": 0.0,
+      "r2": 0.7818,
+      "r2_ret": -0.0359,
+      "r2_ret_naive": -0.0359,
+      "dir_acc": 1.7,
+      "band": 11.51,
+      "n": 174,
+      "mape_raw": 14.36,
+      "alpha": 0.0,
+      "dm_p": null,
+      "cw_p": null,
+      "pt_p": null,
+      "dm_better": null,
+      "skill_ci": [
+        0.0,
+        0.0
+      ],
+      "coverage": 84.9,
+      "band_pct": 35.79,
+      "band_width_pct": 48.43,
+      "significant": false,
+      "n_test": 174
+    },
+    "12": {
+      "mape": 17.0,
+      "level_acc": 83.0,
+      "mae": 0.4968,
+      "naive_mape": 18.22,
+      "skill": 6.7,
+      "r2": 0.4949,
+      "r2_ret": 0.0509,
+      "r2_ret_naive": -0.0719,
+      "dir_acc": 65.5,
+      "band": 17.0,
+      "n": 168,
+      "mape_raw": 16.99,
+      "alpha": 0.30000000000000004,
+      "dm_p": 0.6707,
+      "cw_p": 0.1737,
+      "pt_p": 0.0,
+      "dm_better": true,
+      "skill_ci": [
+        1.1,
+        14.2
+      ],
+      "coverage": 78.0,
+      "band_pct": 43.28,
+      "band_width_pct": 61.16,
+      "significant": false,
+      "n_test": 168
+    }
+  },
+  "forecast": [
+    {
+      "h": 1,
+      "alpha": 0.2,
+      "usd_kg": 3.657,
+      "vn_kg": 90422,
+      "vn_lo": 78938,
+      "vn_hi": 101906
+    },
+    {
+      "h": 2,
+      "alpha": 0.2,
+      "usd_kg": 3.649,
+      "vn_kg": 90222,
+      "vn_lo": 78764,
+      "vn_hi": 101681
+    },
+    {
+      "h": 3,
+      "alpha": 0.0,
+      "usd_kg": 3.69,
+      "vn_kg": 91235,
+      "vn_lo": 70616,
+      "vn_hi": 111855
+    },
+    {
+      "h": 4,
+      "alpha": 0.0,
+      "usd_kg": 3.69,
+      "vn_kg": 91235,
+      "vn_lo": 79649,
+      "vn_hi": 102822
+    },
+    {
+      "h": 5,
+      "alpha": 0.0,
+      "usd_kg": 3.69,
+      "vn_kg": 91235,
+      "vn_lo": 79649,
+      "vn_hi": 102822
+    },
+    {
+      "h": 6,
+      "alpha": 0.0,
+      "usd_kg": 3.69,
+      "vn_kg": 91235,
+      "vn_lo": 58582,
+      "vn_hi": 123889
+    },
+    {
+      "h": 7,
+      "alpha": 0.0,
+      "usd_kg": 3.69,
+      "vn_kg": 91235,
+      "vn_lo": 79649,
+      "vn_hi": 102822
+    },
+    {
+      "h": 8,
+      "alpha": 0.0,
+      "usd_kg": 3.69,
+      "vn_kg": 91235,
+      "vn_lo": 79649,
+      "vn_hi": 102822
+    },
+    {
+      "h": 9,
+      "alpha": 0.0,
+      "usd_kg": 3.69,
+      "vn_kg": 91235,
+      "vn_lo": 79649,
+      "vn_hi": 102822
+    },
+    {
+      "h": 10,
+      "alpha": 0.3,
+      "usd_kg": 3.754,
+      "vn_kg": 92811,
+      "vn_lo": 81024,
+      "vn_hi": 104599
+    },
+    {
+      "h": 11,
+      "alpha": 0.3,
+      "usd_kg": 3.838,
+      "vn_kg": 94902,
+      "vn_lo": 82849,
+      "vn_hi": 106955
+    },
+    {
+      "h": 12,
+      "alpha": 0.3,
+      "usd_kg": 3.887,
+      "vn_kg": 96098,
+      "vn_lo": 54507,
+      "vn_hi": 137689
+    }
+  ],
+  "daily": [
+    {
+      "d": 1,
+      "vn_kg": 89531,
+      "lo": 87455,
+      "hi": 91607,
+      "band": 2.32
+    },
+    {
+      "d": 2,
+      "vn_kg": 89561,
+      "lo": 86624,
+      "hi": 92498,
+      "band": 3.28
+    },
+    {
+      "d": 3,
+      "vn_kg": 89592,
+      "lo": 85994,
+      "hi": 93190,
+      "band": 4.02
+    },
+    {
+      "d": 4,
+      "vn_kg": 89622,
+      "lo": 85466,
+      "hi": 93779,
+      "band": 4.64
+    },
+    {
+      "d": 5,
+      "vn_kg": 89653,
+      "lo": 85005,
+      "hi": 94301,
+      "band": 5.18
+    },
+    {
+      "d": 6,
+      "vn_kg": 89684,
+      "lo": 84590,
+      "hi": 94777,
+      "band": 5.68
+    },
+    {
+      "d": 7,
+      "vn_kg": 89714,
+      "lo": 84211,
+      "hi": 95218,
+      "band": 6.13
+    },
+    {
+      "d": 8,
+      "vn_kg": 89745,
+      "lo": 83859,
+      "hi": 95631,
+      "band": 6.56
+    },
+    {
+      "d": 9,
+      "vn_kg": 89776,
+      "lo": 83531,
+      "hi": 96020,
+      "band": 6.96
+    },
+    {
+      "d": 10,
+      "vn_kg": 89806,
+      "lo": 83221,
+      "hi": 96391,
+      "band": 7.33
+    },
+    {
+      "d": 11,
+      "vn_kg": 89837,
+      "lo": 82928,
+      "hi": 96746,
+      "band": 7.69
+    },
+    {
+      "d": 12,
+      "vn_kg": 89868,
+      "lo": 82649,
+      "hi": 97086,
+      "band": 8.03
+    },
+    {
+      "d": 13,
+      "vn_kg": 89898,
+      "lo": 82383,
+      "hi": 97414,
+      "band": 8.36
+    },
+    {
+      "d": 14,
+      "vn_kg": 89929,
+      "lo": 82127,
+      "hi": 97731,
+      "band": 8.68
+    },
+    {
+      "d": 15,
+      "vn_kg": 89960,
+      "lo": 81881,
+      "hi": 98038,
+      "band": 8.98
+    },
+    {
+      "d": 16,
+      "vn_kg": 89991,
+      "lo": 81644,
+      "hi": 98337,
+      "band": 9.27
+    },
+    {
+      "d": 17,
+      "vn_kg": 90021,
+      "lo": 81415,
+      "hi": 98628,
+      "band": 9.56
+    },
+    {
+      "d": 18,
+      "vn_kg": 90052,
+      "lo": 81193,
+      "hi": 98911,
+      "band": 9.84
+    },
+    {
+      "d": 19,
+      "vn_kg": 90083,
+      "lo": 80978,
+      "hi": 99187,
+      "band": 10.11
+    },
+    {
+      "d": 20,
+      "vn_kg": 90114,
+      "lo": 80769,
+      "hi": 99458,
+      "band": 10.37
+    },
+    {
+      "d": 21,
+      "vn_kg": 90144,
+      "lo": 80566,
+      "hi": 99723,
+      "band": 10.63
+    },
+    {
+      "d": 22,
+      "vn_kg": 90175,
+      "lo": 80368,
+      "hi": 99982,
+      "band": 10.88
+    },
+    {
+      "d": 23,
+      "vn_kg": 90206,
+      "lo": 80175,
+      "hi": 100237,
+      "band": 11.12
+    },
+    {
+      "d": 24,
+      "vn_kg": 90237,
+      "lo": 79987,
+      "hi": 100487,
+      "band": 11.36
+    },
+    {
+      "d": 25,
+      "vn_kg": 90268,
+      "lo": 79803,
+      "hi": 100733,
+      "band": 11.59
+    },
+    {
+      "d": 26,
+      "vn_kg": 90299,
+      "lo": 79622,
+      "hi": 100975,
+      "band": 11.82
+    },
+    {
+      "d": 27,
+      "vn_kg": 90329,
+      "lo": 79446,
+      "hi": 101213,
+      "band": 12.05
+    },
+    {
+      "d": 28,
+      "vn_kg": 90360,
+      "lo": 79274,
+      "hi": 101447,
+      "band": 12.27
+    },
+    {
+      "d": 29,
+      "vn_kg": 90391,
+      "lo": 79104,
+      "hi": 101678,
+      "band": 12.49
+    },
+    {
+      "d": 30,
+      "vn_kg": 90422,
+      "lo": 78938,
+      "hi": 101906,
+      "band": 12.7
+    }
+  ],
+  "daily_now": 89500,
+  "daily_note": "Bảng ngày là nội suy giữa giá hôm nay và dự báo +1 tháng; chưa có chuỗi giá VN/Robusta theo ngày để đo độ chính xác ở mức ngày. Độ rộng khoảng theo khoảng conformal của mốc +1 tháng (12.70%).",
+  "conversion": {
+    "basis": 0.9512,
+    "fx": 25993.45,
+    "n_basis_obs": 436,
+    "n_basis_used": 54,
+    "basis_span": [
+      "2011-11-04",
+      "2026-10-25"
+    ],
+    "vn_days": 436,
+    "vn_now_usd_kg": 3.443,
+    "vn_now_price": 89500.0
+  },
+  "feature_names": [
+    "ret_lag1",
+    "ret_lag2",
+    "ret_lag3",
+    "ret_lag4",
+    "ret_lag5",
+    "ret_lag6",
+    "arabica_ret_lag1",
+    "arabica_ret_lag2",
+    "arabica_ret_lag3",
+    "px_over_ma3",
+    "px_over_ma6",
+    "px_over_ma12",
+    "px_over_ma24",
+    "arabica_over_ma6",
+    "arabica_over_ma12",
+    "arabica_robusta_ratio",
+    "ratio_vs_mean",
+    "vol6",
+    "vol12",
+    "arabica_day_over_wb",
+    "month_sin",
+    "month_cos",
+    "trend"
+  ]
+}

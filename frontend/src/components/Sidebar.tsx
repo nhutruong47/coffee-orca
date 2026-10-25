@@ -110,6 +110,7 @@ export default function Sidebar() {
         { path: '/dashboard', label: 'Tổng quan', icon: 'grid-outline' },
         { path: '/groups', label: 'Nhóm xưởng', icon: 'people-outline', afterDivider: true },
         { path: '/marketplace', label: 'Thị trường', icon: 'storefront-outline' },
+        { path: '/forecast', label: 'Dự báo giá', icon: 'trending-up-outline' },
         { path: '/orders', label: 'Đơn hàng', icon: 'cube-outline', badge: pendingOrderCount },
     ];
 

@@ -1,0 +1,25 @@
+{
+  "source": "Thị Trường Cà Phê",
+  "api_url": "https://thitruongcaphe.vn/api/prices/history",
+  "archive_url": "https://thitruongcaphe.vn/gia-ca-phe/ngay",
+  "methodology_url": "https://thitruongcaphe.vn/phuong-phap",
+  "methodology": "Daily province references from multiple public sources; site describes median of active sources, not a single dealer quote.",
+  "date_range_requested": [
+    "2026-10-22",
+    "2026-10-25"
+  ],
+  "archived_date_pages": 101,
+  "first_observation": "2026-07-16",
+  "last_observation": "2026-10-24",
+  "record_count": 445,
+  "province_counts": {
+    "dak_lak": 101,
+    "lam_dong": 101,
+    "gia_lai": 101,
+    "dak_nong": 101,
+    "kon_tum": 41
+  },
+  "fetched_at_utc": "2026-10-25T02:01:05.946754+00:00",
+  "attribution": "Thị Trường Cà Phê — https://thitruongcaphe.vn",
+  "license": "No explicit reuse license found; retain source attribution and use as an internal reference unless site terms state otherwise."
+}
