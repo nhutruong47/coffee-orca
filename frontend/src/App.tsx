@@ -72,9 +72,9 @@ function App() {
                                     <Route path="/vnpay-mock-checkout" element={<VnpayMockCheckoutPage />} />
                                 </Route>
 
-                                <Route path="/marketplace" element={<ProtectedRoute><MarketplacePage /></ProtectedRoute>} />
-                                <Route path="/dat-hang" element={<ProtectedRoute><MarketplacePage /></ProtectedRoute>} />
-                                <Route path="/thi-truong-dat-hang" element={<ProtectedRoute><MarketplacePage /></ProtectedRoute>} />
+                                <Route path="/marketplace" element={<MarketplacePage />} />
+                                <Route path="/dat-hang" element={<MarketplacePage />} />
+                                <Route path="/thi-truong-dat-hang" element={<MarketplacePage />} />
                                 <Route path="/forecast" element={<CoffeeForecastPage />} />
                                 <Route path="/du-bao-gia" element={<CoffeeForecastPage />} />
                                 <Route path="/" element={<HomePage />} />

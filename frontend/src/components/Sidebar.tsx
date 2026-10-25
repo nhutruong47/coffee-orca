@@ -184,7 +184,7 @@ export default function Sidebar() {
                 })}
             </nav>
 
-            {user && (
+            {user ? (
                 <div className="sidebar-user-wrap">
                     {userMenuOpen && (
                         <div className="sidebar-user-menu">
@@ -248,6 +248,28 @@ export default function Sidebar() {
                         </div>
                         <ion-icon name={userMenuOpen ? 'chevron-down-outline' : 'storefront-outline'} style={{ marginLeft: 'auto', color: 'var(--text-secondary)', fontSize: '18px' }}></ion-icon>
                     </button>
+                </div>
+            ) : (
+                <div style={{ padding: '16px' }}>
+                    <NavLink
+                        to="/login"
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '8px',
+                            padding: '10px 16px',
+                            background: '#08482D',
+                            color: '#ffffff',
+                            borderRadius: '10px',
+                            fontWeight: 700,
+                            fontSize: '13px',
+                            textDecoration: 'none'
+                        }}
+                    >
+                        <ion-icon name="log-in-outline" style={{ fontSize: '18px' }}></ion-icon>
+                        <span>Đăng nhập</span>
+                    </NavLink>
                 </div>
             )}
         </aside>
