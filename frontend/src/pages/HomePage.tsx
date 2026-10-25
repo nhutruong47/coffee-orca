@@ -29,7 +29,7 @@ const COFFEE_MEDIA = [
   {
     title: 'Thu Hoạch Quả Chín',
     tag: 'Nông Trường',
-    poster: 'https://images.unsplash.com/photo-1610632380989-680fe40816c6?w=600&auto=format&fit=crop&q=80',
+    poster: 'https://images.unsplash.com/photo-1524350876685-274059332603?w=600&auto=format&fit=crop&q=80',
     video: 'https://assets.mixkit.co/videos/preview/mixkit-coffee-plantation-with-coffee-cherries-42462-large.mp4'
   },
   {
@@ -47,8 +47,8 @@ const COFFEE_MEDIA = [
   {
     title: 'Đóng Gói Bảo Quản',
     tag: 'Kho Vận',
-    poster: 'https://images.unsplash.com/photo-1559525839-8f8ec3de0ffb?w=600&auto=format&fit=crop&q=80',
-    video: 'https://assets.mixkit.co/videos/preview/mixkit-roasted-coffee-beans-falling-in-slow-motion-42459-large.mp4'
+    poster: 'https://images.unsplash.com/photo-1589396575653-c09c794ff6a6?w=600&auto=format&fit=crop&q=80',
+    video: 'https://assets.mixkit.co/videos/preview/mixkit-hands-holding-coffee-beans-42459-large.mp4'
   },
   {
     title: 'Cold Brew Ủ Lạnh',
