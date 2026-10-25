@@ -525,11 +525,18 @@ export default function MarketplacePage() {
                     teamService.getAllTeams(),
                     teamService.getMyTeams()
                 ]);
-                if (teamsAllResult.status === 'rejected') {
-                    throw teamsAllResult.reason;
+                let teamsAll: Team[] = [];
+                if (teamsAllResult.status === 'fulfilled') {
+                    teamsAll = teamsAllResult.value;
+                } else {
+                    // Try retry once after 1s if rate limited
+                    try {
+                        await new Promise(r => setTimeout(r, 1000));
+                        teamsAll = await teamService.getAllTeams();
+                    } catch {
+                        teamsAll = [];
+                    }
                 }
-
-                const teamsAll = teamsAllResult.value;
                 const teamsMine = teamsMineResult.status === 'fulfilled' ? teamsMineResult.value : [];
                 const publishedTeams = teamsAll.filter(t => t.isPublished);
                 const ownedTeams = teamsMine.filter(t => t.ownerId === user?.id);
@@ -557,16 +564,25 @@ export default function MarketplacePage() {
 
     useEffect(() => {
         if (!allTeams.length) return;
+        let active = true;
         const fetchReviews = async () => {
             const summaries: typeof factoryReviewsSummary = {};
-            await Promise.all(allTeams.map(async (team) => {
+            // Limit review summary prefetch to top 6 to prevent 429 rate limit storm
+            const sampleTeams = allTeams.slice(0, 6);
+            for (const team of sampleTeams) {
+                if (!active) break;
                 try {
                     summaries[team.id] = await reviewService.getSummary(team.id);
-                } catch {}
-            }));
-            setFactoryReviewsSummary(summaries);
+                } catch {
+                    // ignore individual review error
+                }
+            }
+            if (active) {
+                setFactoryReviewsSummary(prev => ({ ...prev, ...summaries }));
+            }
         };
         fetchReviews();
+        return () => { active = false; };
     }, [allTeams]);
 
     const loadFactoryReviews = async (teamId: string) => {
