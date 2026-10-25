@@ -235,46 +235,45 @@ export const HomePage: React.FC = () => {
                 strokeLinecap="round"
               />
             </svg>
-            <span>Reelmark</span>
+            <span>ORCA Coffee</span>
           </Link>
 
           <nav className="reelmark-nav">
-            <Link to="/marketplace" className="reelmark-nav-item">Brands</Link>
-            <Link to="/forecast" className="reelmark-nav-item">Creators</Link>
-            <Link to="/upgrade" className="reelmark-nav-item">Pricing</Link>
-            <Link to="/orders" className="reelmark-nav-item">Use Cases</Link>
-            <Link to="/settings" className="reelmark-nav-item">Contact</Link>
+            <Link to="/marketplace" className="reelmark-nav-item">Sàn Gia Công</Link>
+            <Link to="/forecast" className="reelmark-nav-item">Dự Báo Giá</Link>
+            <Link to="/upgrade" className="reelmark-nav-item">Gói Dịch Vụ</Link>
+            <Link to="/orders" className="reelmark-nav-item">Đơn Hàng</Link>
+            <Link to="/dashboard" className="reelmark-nav-item">Vào Xưởng</Link>
           </nav>
 
           <div className="reelmark-actions">
-            <Link to="/login" className="btn-login">Log in</Link>
-            <Link to="/register" className="btn-signup">Sign up</Link>
+            <Link to="/login" className="btn-login">Đăng nhập</Link>
+            <Link to="/register" className="btn-signup">Đăng ký</Link>
           </div>
         </header>
 
         {/* Mint Badge */}
         <div className="reelmark-badge">
-          Trusted by 120,000+ indie makers
+          Hơn 120+ Xưởng Cà Phê Tin Tưởng
         </div>
 
         {/* Big Bold Headline */}
         <h1 className="reelmark-headline">
-          Captivate Crowds
-          <span className="line-2">with Snackable Reels</span>
+          Hạ Tầng Vận Hành
+          <span className="line-2">Cà Phê Bản Sắc Việt</span>
         </h1>
 
         {/* Subline */}
         <p className="reelmark-subline">
-          Grow your brand with short, snappy product clips by<br />
-          our handpicked video makers. Our crew is ready to<br />
-          lift your next launch higher.
+          Nền tảng số hóa xưởng rang xay, dự báo dẫn truyền giá thị trường<br />
+          và kết nối trực tiếp các nhà chế biến nông sản đặc sản hàng đầu.
         </p>
 
         {/* Hand-drawn Notes & Doodles */}
         <div className="hand-note note-doodle">//</div>
 
         <div className="hand-note note-beseen">
-          Be seen<br />with clips
+          Mẻ rang<br />nguyên bản
         </div>
 
         {/* Curling Arrow from 'Be seen' down to cards */}
@@ -301,7 +300,7 @@ export const HomePage: React.FC = () => {
         </svg>
 
         <div className="hand-note note-zerocost">
-          Zero cost
+          Miễn phí
         </div>
 
         {/* Small arrow pointing to the button */}
@@ -377,7 +376,7 @@ export const HomePage: React.FC = () => {
         <div className="cta-container">
           <div className="cta-dashed-ring" />
           <Link to="/marketplace" className="btn-main-cta">
-            Make a Reel
+            Khám Phá Sàn
           </Link>
         </div>
       </div>
