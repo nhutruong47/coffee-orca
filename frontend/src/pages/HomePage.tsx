@@ -426,11 +426,13 @@ export const HomePage: React.FC = () => {
       </section>
 
       {/* SECTION 3: 8 VÙNG NGUYÊN LIỆU BẢN SẮC */}
-      <section className="landing-section" style={{ background: '#f0f4ea', borderRadius: '32px', margin: '20px 0' }}>
+      <section className="landing-section" style={{ background: '#f0f4ea', borderRadius: '32px', margin: '20px 0', padding: '80px 48px 120px 48px' }}>
         <div className="section-tag">
           <MapPin className="w-4 h-4" /> Bản Sắc Thổ Nhưỡng
         </div>
-        <h2 className="section-title">{'8 Thủ Phủ Cà Phê Đặc Sản Việt Nam'}</h2>
+        <h2 className="section-title">
+          <span>8 Thủ Phủ Cà Phê</span>{' '}<span>Đặc Sản Việt Nam</span>
+        </h2>
         <p className="section-desc">
           Từ những cánh rừng nguyên sinh Cầu Đất đến đất đỏ bazan Buôn Ma Thuột — mỗi mẻ rang đều mang đậm dấu ấn thổ nhưỡng độc bản.
         </p>

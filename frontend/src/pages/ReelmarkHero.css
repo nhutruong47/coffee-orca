@@ -491,8 +491,8 @@
 /* AI Sommelier Floating Button & Modal */
 .floating-ai-sommelier {
   position: fixed;
-  bottom: 28px;
-  right: 28px;
+  bottom: 24px;
+  right: 24px;
   z-index: 1000;
 }
 
