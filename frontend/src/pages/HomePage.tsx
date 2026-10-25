@@ -1,760 +1,321 @@
-import { useEffect, useRef } from 'react';
-import orcaLogo from '../assets/orca-logo.png';
-import './PlanetJumping.css';
+import React, { useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
+import './ReelmarkHero.css';
 
-const BASE = 'https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P';
-const MARS_BG = `${BASE}/3c83091e-4046-4fd6-adbb-2edb728be79a.mp4`;
-const TO_EARTH = `${BASE}/fc3ded42-e845-41f3-a830-5cab512d79cd.mp4`;
-const TO_VENUS = `${BASE}/b30f64d9-1637-477a-83df-d0fc6461a422.mp4`;
-const TO_MARS = `${BASE}/5fc5651c-3b5d-4171-b507-87f7e635d1b4.mp4`;
-const MERCURY = `${BASE}/d6fb8b6b-c15e-4aaa-9cf7-45bbb5e33372.jpg`;
+const GRID_POSTER = 'https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/b7ebb74a-8c8a-4f7e-8f80-55e2d74ecd05.webp';
+const GRID_VIDEO = 'https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/04fd3d5f-99d7-476e-98a4-46c08518ffb3.mp4';
 
-const planets = [
-  'Arabica Cầu Đất',
-  'Robusta Buôn Ma Thuột',
-  'Liberica Quảng Trị',
-  'Typica Khe Sanh',
-  'Bourbon Sơn La',
-  'Catimor Điện Biên',
-  'Moka Cầu Đất',
-  'Culi Đặc Biệt'
-];
+export const HomePage: React.FC = () => {
+  const stageRef = useRef<HTMLDivElement>(null);
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
 
-interface PlanetState {
-  name: string;
-  next: string;
-  number: string;
-  portal?: string;
-  image?: string;
-  background: string;
-  facts: [string, string][];
-}
-
-const states: Record<string, PlanetState> = {
-  mars: {
-    name: 'Arabica',
-    next: 'Robusta',
-    number: '[01]',
-    portal: TO_EARTH,
-    background: 'mars-background',
-    facts: [
-      ['Độ cao:', 'Vùng núi cao 1.200 - 1.600m tại Cầu Đất (Đà Lạt).'],
-      ['Hương vị:', 'Chua thanh tao nhã, hương hoa cam, quả mọng và mật ong rừng.'],
-      ['Hàm lượng Caffeine:', '1.2% - 1.5%, hậu vị ngọt dịu lưu luyến kéo dài.'],
-      ['Chế biến:', 'Chế biến ướt (Washed process) chuẩn Specialty Quốc tế SCAA.']
-    ]
-  },
-  earth: {
-    name: 'Robusta',
-    next: 'Liberica',
-    number: '[02]',
-    portal: TO_VENUS,
-    background: 'earth-background',
-    facts: [
-      ['Độ cao:', 'Vùng đất đỏ bazan màu mỡ 600 - 900m tại Buôn Ma Thuột.'],
-      ['Hương vị:', 'Đậm đà mãnh liệt, chocolate đen, hạt hạnh nhân nướng và gỗ sồi.'],
-      ['Hàm lượng Caffeine:', '2.2% - 2.7%, thể chất dày (heavy body), bừng tỉnh năng lượng.'],
-      ['Chế biến:', 'Chế biến tự nhiên (Natural Honey) tuyển chọn 100% trái chín đỏ.']
-    ]
-  },
-  venus: {
-    name: 'Liberica',
-    next: 'Culicui',
-    number: '[03]',
-    image: MERCURY,
-    background: 'venus-background',
-    facts: [
-      ['Độ cao:', 'Cà phê Mít huyền thoại vùng đất đỏ Quảng Trị & Lâm Đồng.'],
-      ['Hương vị:', 'Hương thơm nồng nàn thảo mộc hoang dã, mít chín và hoa tiêu.'],
-      ['Hàm lượng Caffeine:', '1.0% - 1.3%, vị chua thanh tự nhiên độc bản khác lạ.'],
-      ['Chế biến:', 'Ủ lên men kỵ khí (Anaerobic fermentation) số lượng giới hạn.']
-    ]
-  }
-};
-
-export default function HomePage() {
-  const containerRef = useRef<HTMLElement | null>(null);
-
+  // Update scale factor --u based on viewport (1440x1080 design space)
   useEffect(() => {
-    let active = true;
-    let current = 'mars';
-    let busy = false;
-    let transitionActive = false;
-    let expansion = 0;
-    let maskScale = 0;
-    let canvasOpacity = 1;
-    let rotX = 0;
-    let rotY = 0;
-    let targetX = 0;
-    let targetY = 0;
-    let hasFrozenFrame = false;
+    const updateUnit = () => {
+      if (!stageRef.current) return;
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const u = Math.min(vw / 1440, vh / 1080);
+      document.documentElement.style.setProperty('--u', `${u}px`);
+    };
+
+    updateUnit();
+    window.addEventListener('resize', updateUnit);
+    return () => window.removeEventListener('resize', updateUnit);
+  }, []);
+
+  // Curved Cylinder Carousel physics & animation loop
+  useEffect(() => {
+    let animationFrameId: number;
+    let offset = 0;
+    const speed = 50; // 50u per second auto scroll
+    let isDragging = false;
+    let startX = 0;
+    let dragStartOffset = 0;
+    let velocity = 0;
+    let lastDragX = 0;
     let lastTime = performance.now();
-    let isFirstRender = true;
 
-    // Cursor state
-    let mouseX = -100;
-    let mouseY = -100;
-    let orbitX = -100;
-    let orbitY = -100;
-    let cursorVisible = false;
-    let cursorEnter = false;
+    const cardPitch = 196;
+    const totalCards = 10;
+    const totalWidth = totalCards * cardPitch;
 
-    const mainEl = containerRef.current;
-    if (!mainEl) return;
-
-    const portalCanvas = mainEl.querySelector('#portal-canvas') as HTMLCanvasElement;
-    const sceneCanvas = mainEl.querySelector('#scene-canvas') as HTMLCanvasElement;
-    const portalCtx = portalCanvas?.getContext('2d');
-    const sceneCtx = sceneCanvas?.getContext('2d');
-
-    const preloader = mainEl.querySelector('#preloader') as HTMLDivElement;
-    const preloaderVideo = mainEl.querySelector('#preloader-video') as HTMLVideoElement;
-    const preloaderCount = mainEl.querySelector('#preloader-count') as HTMLDivElement;
-    const preloaderValue = mainEl.querySelector('#preloader-value') as HTMLSpanElement;
-    const floatingLogo = mainEl.querySelector('#floating-logo') as HTMLImageElement;
-
-    const portalBtn = mainEl.querySelector('#portal') as HTMLButtonElement;
-    const portalVideo = mainEl.querySelector('#portal-video') as HTMLVideoElement;
-    const portalImage = mainEl.querySelector('#portal-image') as HTMLImageElement;
-    const transitionVideo = mainEl.querySelector('#transition-video') as HTMLVideoElement;
-
-    const planetTitle = mainEl.querySelector('#planet-title') as HTMLHeadingElement;
-    const nextName = mainEl.querySelector('#next-name') as HTMLElement;
-    const nextNumber = mainEl.querySelector('#next-number') as HTMLElement;
-    const factsEl = mainEl.querySelector('#facts') as HTMLElement;
-    const planetList = mainEl.querySelector('.planet-list') as HTMLElement;
-
-    const customCursor = mainEl.querySelector('.custom-cursor') as HTMLDivElement;
-    const cursorOrbit = mainEl.querySelector('.cursor-orbit') as HTMLSpanElement;
-    const cursorDot = mainEl.querySelector('.cursor-dot') as HTMLSpanElement;
-
-    // Pause + rewind all background videos
-    const bgVideos = mainEl.querySelectorAll('.background') as NodeListOf<HTMLVideoElement>;
-    bgVideos.forEach(v => {
-      v.pause();
-      v.currentTime = 0;
-    });
-
-    const easeInOutCubic = (t: number) =>
-      t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-
-    const animateValue = (setter: (v: number) => void, duration: number) => {
-      return new Promise<void>(resolve => {
-        const start = performance.now();
-        const frame = (now: number) => {
-          if (!active) return;
-          const elapsed = now - start;
-          const progress = Math.min(1, elapsed / duration);
-          setter(easeInOutCubic(progress));
-          if (progress < 1) {
-            requestAnimationFrame(frame);
-          } else {
-            resolve();
-          }
-        };
-        requestAnimationFrame(frame);
-      });
-    };
-
-    const resizeCanvas = () => {
-      if (!portalCanvas || !sceneCanvas) return;
-      const d = Math.min(window.devicePixelRatio || 1, 2);
-      const w = window.innerWidth;
-      const h = window.innerHeight;
-
-      portalCanvas.width = w * d;
-      portalCanvas.height = h * d;
-      portalCanvas.style.width = `${w}px`;
-      portalCanvas.style.height = `${h}px`;
-      portalCtx?.setTransform(d, 0, 0, d, 0, 0);
-
-      if (!hasFrozenFrame) {
-        sceneCanvas.width = w * d;
-        sceneCanvas.height = h * d;
-        sceneCanvas.style.width = `${w}px`;
-        sceneCanvas.style.height = `${h}px`;
-        sceneCtx?.setTransform(d, 0, 0, d, 0, 0);
-      }
-    };
-
-    const drawCover = (ctx: CanvasRenderingContext2D, media: HTMLVideoElement | HTMLImageElement) => {
-      const isVid = media instanceof HTMLVideoElement;
-      const mw = isVid ? (media as HTMLVideoElement).videoWidth : (media as HTMLImageElement).naturalWidth;
-      const mh = isVid ? (media as HTMLVideoElement).videoHeight : (media as HTMLImageElement).naturalHeight;
-      if (!mw || !mh) return;
-
-      const sw = window.innerWidth;
-      const sh = window.innerHeight;
-      const scale = Math.max(sw / mw, sh / mh);
-      const dw = mw * scale;
-      const dh = mh * scale;
-      const dx = (sw - dw) / 2;
-      const dy = (sh - dh) / 2;
-
-      try {
-        ctx.drawImage(media, dx, dy, dw, dh);
-      } catch (err) {
-        // ignore media decoding glitches
-      }
-    };
-
-    const drawShade = (ctx: CanvasRenderingContext2D) => {
-      const sh = window.innerHeight;
-      const sw = window.innerWidth;
-      const grad = ctx.createLinearGradient(0, sh * 0.52, 0, sh);
-      grad.addColorStop(0, 'rgba(0,0,0,0)');
-      grad.addColorStop(1, 'rgba(0,0,0,0.88)');
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, sh * 0.52, sw, sh * 0.48);
-    };
-
-    const render = () => {
-      const state = states[current];
-      if (!state) return;
-
-      mainEl.setAttribute('data-planet', current);
-      if (planetTitle) planetTitle.textContent = state.name.toUpperCase();
-      if (nextName) nextName.textContent = state.next;
-      if (nextNumber) nextNumber.textContent = state.number;
-      if (portalBtn) portalBtn.setAttribute('aria-label', `Travel to ${state.next}`);
-
-      // Build facts
-      if (factsEl) {
-        factsEl.innerHTML = state.facts
-          .map(
-            ([k, v]) => `<div class="fact"><dt>${k}</dt><dd>${v}</dd></div>`
-          )
-          .join('');
-      }
-
-      // Build planet-list
-      if (planetList) {
-        planetList.innerHTML = planets
-          .map((p, idx) => {
-            const isMatch = (current === 'mars' && idx === 0) || (current === 'earth' && idx === 1) || (current === 'venus' && idx === 2);
-            return `<span class="planet-item${isMatch ? ' active' : ''}">${p}</span>`;
-          })
-          .join('');
-
-        if (!isFirstRender) {
-          planetList.classList.remove('is-switching');
-          void planetList.offsetWidth;
-          planetList.classList.add('is-switching');
-        }
-      }
-
-      // Background video visibility
-      bgVideos.forEach(v => {
-        if (v.id === state.background) {
-          v.classList.add('is-visible');
-          v.play().catch(() => {});
-        } else {
-          v.classList.remove('is-visible');
-          v.pause();
-        }
-      });
-
-      // Portal media
-      if (state.image) {
-        if (portalImage) {
-          portalImage.src = state.image;
-          portalImage.style.visibility = 'hidden';
-        }
-        if (portalVideo) {
-          portalVideo.style.visibility = 'hidden';
-          portalVideo.pause();
-        }
-      } else if (state.portal) {
-        if (portalVideo) {
-          if (portalVideo.src !== state.portal) {
-            portalVideo.src = state.portal;
-            portalVideo.load();
-          }
-          portalVideo.play().catch(() => {});
-        }
-      }
-
-      isFirstRender = false;
-    };
-
-    const revealMask = async () => {
-      mainEl.classList.remove('mask-revealing');
-      void mainEl.offsetWidth;
-      mainEl.classList.add('mask-revealing');
-      maskScale = 0;
-      await animateValue(v => {
-        maskScale = v;
-      }, 1050);
-    };
-
-    const revealPlanetContent = () => {
-      mainEl.classList.remove('content-revealing');
-      void mainEl.offsetWidth;
-      mainEl.classList.add('content-revealing');
-    };
-
-    const startExperience = async () => {
-      const state = states[current];
-      if (state.portal && portalVideo) {
-        await new Promise<void>(res => {
-          if (portalVideo.readyState >= 2) return res();
-          const onCanPlay = () => {
-            portalVideo.removeEventListener('canplay', onCanPlay);
-            res();
-          };
-          portalVideo.addEventListener('canplay', onCanPlay);
-          setTimeout(res, 1200);
-        });
-      }
-      await revealMask();
-      document.body.classList.add('intro-ready');
-      setTimeout(() => {
-        if (active) revealPlanetContent();
-      }, 850);
-    };
-
-    const runPreloader = () => {
-      let finished = false;
-
-      const finish = () => {
-        if (finished) return;
-        finished = true;
-        if (preloaderValue) preloaderValue.textContent = '100';
-        if (preloaderCount) preloaderCount.classList.add('is-leaving');
-        if (floatingLogo) floatingLogo.classList.add('is-docked');
-        if (preloader) preloader.classList.add('is-background');
-        document.body.classList.add('preload-complete');
-
-        startExperience();
-
-        setTimeout(() => {
-          if (preloaderCount && preloaderCount.parentNode) {
-            preloaderCount.style.display = 'none';
-          }
-        }, 750);
-
-        setTimeout(() => {
-          if (floatingLogo) floatingLogo.classList.add('is-settled');
-        }, 2000);
-      };
-
-      if (!preloaderVideo) {
-        finish();
-        return;
-      }
-
-      const updateCount = () => {
-        if (finished || !active) return;
-        if (preloaderVideo.duration) {
-          const pct = Math.min(100, Math.round((preloaderVideo.currentTime / preloaderVideo.duration) * 100));
-          if (preloaderValue) preloaderValue.textContent = String(pct);
-        }
-        if (!preloaderVideo.paused && !preloaderVideo.ended) {
-          requestAnimationFrame(updateCount);
-        }
-      };
-
-      const startPlayback = () => {
-        if (preloaderVideo.duration) {
-          preloaderVideo.playbackRate = Math.max(0.25, preloaderVideo.duration / 3);
-        }
-        preloaderVideo
-          .play()
-          .then(() => {
-            requestAnimationFrame(updateCount);
-          })
-          .catch(() => {
-            finish();
-          });
-      };
-
-      if (preloaderVideo.readyState >= 1) {
-        startPlayback();
-      } else {
-        preloaderVideo.addEventListener('loadedmetadata', startPlayback, { once: true });
-      }
-
-      preloaderVideo.addEventListener('ended', finish, { once: true });
-      setTimeout(() => {
-        if (!finished) finish();
-      }, 4500);
-    };
-
-    const travel = async () => {
-      if (busy || current === 'venus') return;
-      busy = true;
-      targetX = 0;
-      targetY = 0;
-
-      const next = current === 'mars' ? 'earth' : 'venus';
-      const state = states[current];
-
-      if (!transitionVideo) {
-        busy = false;
-        return;
-      }
-
-      transitionVideo.src = state.portal || '';
-      transitionVideo.load();
-      mainEl.classList.add('is-loading');
-
-      await new Promise<void>(res => {
-        let done = false;
-        const cleanup = () => {
-          if (done) return;
-          done = true;
-          transitionVideo.removeEventListener('canplaythrough', onReady);
-          transitionVideo.removeEventListener('error', onReady);
-          res();
-        };
-        const onReady = () => cleanup();
-        transitionVideo.addEventListener('canplaythrough', onReady);
-        transitionVideo.addEventListener('error', onReady);
-        setTimeout(cleanup, 1600);
-      });
-
-      mainEl.classList.remove('is-loading', 'content-revealing', 'mask-revealing');
-      mainEl.classList.add('is-transitioning');
-
-      transitionVideo.currentTime = 0;
-      transitionVideo.playbackRate = 1.3;
-      canvasOpacity = 1;
-      transitionActive = true;
-
-      try {
-        await transitionVideo.play();
-      } catch (e) {
-        // Ignored
-      }
-
-      await animateValue(v => {
-        expansion = v;
-      }, 1100);
-
-      await new Promise<void>(res => {
-        transitionVideo.addEventListener('ended', () => res(), { once: true });
-        setTimeout(res, 3500);
-      });
-
-      // Freeze frame onto sceneCanvas
-      if (sceneCtx && sceneCanvas) {
-        const d = Math.min(window.devicePixelRatio || 1, 2);
-        const w = window.innerWidth;
-        const h = window.innerHeight;
-        sceneCanvas.width = w * d;
-        sceneCanvas.height = h * d;
-        sceneCtx.setTransform(d, 0, 0, d, 0, 0);
-        sceneCtx.clearRect(0, 0, w, h);
-        drawCover(sceneCtx, transitionVideo);
-        hasFrozenFrame = true;
-      }
-
-      current = next;
-      mainEl.classList.add('is-committing');
-      render();
-
-      await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
-
-      transitionActive = false;
-      expansion = 0;
-      maskScale = 0;
-      canvasOpacity = 1;
-      mainEl.classList.remove('is-transitioning', 'is-committing');
-
-      const maskReveal = revealMask();
-      setTimeout(() => {
-        if (active) revealPlanetContent();
-      }, 100);
-
-      await maskReveal;
-      hasFrozenFrame = false;
-
-      setTimeout(() => {
-        transitionVideo.removeAttribute('src');
-        transitionVideo.load();
-        busy = false;
-      }, 450);
-    };
-
-    // Draw loop
-    const draw = (now: number) => {
-      if (!active) return;
-      const dt = Math.min(40, now - lastTime);
+    const renderCarousel = (now: number) => {
+      const dt = Math.min((now - lastTime) / 1000, 0.1);
       lastTime = now;
 
-      if (!busy) {
-        rotX += (targetX - rotX) * Math.min(1, dt * 0.009);
-        rotY += (targetY - rotY) * Math.min(1, dt * 0.009);
-      } else {
-        rotX += (0 - rotX) * Math.min(1, dt * 0.015);
-        rotY += (0 - rotY) * Math.min(1, dt * 0.015);
-      }
-
-      if (portalCtx && portalCanvas && portalBtn) {
-        const sw = window.innerWidth;
-        const sh = window.innerHeight;
-
-        portalCtx.clearRect(0, 0, sw, sh);
-
-        if (hasFrozenFrame && sceneCanvas) {
-          portalCtx.drawImage(sceneCanvas, 0, 0, sw, sh);
-          drawShade(portalCtx);
-        }
-
-        const rect = portalBtn.getBoundingClientRect();
-        const rectCx = rect.left + rect.width / 2;
-        const rectCy = rect.top + rect.height / 2;
-        const e = expansion;
-
-        const cx = rectCx + (sw / 2 - rectCx) * e;
-        const cy = rectCy + (sh / 2 - rectCy) * e;
-
-        const baseW = rect.width + (sw - rect.width) * e;
-        const baseH = rect.height + (sh - rect.height) * e;
-        const scale = e > 0 ? 1 : maskScale;
-        const w = baseW * scale;
-        const h = baseH * scale;
-
-        const r = 90 * (1 - e) * scale;
-        const rx = rotX * (1 - e);
-        const ry = rotY * (1 - e);
-
-        if (w > 1 && h > 1) {
-          const clampedR = Math.min(r, w / 2, h / 2);
-          const points: [number, number][] = [];
-
-          const arcRanges = [
-            { ox: w / 2 - clampedR, oy: -h / 2 + clampedR, start: -Math.PI / 2, end: 0 },
-            { ox: w / 2 - clampedR, oy: h / 2 - clampedR, start: 0, end: Math.PI / 2 },
-            { ox: -w / 2 + clampedR, oy: h / 2 - clampedR, start: Math.PI / 2, end: Math.PI },
-            { ox: -w / 2 + clampedR, oy: -h / 2 + clampedR, start: Math.PI, end: Math.PI * 1.5 }
-          ];
-
-          for (const arc of arcRanges) {
-            for (let i = 0; i <= 10; i++) {
-              const ang = arc.start + (arc.end - arc.start) * (i / 10);
-              points.push([arc.ox + clampedR * Math.cos(ang), arc.oy + clampedR * Math.sin(ang)]);
-            }
-          }
-
-          // Projection
-          const ax = (rx * Math.PI) / 180;
-          const ay = (ry * Math.PI) / 180;
-          const cosAx = Math.cos(ax);
-          const sinAx = Math.sin(ax);
-          const cosAy = Math.cos(ay);
-          const sinAy = Math.sin(ay);
-          const focal = 850;
-
-          const projPoints: [number, number][] = points.map(([x, y]) => {
-            const xx = x * cosAy;
-            const yy = y * cosAx;
-            const z = x * sinAy - y * sinAx;
-            const p = focal / (focal + z);
-            return [cx + xx * p, cy + yy * p];
-          });
-
-          portalCtx.save();
-          portalCtx.globalAlpha = canvasOpacity;
-          portalCtx.beginPath();
-          if (projPoints.length > 0) {
-            portalCtx.moveTo(projPoints[0][0], projPoints[0][1]);
-            for (let i = 1; i < projPoints.length; i++) {
-              portalCtx.lineTo(projPoints[i][0], projPoints[i][1]);
-            }
-          }
-          portalCtx.closePath();
-          portalCtx.clip();
-
-          portalCtx.fillStyle = '#090807';
-          portalCtx.fillRect(0, 0, sw, sh);
-
-          const curState = states[current];
-          if (transitionActive && transitionVideo) {
-            drawCover(portalCtx, transitionVideo);
-          } else if (curState?.image && portalImage) {
-            drawCover(portalCtx, portalImage);
-          } else if (portalVideo) {
-            drawCover(portalCtx, portalVideo);
-          }
-
-          // Subtle warm amber coffee tint overlay inside portal
-          portalCtx.fillStyle = 'rgba(40, 20, 10, 0.15)';
-          portalCtx.fillRect(0, 0, sw, sh);
-
-          if (transitionActive) {
-            drawShade(portalCtx);
-          }
-          portalCtx.restore();
+      if (!isDragging) {
+        if (Math.abs(velocity) > 0.5) {
+          offset += velocity * dt;
+          velocity *= Math.pow(0.05, dt); // Decays ~95% per second
+        } else {
+          offset += speed * dt;
         }
       }
 
-      requestAnimationFrame(draw);
+      // Keep offset positive & bounded
+      offset = ((offset % totalWidth) + totalWidth) % totalWidth;
+
+      // Position each of the 10 cards along the cylinder curve
+      cardsRef.current.forEach((card, i) => {
+        if (!card) return;
+
+        // Base linear position centered around 0
+        let pos = (i * cardPitch - offset) % totalWidth;
+        if (pos < -totalWidth / 2) pos += totalWidth;
+        if (pos > totalWidth / 2) pos -= totalWidth;
+
+        // Normalized distance d from center (720u)
+        const t = pos;
+        const normDist = Math.abs(t) / 706;
+        const d = Math.min(normDist, 1.4);
+
+        // Cylinder outward displacement: x = 720 + t * (1 + 0.083 * (t / 706)^2)
+        const xCenter = 720 + t * (1 + 0.083 * Math.pow(t / 706, 2));
+
+        // Geometric sizing per spec:
+        // Width = (170 + 48 * d^2)
+        const width = 170 + 48 * Math.pow(d, 2);
+
+        // Height curve based on outer edge: Height = (280 + 92 * d^2.6)
+        const height = 280 + 92 * Math.pow(d, 2.6);
+
+        // Vertical center = (687 - 12 * d^2)
+        // Note: carousel-viewport is placed at top 480u, so relative y center = (687 - 480) - 12 * d^2 = 207 - 12 * d^2
+        const yCenter = 207 - 12 * Math.pow(d, 2);
+
+        const left = xCenter - width / 2;
+        const top = yCenter - height / 2;
+
+        card.style.transform = `translate3d(calc(${left} * var(--u)), calc(${top} * var(--u)), 0)`;
+        card.style.width = `calc(${width} * var(--u))`;
+        card.style.height = `calc(${height} * var(--u))`;
+
+        // Slight 3D leaning perspective: cards on left rotateY slightly, cards on right opposite
+        const rotY = -(t / 706) * 16;
+        card.style.transform += ` rotateY(${rotY}deg)`;
+      });
+
+      animationFrameId = requestAnimationFrame(renderCarousel);
     };
 
-    // Cursor loop
-    const cursorLoop = () => {
-      if (!active) return;
-      orbitX += (mouseX - orbitX) * 0.2;
-      orbitY += (mouseY - orbitY) * 0.2;
+    animationFrameId = requestAnimationFrame(renderCarousel);
 
-      if (customCursor) {
-        if (cursorVisible) {
-          customCursor.classList.add('is-visible');
-        } else {
-          customCursor.classList.remove('is-visible');
-        }
-        if (cursorEnter) {
-          customCursor.classList.add('is-enter');
-        } else {
-          customCursor.classList.remove('is-enter');
-        }
-      }
+    // Drag handlers
+    const el = carouselRef.current;
+    if (!el) return;
 
-      if (cursorDot) {
-        cursorDot.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
-      }
-      if (cursorOrbit) {
-        cursorOrbit.style.transform = `translate3d(${orbitX}px, ${orbitY}px, 0) translate(-50%, -50%)${
-          cursorEnter ? ' scale(1.16)' : ''
-        }`;
-      }
-
-      requestAnimationFrame(cursorLoop);
+    const onPointerDown = (e: PointerEvent) => {
+      isDragging = true;
+      startX = e.clientX;
+      lastDragX = e.clientX;
+      dragStartOffset = offset;
+      velocity = 0;
+      el.setPointerCapture(e.pointerId);
     };
 
     const onPointerMove = (e: PointerEvent) => {
-      cursorVisible = true;
-      mouseX = e.clientX;
-      mouseY = e.clientY;
+      if (!isDragging) return;
+      const dx = e.clientX - startX;
+      const u = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--u')) || 1;
+      offset = dragStartOffset - dx / u;
 
-      if (!busy) {
-        targetY = (e.clientX / window.innerWidth - 0.5) * 37.4;
-        targetX = (e.clientY / window.innerHeight - 0.5) * -33;
-      }
+      // Track instantaneous velocity
+      const instDx = e.clientX - lastDragX;
+      velocity = -(instDx / u) * 40;
+      lastDragX = e.clientX;
     };
 
-    const onPointerLeave = () => {
-      targetX = 0;
-      targetY = 0;
-      cursorVisible = false;
+    const onPointerUp = (e: PointerEvent) => {
+      if (!isDragging) return;
+      isDragging = false;
+      try {
+        el.releasePointerCapture(e.pointerId);
+      } catch (err) {}
     };
 
-    const onPortalEnter = () => {
-      cursorEnter = true;
-    };
-
-    const onPortalLeave = () => {
-      cursorEnter = false;
-    };
-
-    const onPortalClick = () => {
-      travel();
-    };
-
-    window.addEventListener('resize', resizeCanvas);
-    document.addEventListener('pointermove', onPointerMove);
-    document.addEventListener('pointerleave', onPointerLeave);
-
-    if (portalBtn) {
-      portalBtn.addEventListener('pointerenter', onPortalEnter);
-      portalBtn.addEventListener('pointerleave', onPortalLeave);
-      portalBtn.addEventListener('click', onPortalClick);
-    }
-
-    resizeCanvas();
-    render();
-    requestAnimationFrame(draw);
-    requestAnimationFrame(cursorLoop);
-    runPreloader();
+    el.addEventListener('pointerdown', onPointerDown);
+    el.addEventListener('pointermove', onPointerMove);
+    el.addEventListener('pointerup', onPointerUp);
+    el.addEventListener('pointercancel', onPointerUp);
 
     return () => {
-      active = false;
-      window.removeEventListener('resize', resizeCanvas);
-      document.removeEventListener('pointermove', onPointerMove);
-      document.removeEventListener('pointerleave', onPointerLeave);
-      if (portalBtn) {
-        portalBtn.removeEventListener('pointerenter', onPortalEnter);
-        portalBtn.removeEventListener('pointerleave', onPortalLeave);
-        portalBtn.removeEventListener('click', onPortalClick);
-      }
-      document.body.classList.remove('preload-complete', 'intro-ready');
+      cancelAnimationFrame(animationFrameId);
+      el.removeEventListener('pointerdown', onPointerDown);
+      el.removeEventListener('pointermove', onPointerMove);
+      el.removeEventListener('pointerup', onPointerUp);
+      el.removeEventListener('pointercancel', onPointerUp);
     };
   }, []);
 
   return (
-    <main ref={containerRef} className="experience" data-planet="mars">
-      <div className="backgrounds" aria-hidden="true">
-        <video id="mars-background" className="background is-visible" src={MARS_BG} muted playsInline preload="auto" />
-        <video id="earth-background" className="background" src={TO_EARTH} muted playsInline preload="auto" />
-        <video id="venus-background" className="background" src={TO_VENUS} muted playsInline preload="auto" />
-      </div>
+    <div className="reelmark-landing">
+      <div className="reelmark-stage" ref={stageRef}>
+        {/* Topbar */}
+        <header className="reelmark-topbar">
+          <Link to="/" className="reelmark-logo">
+            {/* Green Leaf Logo */}
+            <svg className="reelmark-logo-leaf" viewBox="0 0 32 32" fill="none">
+              <path
+                d="M6 26C6 26 8 16 18 10C24 6.5 28 6 28 6C28 6 27 10 24 16C19 25 10 26 6 26Z"
+                fill="#08482D"
+              />
+              <path
+                d="M6 26C11 23 16 17 21 11"
+                stroke="#F5F8EF"
+                strokeWidth="2"
+                strokeLinecap="round"
+              />
+            </svg>
+            <span>Reelmark</span>
+          </Link>
 
-      <div className="preloader" id="preloader" aria-label="Khởi động hành trình cà phê">
-        <video id="preloader-video" src={TO_MARS} muted playsInline preload="auto" />
-        <div className="preloader-shade" />
-      </div>
-
-      <img className="floating-logo" id="floating-logo" src={orcaLogo} alt="ORCA Coffee" />
-
-      <div className="preloader-count" id="preloader-count" aria-live="polite">
-        <span id="preloader-value">0</span>
-        <span className="percent">%</span>
-      </div>
-
-      <canvas id="scene-canvas" className="scene-canvas" aria-hidden="true" />
-      <div className="shade" aria-hidden="true" />
-
-      <header className="header chrome">
-        <div className="header-actions">
-          <nav className="nav" aria-label="Primary navigation">
-            <a className="active" href="#about">
-              Cà Phê Bản Sắc
-            </a>
-            <a href="#explore">Vùng Trồng</a>
-            <a href="#planets">Bộ Sưu Tập</a>
+          <nav className="reelmark-nav">
+            <Link to="/marketplace" className="reelmark-nav-item">Brands</Link>
+            <Link to="/forecast" className="reelmark-nav-item">Creators</Link>
+            <Link to="/upgrade" className="reelmark-nav-item">Pricing</Link>
+            <Link to="/orders" className="reelmark-nav-item">Use Cases</Link>
+            <Link to="/settings" className="reelmark-nav-item">Contact</Link>
           </nav>
-          <button className="menu" type="button" onClick={() => (window.location.href = '/dashboard')}>
-            Vào Xưởng ORCA
-          </button>
+
+          <div className="reelmark-actions">
+            <Link to="/login" className="btn-login">Log in</Link>
+            <Link to="/register" className="btn-signup">Sign up</Link>
+          </div>
+        </header>
+
+        {/* Mint Badge */}
+        <div className="reelmark-badge">
+          Trusted by 120,000+ indie makers
         </div>
-      </header>
 
-      <aside className="planet-list chrome" aria-label="Bộ sưu tập cà phê" />
+        {/* Big Bold Headline */}
+        <h1 className="reelmark-headline">
+          Captivate Crowds
+          <span className="line-2">with Snackable Reels</span>
+        </h1>
 
-      <canvas id="portal-canvas" className="portal-canvas" aria-hidden="true" />
+        {/* Subline */}
+        <p className="reelmark-subline">
+          Grow your brand with short, snappy product clips by<br />
+          our handpicked video makers. Our crew is ready to<br />
+          lift your next launch higher.
+        </p>
 
-      <section className="portal-wrap chrome" aria-label="Tiếp theo">
-        <div className="portal-heading">
-          <span>Tiếp theo:</span>
-          <span>
-            <span id="next-number">[02]</span> <strong id="next-name">Robusta</strong>
-          </span>
+        {/* Hand-drawn Notes & Doodles */}
+        <div className="hand-note note-doodle">//</div>
+
+        <div className="hand-note note-beseen">
+          Be seen<br />with clips
         </div>
-        <button className="portal" id="portal" type="button" aria-label="Khám phá dòng cà phê tiếp theo">
-          <video id="portal-video" src={TO_EARTH} muted playsInline preload="auto" />
-          <img id="portal-image" src={MERCURY} alt="Mercury" />
-        </button>
-      </section>
 
-      <section className="planet-content chrome" aria-live="polite">
-        <h1 id="planet-title">ARABICA</h1>
-        <dl id="facts" />
-      </section>
+        {/* Curling Arrow from 'Be seen' down to cards */}
+        <svg
+          className="arrow-svg"
+          style={{ top: 'calc(385 * var(--u))', left: 'calc(1185 * var(--u))', width: 'calc(95 * var(--u))', height: 'calc(110 * var(--u))' }}
+          viewBox="0 0 95 110"
+          fill="none"
+        >
+          <path
+            d="M 50 5 Q 75 40 45 75 Q 25 100 12 105"
+            stroke="#08482D"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            fill="none"
+          />
+          <path
+            d="M 10 92 L 12 105 L 24 104"
+            stroke="#08482D"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
 
-      <div className="transition-layer" aria-hidden="true">
-        <video id="transition-video" muted playsInline preload="auto" />
+        <div className="hand-note note-zerocost">
+          Zero cost
+        </div>
+
+        {/* Small arrow pointing to the button */}
+        <svg
+          className="arrow-svg"
+          style={{ top: 'calc(935 * var(--u))', left: 'calc(580 * var(--u))', width: 'calc(45 * var(--u))', height: 'calc(30 * var(--u))' }}
+          viewBox="0 0 45 30"
+          fill="none"
+        >
+          <path
+            d="M 5 22 Q 22 25 35 12"
+            stroke="#08482D"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            fill="none"
+          />
+          <path
+            d="M 27 10 L 35 12 L 32 20"
+            stroke="#08482D"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+
+        {/* Curved Video Carousel */}
+        <div className="carousel-viewport" ref={carouselRef}>
+          <div className="carousel-stage">
+            {Array.from({ length: 10 }).map((_, idx) => {
+              // 5 columns, 2 rows (10 tiles in 5x2 grid)
+              const col = idx % 5;
+              const row = Math.floor(idx / 5);
+
+              return (
+                <div
+                  key={idx}
+                  className="carousel-card"
+                  ref={(el) => {
+                    cardsRef.current[idx] = el;
+                  }}
+                >
+                  <img
+                    src={GRID_POSTER}
+                    alt="Reel clip poster"
+                    className="card-poster"
+                    style={{
+                      transform: `translate(-${col * 20}%, -${row * 50}%)`,
+                    }}
+                  />
+                  <video
+                    src={GRID_VIDEO}
+                    muted
+                    loop
+                    playsInline
+                    autoPlay
+                    className="card-video"
+                    style={{
+                      transform: `translate(-${col * 20}%, -${row * 50}%)`,
+                    }}
+                  />
+                  <div className="play-pill">
+                    <svg viewBox="0 0 24 24">
+                      <polygon points="6,4 20,12 6,20" />
+                    </svg>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Forest-green Button inside Dashed Ring */}
+        <div className="cta-container">
+          <div className="cta-dashed-ring" />
+          <Link to="/marketplace" className="btn-main-cta">
+            Make a Reel
+          </Link>
+        </div>
       </div>
-
-      <div className="loading" aria-hidden="true">
-        Đang rang mẻ mới…
-      </div>
-
-      <div className="custom-cursor" aria-hidden="true">
-        <span className="cursor-orbit" />
-        <span className="cursor-dot" />
-        <span className="cursor-label">Khám phá</span>
-      </div>
-    </main>
+    </div>
   );
-}
+};
+
+export default HomePage;
