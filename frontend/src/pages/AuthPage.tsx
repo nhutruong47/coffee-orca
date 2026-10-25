@@ -101,10 +101,10 @@ export default function AuthPage() {
                         <div className="login-logo-row">
                             <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
                                 <svg style={{ width: '32px', height: '32px' }} viewBox="0 0 32 32" fill="none">
-                                    <path d="M6 26C6 26 8 16 18 10C24 6.5 28 6 28 6C28 6 27 10 24 16C19 25 10 26 6 26Z" fill="#08482D" />
-                                    <path d="M6 26C11 23 16 17 21 11" stroke="#DAE7C7" strokeWidth="2" strokeLinecap="round" />
+                                    <path d="M6 26C6 26 8 16 18 10C24 6.5 28 6 28 6C28 6 27 10 24 16C19 25 10 26 6 26Z" fill="#34d399" />
+                                    <path d="M6 26C11 23 16 17 21 11" stroke="#DAE7C7" strokeWidth="2.5" strokeLinecap="round" />
                                 </svg>
-                                <span style={{ fontSize: '22px', fontWeight: 800, color: '#08482D', letterSpacing: '-0.02em' }}>ORCA Coffee</span>
+                                <span style={{ fontSize: '22px', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.02em' }}>ORCA Coffee</span>
                             </Link>
                         </div>
 
