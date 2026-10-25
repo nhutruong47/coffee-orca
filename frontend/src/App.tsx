@@ -59,8 +59,6 @@ function App() {
                                     <Route path="/groups/:id/calendar" element={<ProductionCalendarPage />} />
                                     <Route path="/orders" element={<OrderManagementPage />} />
                                     <Route path="/orders/:id" element={<OrderDetailPage />} />
-                                    <Route path="/forecast" element={<CoffeeForecastPage />} />
-                                    <Route path="/du-bao-gia" element={<CoffeeForecastPage />} />
                                     <Route path="/settings" element={<SettingsPage />} />
                                     <Route path="/admin" element={<AdminPage />} />
                                     <Route path="/admin/verification" element={<AdminVerificationPage />} />
