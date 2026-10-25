@@ -33,6 +33,15 @@ const VnpayMockCheckoutPage = lazy(() => import('./pages/VnpayMockCheckoutPage')
 const AdminVerificationPage = lazy(() => import('./pages/AdminVerificationPage'));
 const NotificationsPage = lazy(() => import('./pages/NotificationsPage'));
 const FactoryOverviewPage = lazy(() => import('./pages/FactoryOverviewPage'));
+const WorkforcePage = lazy(() => import('./pages/WorkforcePage'));
+const ProductionOrderPage = lazy(() => import('./pages/ProductionOrderPage'));
+const ProductionPlanPage = lazy(() => import('./pages/ProductionPlanPage'));
+const DailyBoardPage = lazy(() => import('./pages/DailyBoardPage'));
+const InventoryPage = lazy(() => import('./pages/InventoryPage'));
+const ProductivityAnalyticsPage = lazy(() => import('./pages/ProductivityAnalyticsPage'));
+const FactoryDashboardPage = lazy(() => import('./pages/FactoryDashboardPage'));
+const CustomersPage = lazy(() => import('./pages/CustomersPage'));
+const CustomerInventoryPage = lazy(() => import('./pages/CustomerInventoryPage'));
 
 import './App.css';
 
@@ -57,6 +66,16 @@ function App() {
                                     <Route path="/groups/:id" element={<GroupDetailPage />} />
                                     <Route path="/groups/:id/create-task" element={<CreateTaskPage />} />
                                     <Route path="/groups/:id/calendar" element={<ProductionCalendarPage />} />
+                                    <Route path="/groups/:id/workforce" element={<WorkforcePage />} />
+                                    <Route path="/groups/:id/production-orders" element={<ProductionOrderPage />} />
+                                    <Route path="/groups/:id/plans" element={<ProductionPlanPage />} />
+                                    <Route path="/groups/:id/daily-board" element={<DailyBoardPage />} />
+                                    <Route path="/groups/:id/inventory" element={<InventoryPage />} />
+                                    <Route path="/groups/:id/analytics" element={<ProductivityAnalyticsPage />} />
+                                    <Route path="/groups/:id/factory-dashboard" element={<FactoryDashboardPage />} />
+                                    <Route path="/inventory" element={<InventoryPage />} />
+                                    <Route path="/customers" element={<CustomersPage />} />
+                                    <Route path="/customer-inventory" element={<CustomerInventoryPage />} />
                                     <Route path="/orders" element={<OrderManagementPage />} />
                                     <Route path="/orders/:id" element={<OrderDetailPage />} />
                                     <Route path="/settings" element={<SettingsPage />} />

@@ -34,6 +34,11 @@ public class TaskService {
     private final InventoryRepository inventoryRepo;
     private final SalaryPayoutRepository salaryPayoutRepo;
 
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private InterGroupOrderRepository interGroupOrderRepo;
+
+    private static final double ROASTING_YIELD_RATIO = 0.85; // 15% natural moisture & chaff loss during roasting
+
     public TaskService(TaskRepository taskRepo, GoalRepository goalRepo,
             UserRepository userRepo, TaskChecklistRepository checklistRepo,
             NotificationService notificationService, TeamMemberRepository teamMemberRepo,
@@ -95,16 +100,84 @@ public class TaskService {
         t.setDescription(dto.getDescription());
         t.setPriority(dto.getPriority() != null ? dto.getPriority() : 1);
         t.setDeadline(dto.getDeadline());
+        t.setDueTime(dto.getDueTime());
         t.setStatus("PENDING");
         t.setWorkload(dto.getWorkload());
+        t.setActualWorkload(dto.getActualWorkload());
+        t.setOutputTarget(dto.getOutputTarget());
+        t.setActualOutput(dto.getActualOutput());
+        t.setProductionStage(dto.getProductionStage());
+        t.setHourlyRate(dto.getHourlyRate());
 
-        if (dto.getGoalId() != null) {
+        if (dto.getGoalId() != null && !dto.getGoalId().isBlank()) {
             goalRepo.findById(UUID.fromString(dto.getGoalId())).ifPresent(t::setGoal);
         }
-        if (dto.getMemberId() != null) {
+        if (dto.getMemberId() != null && !dto.getMemberId().isBlank()) {
             userRepo.findById(UUID.fromString(dto.getMemberId())).ifPresent(t::setMember);
+        } else if (t.getGoal() != null && t.getGoal().getTeam() != null) {
+            User autoAssignee = autoPickBestMember(t.getGoal().getTeam(), t.getProductionStage(), t.getTitle());
+            if (autoAssignee != null) {
+                t.setMember(autoAssignee);
+                t.setAcceptanceStatus("WAITING");
+            }
         }
-        return toDTO(taskRepo.save(t));
+        Task saved = taskRepo.save(t);
+        if (saved.getGoal() != null) {
+            updateGoalProgress(saved.getGoal().getId());
+        }
+        if (saved.getMember() != null) {
+            notificationService.createAndSend(
+                    saved.getMember(),
+                    "Nhiệm vụ mới (Tự động phân công)",
+                    "Bạn được giao nhiệm vụ: " + saved.getTitle(),
+                    "TASK_ASSIGNED",
+                    saved.getId()
+            );
+        }
+        return toDTO(saved);
+    }
+
+    private User autoPickBestMember(Team team, String productionStage, String title) {
+        if (team == null || team.getId() == null) return null;
+        List<TeamMember> members = teamMemberRepo.findByTeamId(team.getId());
+        if (members == null || members.isEmpty()) {
+            return team.getOwner();
+        }
+        String stageNorm = (productionStage != null ? productionStage : "").toLowerCase(Locale.ROOT);
+        String titleNorm = (title != null ? title : "").toLowerCase(Locale.ROOT);
+
+        User bestCandidate = null;
+        int bestScore = Integer.MIN_VALUE;
+
+        for (TeamMember tm : members) {
+            User u = tm.getUser();
+            if (u == null) continue;
+            int score = 0;
+            List<String> labels = tm.getJobLabels();
+            if (labels != null) {
+                for (String lbl : labels) {
+                    String l = lbl.toLowerCase(Locale.ROOT);
+                    if ((stageNorm.contains("rang") || titleNorm.contains("rang")) && (l.contains("rang") || l.contains("roast"))) {
+                        score += 50;
+                    } else if ((stageNorm.contains("qa") || stageNorm.contains("qc") || titleNorm.contains("qc") || titleNorm.contains("độ ẩm") || titleNorm.contains("cupping")) && (l.contains("qc") || l.contains("qa") || l.contains("kiểm"))) {
+                        score += 50;
+                    } else if ((stageNorm.contains("dong_goi") || titleNorm.contains("đóng gói")) && (l.contains("đóng gói") || l.contains("pack"))) {
+                        score += 50;
+                    } else if ((stageNorm.contains("xay") || titleNorm.contains("xay")) && (l.contains("xay") || l.contains("grind"))) {
+                        score += 50;
+                    }
+                }
+            }
+            long activeTasks = taskRepo.findByMemberId(u.getId()).stream()
+                    .filter(task -> !"COMPLETED".equals(task.getStatus()) && !"CANCELLED".equals(task.getStatus()))
+                    .count();
+            score -= (int) (activeTasks * 5);
+            if (score > bestScore) {
+                bestScore = score;
+                bestCandidate = u;
+            }
+        }
+        return bestCandidate != null ? bestCandidate : team.getOwner();
     }
 
     public TaskDTO updateStatus(UUID id, String status) {
@@ -130,35 +203,78 @@ public class TaskService {
 
     private void handleInventoryDeduction(Task t, String oldStatus) {
         if (t.getGoal() != null && t.getGoal().getTeam() != null) {
-            double qty = t.getActualOutput() != null ? t.getActualOutput() : 
-                        (t.getWorkload() != null ? t.getWorkload() : 0.0);
+            Team team = t.getGoal().getTeam();
+            double qty = t.getActualOutput() != null && t.getActualOutput() > 0 ? t.getActualOutput() :
+                        (t.getOutputTarget() != null && t.getOutputTarget() > 0 ? t.getOutputTarget() :
+                        (t.getWorkload() != null ? t.getWorkload() : 0.0));
             if (qty > 0) {
+                List<InventoryItem> items = inventoryRepo.findByTeamIdOrderByProductTypeAscProductStateAsc(team.getId());
+                if (items.isEmpty()) return;
+
+                String stage = (t.getProductionStage() != null ? t.getProductionStage() : "").toUpperCase(Locale.ROOT);
+                String titleLower = (t.getTitle() != null ? t.getTitle() : "").toLowerCase(Locale.ROOT);
+                boolean isRoasting = stage.contains("RANG") || stage.contains("ROAST") || titleLower.contains("rang");
+                boolean isPackaging = stage.contains("DONG_GOI") || stage.contains("PACK") || titleLower.contains("đóng gói");
+
+                InventoryItem matched = items.stream()
+                        .filter(i -> i.getProductType() != null &&
+                                (titleLower.contains(i.getProductType().toLowerCase(Locale.ROOT)) ||
+                                 (t.getGoal().getTitle() != null && t.getGoal().getTitle().toLowerCase(Locale.ROOT).contains(i.getProductType().toLowerCase(Locale.ROOT)))))
+                        .findFirst()
+                        .orElse(items.get(0));
+                String pType = matched.getProductType();
+
                 if (!"COMPLETED".equals(oldStatus) && "COMPLETED".equals(t.getStatus())) {
-                    // Trừ tồn kho khi task hoàn thành
-                    List<InventoryItem> items = inventoryRepo.findByTeamIdOrderByProductTypeAscProductStateAsc(t.getGoal().getTeam().getId());
-                    if (!items.isEmpty()) {
-                        InventoryItem target = items.stream()
-                            .filter(i -> t.getTitle() != null && i.getProductType() != null && 
-                                       t.getTitle().toLowerCase().contains(i.getProductType().toLowerCase()))
-                            .findFirst()
-                            .orElse(items.get(0));
-                        target.setQuantity(Math.max(0, target.getQuantity() - qty));
-                        inventoryRepo.save(target);
+                    if (isRoasting) {
+                        double greenNeeded = Math.round((qty / ROASTING_YIELD_RATIO) * 100.0) / 100.0;
+                        InventoryItem greenItem = items.stream()
+                                .filter(i -> pType.equalsIgnoreCase(i.getProductType()) && ("GREEN".equalsIgnoreCase(i.getProductState()) || "RAW_MATERIAL".equalsIgnoreCase(i.getProductType())))
+                                .findFirst().orElse(matched);
+                        greenItem.setQuantity(Math.max(0, greenItem.getQuantity() - greenNeeded));
+                        inventoryRepo.save(greenItem);
+                        checkLowStockAlert(team, greenItem);
+
+                        inventoryRepo.findByTeamIdAndProductTypeAndProductState(team.getId(), pType, "ROASTED")
+                                .ifPresent(roasted -> {
+                                    roasted.setQuantity(roasted.getQuantity() + qty);
+                                    inventoryRepo.save(roasted);
+                                });
+                    } else if (isPackaging) {
+                        InventoryItem roastedItem = items.stream()
+                                .filter(i -> pType.equalsIgnoreCase(i.getProductType()) && "ROASTED".equalsIgnoreCase(i.getProductState()))
+                                .findFirst().orElse(matched);
+                        roastedItem.setQuantity(Math.max(0, roastedItem.getQuantity() - qty));
+                        inventoryRepo.save(roastedItem);
+
+                        inventoryRepo.findByTeamIdAndProductTypeAndProductState(team.getId(), pType, "PACKAGED")
+                                .ifPresent(packaged -> {
+                                    packaged.setQuantity(packaged.getQuantity() + qty);
+                                    inventoryRepo.save(packaged);
+                                });
+                    } else {
+                        matched.setQuantity(Math.max(0, matched.getQuantity() - qty));
+                        inventoryRepo.save(matched);
+                        checkLowStockAlert(team, matched);
                     }
                 } else if ("COMPLETED".equals(oldStatus) && !"COMPLETED".equals(t.getStatus())) {
-                    // Cộng lại tồn kho (revert) khi task từ COMPLETED chuyển về trạng thái khác
-                    List<InventoryItem> items = inventoryRepo.findByTeamIdOrderByProductTypeAscProductStateAsc(t.getGoal().getTeam().getId());
-                    if (!items.isEmpty()) {
-                        InventoryItem target = items.stream()
-                            .filter(i -> t.getTitle() != null && i.getProductType() != null && 
-                                       t.getTitle().toLowerCase().contains(i.getProductType().toLowerCase()))
-                            .findFirst()
-                            .orElse(items.get(0));
-                        target.setQuantity(target.getQuantity() + qty);
-                        inventoryRepo.save(target);
-                    }
+                    double greenRevert = isRoasting ? Math.round((qty / ROASTING_YIELD_RATIO) * 100.0) / 100.0 : qty;
+                    matched.setQuantity(matched.getQuantity() + greenRevert);
+                    inventoryRepo.save(matched);
                 }
             }
+        }
+    }
+
+    private void checkLowStockAlert(Team team, InventoryItem item) {
+        double threshold = item.getLowStockThreshold() != null ? item.getLowStockThreshold() : 100.0;
+        if (item.getQuantity() <= threshold && team.getOwner() != null) {
+            notificationService.createAndSend(
+                    team.getOwner(),
+                    "Cảnh báo tồn kho thấp",
+                    "Nguyên liệu '" + item.getDisplayName() + "' tại " + team.getName() + " còn " + item.getQuantity() + " " + item.getUnit() + " (dưới ngưỡng an toàn " + threshold + " " + item.getUnit() + ").",
+                    "LOW_STOCK_ALERT",
+                    item.getId()
+            );
         }
     }
 
@@ -560,6 +676,29 @@ public class TaskService {
                 g.setStatus("PENDING");
             }
             goalRepo.save(g);
+
+            if (interGroupOrderRepo != null) {
+                List<InterGroupOrder> linkedOrders = interGroupOrderRepo.findByLinkedGoalId(goalId);
+                for (InterGroupOrder order : linkedOrders) {
+                    if ("DONE".equals(g.getStatus()) &&
+                            Set.of("CONFIRMED", "IN_PRODUCTION", "QC").contains(order.getStatus())) {
+                        order.setStatus("COMPLETED");
+                        interGroupOrderRepo.save(order);
+                        if (order.getSellerTeam() != null && order.getSellerTeam().getOwner() != null) {
+                            notificationService.createAndSend(
+                                    order.getSellerTeam().getOwner(),
+                                    "Hoàn tất sản xuất đơn hàng",
+                                    "Tất cả công đoạn của đơn '" + order.getTitle() + "' đã hoàn thành 100%, sẵn sàng xuất kho giao hàng.",
+                                    "ORDER_COMPLETED",
+                                    order.getId()
+                            );
+                        }
+                    } else if ("IN_PROGRESS".equals(g.getStatus()) && "CONFIRMED".equals(order.getStatus())) {
+                        order.setStatus("IN_PRODUCTION");
+                        interGroupOrderRepo.save(order);
+                    }
+                }
+            }
         });
     }
 

@@ -37,9 +37,9 @@ function Avatar({ name, size = 36 }: { name: string; size?: number }) {
 }
 
 function StatusBadge({ status }: { status: string }) {
-    if (status === 'ON_TIME') return <span style={{ fontSize: 11, color: '#10b981', fontWeight: 700 }}>Dung gio</span>;
-    if (status === 'LATE') return <span style={{ fontSize: 11, color: '#ef4444', fontWeight: 700 }}>Di tre</span>;
-    if (status === 'MISSING_CHECKOUT') return <span style={{ fontSize: 11, color: '#f59e0b', fontWeight: 700 }}>Chua check-out</span>;
+    if (status === 'ON_TIME') return <span style={{ fontSize: 11, color: '#10b981', fontWeight: 700 }}>Đúng giờ</span>;
+    if (status === 'LATE') return <span style={{ fontSize: 11, color: '#ef4444', fontWeight: 700 }}>Đi trễ</span>;
+    if (status === 'MISSING_CHECKOUT') return <span style={{ fontSize: 11, color: '#f59e0b', fontWeight: 700 }}>Chưa check-out</span>;
     return <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{status}</span>;
 }
 
@@ -95,30 +95,30 @@ export default function WorkforcePage() {
                 }}>
                     <ion-icon name="chevron-back-outline" />
                 </button>
-                <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>Nhan su Hom nay</h1>
+                <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>Nhân sự & Ca làm Hôm nay</h1>
             </div>
 
             {/* KPI Pills */}
             <div style={{ display: 'flex', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}>
-                <MetricPill label="Dang lam viec" value={wf.checkedIn?.length || 0} unit=" nguoi" color="#3b82f6" />
-                <MetricPill label="Da check-out" value={wf.checkedOut?.length || 0} unit=" nguoi" color="#10b981" />
-                <MetricPill label="Tong gio cong" value={(wf.totalWorkHours || 0).toFixed(1)} unit=" gio" color="#8b5cf6" />
-                <MetricPill label="Chua check-out" value={wf.notCheckedOut || 0} unit=" nguoi" color="#f59e0b" />
+                <MetricPill label="Đang làm việc" value={wf.checkedIn?.length || 0} unit=" người" color="#3b82f6" />
+                <MetricPill label="Đã check-out" value={wf.checkedOut?.length || 0} unit=" người" color="#10b981" />
+                <MetricPill label="Tổng giờ công" value={(wf.totalWorkHours || 0).toFixed(1)} unit=" giờ" color="#8b5cf6" />
+                <MetricPill label="Chưa check-out" value={wf.notCheckedOut || 0} unit=" người" color="#f59e0b" />
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 20 }}>
                 {/* Gio cong theo cong doan */}
                 <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 16, padding: 20 }}>
-                    <h2 style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 16 }}>Gio cong theo cong doan</h2>
+                    <h2 style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 16 }}>Giờ công theo công đoạn</h2>
                     {[
                         { label: 'Rang', hours: totalRoastHours, color: '#d97706' },
                         { label: 'QC / Xay', hours: totalQcHours, color: '#3b82f6' },
-                        { label: 'Dong goi', hours: stageHours.DONG_GOI || 0, color: '#8b5cf6' },
+                        { label: 'Đóng gói', hours: stageHours.DONG_GOI || 0, color: '#8b5cf6' },
                     ].map(row => (
                         <div key={row.label} style={{ marginBottom: 14 }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, marginBottom: 6 }}>
                                 <span style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>{row.label}</span>
-                                <span style={{ fontWeight: 800, color: row.color }}>{row.hours.toFixed(1)} gio</span>
+                                <span style={{ fontWeight: 800, color: row.color }}>{row.hours.toFixed(1)} giờ</span>
                             </div>
                             <div style={{ background: 'var(--bg-input)', borderRadius: 6, height: 8 }}>
                                 <div style={{ width: `${Math.min(100, row.hours * 5)}%`, height: '100%', background: row.color, borderRadius: 6 }} />
@@ -129,16 +129,16 @@ export default function WorkforcePage() {
 
                 {/* Don hang dang chay */}
                 <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 16, padding: 20 }}>
-                    <h2 style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 16 }}>Don hang dang chay</h2>
+                    <h2 style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 16 }}>Đơn hàng đang chạy</h2>
                     {(!wf.activeOrders || wf.activeOrders.length === 0) ? (
-                        <div style={{ color: 'var(--text-muted)', fontSize: 13, textAlign: 'center', padding: 20 }}>Khong co don nao</div>
+                        <div style={{ color: 'var(--text-muted)', fontSize: 13, textAlign: 'center', padding: 20 }}>Không có đơn nào đang chạy</div>
                     ) : (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                             {wf.activeOrders.map((o: any) => (
                                 <div key={o.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid var(--border)' }}>
                                     <div>
                                         <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>{o.title}</div>
-                                        <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>Con lai: {o.remainingQuantity?.toLocaleString('vi-VN')} kg</div>
+                                        <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>Còn lại: {o.remainingQuantity?.toLocaleString('vi-VN')} kg</div>
                                     </div>
                                     <div style={{ fontSize: 18, fontWeight: 900, color: '#10b981' }}>{o.progressPercent?.toFixed(0)}%</div>
                                 </div>

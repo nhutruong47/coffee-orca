@@ -23,6 +23,8 @@ public class TaskServiceIntegrationTest {
     @Autowired private TeamRepository teamRepo;
     @Autowired private UserRepository userRepo;
     @Autowired private TeamMemberRepository teamMemberRepo;
+    @Autowired private InventoryRepository inventoryRepo;
+    @Autowired private InterGroupOrderRepository interGroupOrderRepo;
 
     private User owner;
     private User stranger;
@@ -79,5 +81,61 @@ public class TaskServiceIntegrationTest {
         TaskDTO dto = taskService.assign(task.getId(), owner.getId());
         assertNotNull(dto);
         assertEquals(owner.getId().toString(), dto.getMemberId());
+    }
+
+    @Test
+    void createTaskWithoutAssignee_ShouldAutoAssignAndSyncInventoryAndOrderOnCompletion() {
+        InventoryItem green = new InventoryItem();
+        green.setTeam(team);
+        green.setProductType("Robusta");
+        green.setProductState("GREEN");
+        green.setQuantity(1000.0);
+        green.setUnit("kg");
+        green.setLowStockThreshold(100.0);
+        inventoryRepo.save(green);
+
+        InventoryItem roasted = new InventoryItem();
+        roasted.setTeam(team);
+        roasted.setProductType("Robusta");
+        roasted.setProductState("ROASTED");
+        roasted.setQuantity(0.0);
+        roasted.setUnit("kg");
+        inventoryRepo.save(roasted);
+
+        Goal autoGoal = new Goal();
+        autoGoal.setTitle("[Đơn Hàng] Gia công Robusta");
+        autoGoal.setTeam(team);
+        autoGoal.setOwner(owner);
+        autoGoal = goalRepo.save(autoGoal);
+
+        InterGroupOrder linkedOrder = new InterGroupOrder();
+        linkedOrder.setTitle("Gia công Robusta");
+        linkedOrder.setQuantity(85);
+        linkedOrder.setSellerTeam(team);
+        linkedOrder.setBuyerTeam(team);
+        linkedOrder.setStatus("CONFIRMED");
+        linkedOrder.setLinkedGoalId(autoGoal.getId());
+        linkedOrder = interGroupOrderRepo.save(linkedOrder);
+
+        TaskDTO createDto = new TaskDTO();
+        createDto.setGoalId(autoGoal.getId().toString());
+        createDto.setTitle("[Rang Mẻ] Rang Robusta chuẩn Medium");
+        createDto.setProductionStage("RANG");
+        createDto.setOutputTarget(85.0);
+        createDto.setWorkload(4.0);
+
+        TaskDTO created = taskService.create(createDto);
+        assertNotNull(created.getId());
+        assertEquals(owner.getId().toString(), created.getMemberId(), "Should auto-assign to team member");
+
+        taskService.updateProgress(UUID.fromString(created.getId()), 100);
+
+        InventoryItem greenAfter = inventoryRepo.findByTeamIdAndProductTypeAndProductState(team.getId(), "Robusta", "GREEN").orElseThrow();
+        InventoryItem roastedAfter = inventoryRepo.findByTeamIdAndProductTypeAndProductState(team.getId(), "Robusta", "ROASTED").orElseThrow();
+        assertEquals(900.0, greenAfter.getQuantity(), 0.01, "85kg roasted output at 0.85 yield should deduct 100kg green beans");
+        assertEquals(85.0, roastedAfter.getQuantity(), 0.01, "Roasted stock should increase by 85kg");
+
+        InterGroupOrder orderAfter = interGroupOrderRepo.findById(linkedOrder.getId()).orElseThrow();
+        assertEquals("COMPLETED", orderAfter.getStatus(), "Linked B2B order should auto-complete when all goal tasks finish");
     }
 }

@@ -1326,6 +1326,117 @@ export default function GroupDetailPage() {
                 </div>
             </div>
 
+            {/* ===== FACTORY AUTOMATION & OPERATIONS HUB ===== */}
+            <div style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: 10,
+                padding: '12px 16px',
+                marginBottom: 18,
+                background: 'linear-gradient(135deg, rgba(8, 72, 45, 0.06) 0%, rgba(218, 231, 199, 0.35) 100%)',
+                border: '1px solid rgba(8, 72, 45, 0.16)',
+                borderRadius: 14
+            }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8 }}>
+                    <span style={{ fontSize: 12, fontWeight: 800, color: '#08482D', textTransform: 'uppercase', letterSpacing: '0.04em', marginRight: 4, display: 'flex', alignItems: 'center', gap: 5 }}>
+                        <ion-icon name="hardware-chip-outline" style={{ fontSize: 16 }}></ion-icon>
+                        Điều độ chuyên sâu:
+                    </span>
+                    {[
+                        { label: 'Đơn sản xuất & Hao hụt', path: `/groups/${id}/production-orders`, icon: 'cube-outline' },
+                        { label: 'Kế hoạch AI', path: `/groups/${id}/plans`, icon: 'sparkles-outline' },
+                        { label: 'Bảng điều độ ngày', path: `/groups/${id}/daily-board`, icon: 'today-outline' },
+                        { label: 'Kho hạt & Truy xuất', path: `/groups/${id}/inventory`, icon: 'Server-outline' },
+                        { label: 'Nhân sự & Ca làm', path: `/groups/${id}/workforce`, icon: 'people-circle-outline' },
+                        { label: 'Phân tích năng suất', path: `/groups/${id}/analytics`, icon: 'bar-chart-outline' },
+                    ].map((nav) => (
+                        <button
+                            key={nav.path}
+                            type="button"
+                            onClick={() => navigate(nav.path)}
+                            style={{
+                                background: '#FFFFFF',
+                                border: '1px solid rgba(8, 72, 45, 0.18)',
+                                borderRadius: 9,
+                                padding: '6px 12px',
+                                fontSize: 12,
+                                fontWeight: 700,
+                                color: '#08482D',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 5,
+                                boxShadow: '0 1px 2px rgba(8, 72, 45, 0.05)'
+                            }}
+                        >
+                            <ion-icon name={nav.icon.toLowerCase()} style={{ fontSize: 14 }}></ion-icon>
+                            {nav.label}
+                        </button>
+                    ))}
+                </div>
+
+                {isAdmin && (
+                    <button
+                        type="button"
+                        onClick={async () => {
+                            if (!id) return;
+                            try {
+                                const batchCode = `SCA-${new Date().toISOString().slice(5, 10).replace('-', '')}-${Math.floor(100 + Math.random() * 900)}`;
+                                const createdGoal = await goalService.create({
+                                    teamId: id,
+                                    title: `[Lô Tự Động ${batchCode}] Rang Gia Công 500kg Chuẩn SCA (Hao hụt 15%)`,
+                                    outputTarget: '500kg Thành phẩm (Cần 588.2kg Nhân xanh độ ẩm 12%)',
+                                    priority: 1,
+                                    status: 'IN_PROGRESS',
+                                } as any);
+                                const stages = [
+                                    { title: `[QC Đầu Vào] Sàng phân cỡ & đo độ ẩm nhân xanh 11.5-12.5% (${batchCode})`, stage: 'QA', target: 588.2, workload: 2 },
+                                    { title: `[Rang Mẻ] Gia công rang chuẩn Profile Medium & tách đá Destoner (${batchCode})`, stage: 'RANG', target: 500, workload: 4 },
+                                    { title: `[Cupping & QC] Đo màu Agtron #58, thử nếm SCA 85+ & Degassing (${batchCode})`, stage: 'QA', target: 500, workload: 1.5 },
+                                    { title: `[Đóng Gói] Đóng túi van 1 chiều, hàn nhiệt & dán tem truy xuất (${batchCode})`, stage: 'DONG_GOI', target: 500, workload: 2.5 },
+                                ];
+                                for (const s of stages) {
+                                    await taskService.create({
+                                        goalId: createdGoal.id,
+                                        title: s.title,
+                                        description: `Tự động khởi tạo bởi ORCA Smart Workflow • Hao hụt tự nhiên 15%`,
+                                        productionStage: s.stage,
+                                        outputTarget: s.target,
+                                        workload: s.workload,
+                                        priority: 1,
+                                    } as any);
+                                }
+                                const updatedGoals = await goalService.getByTeam(id);
+                                setGoals(updatedGoals);
+                                const taskArrays = await Promise.all(updatedGoals.map(g => taskService.getByGoal(g.id)));
+                                setAllTasks(taskArrays.flat());
+                            } catch {
+                                alert('Không thể khởi tạo tự động lô sản xuất.');
+                            }
+                        }}
+                        style={{
+                            background: '#08482D',
+                            color: '#FFFFFF',
+                            border: 'none',
+                            borderRadius: 10,
+                            padding: '8px 14px',
+                            fontSize: 12,
+                            fontWeight: 800,
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 6,
+                            boxShadow: '0 4px 10px rgba(8, 72, 45, 0.2)'
+                        }}
+                    >
+                        <ion-icon name="flash-outline" style={{ fontSize: 15, color: '#DAE7C7' }}></ion-icon>
+                        ⚡ Khởi tạo Tự động Lô Rang SCA (4 Công đoạn)
+                    </button>
+                )}
+            </div>
+
             {/* ===== STATS CARDS ===== */}
             {isManager && totalTasks > 0 && (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 14, marginBottom: 18 }}>

@@ -274,9 +274,14 @@ public class InventoryService {
         Team team = teamRepo.findById(teamId)
                 .orElseThrow(() -> new RuntimeException("Team not found"));
 
+        // Apply 15% natural moisture/chaff weight loss when roasting GREEN -> ROASTED
+        double sourceDeduction = ("GREEN".equalsIgnoreCase(fromState) && "ROASTED".equalsIgnoreCase(toState))
+                ? Math.round((quantity / 0.85) * 100.0) / 100.0
+                : quantity;
+
         // Deduct from source
         InventoryItem source = getOrCreate(team, productType, fromState);
-        double newSourceQty = Math.max(0, source.getQuantity() - quantity);
+        double newSourceQty = Math.max(0, source.getQuantity() - sourceDeduction);
         source.setQuantity(newSourceQty);
         inventoryRepo.save(source);
 

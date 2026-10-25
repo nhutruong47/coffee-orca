@@ -20,4 +20,6 @@ public interface InterGroupOrderRepository extends JpaRepository<InterGroupOrder
     List<InterGroupOrder> findBySellerTeamIdOrderByCreatedAtDesc(UUID sellerTeamId);
 
     List<InterGroupOrder> findByStatusAndDeadlineBefore(String status, java.time.LocalDateTime cutoff);
+
+    List<InterGroupOrder> findByLinkedGoalId(UUID linkedGoalId);
 }

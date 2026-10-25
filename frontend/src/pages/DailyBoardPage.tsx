@@ -6,7 +6,7 @@ const RISK_COLOR: Record<string, string> = {
     NONE: '#10b981', LOW: '#10b981', MEDIUM: '#f59e0b', HIGH: '#ef4444', CRITICAL: '#dc2626',
 };
 const RISK_LABEL: Record<string, string> = {
-    NONE: 'On dinh', LOW: 'Thap', MEDIUM: 'Trung binh', HIGH: 'Cao', CRITICAL: 'Nguy cap',
+    NONE: 'Ổn định', LOW: 'Thấp', MEDIUM: 'Trung bình', HIGH: 'Cao', CRITICAL: 'Nguy cấp',
 };
 function MetricPill({ label, value, unit, color }: { label: string; value: string | number; unit?: string; color?: string }) {
     return (
@@ -115,7 +115,7 @@ export default function DailyBoardPage() {
                         <ion-icon name="chevron-back-outline" />
                     </button>
                     <div>
-                        <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', marginBottom: 4 }}>Bang San Xuat Ngay</h1>
+                        <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', marginBottom: 4 }}>Bảng Điều Độ Sản Xuất Ngày</h1>
                         <p style={{ fontSize: 13, color: 'var(--text-muted)', margin: 0 }}>{dateLabel}</p>
                     </div>
                 </div>
@@ -150,47 +150,47 @@ export default function DailyBoardPage() {
             <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 16, padding: 24, marginBottom: 20 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 16 }}>
                     <div>
-                        <div style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 6 }}>Tong san luong</div>
+                        <div style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 6 }}>Tổng sản lượng thực tế</div>
                         <div style={{ fontSize: 40, fontWeight: 900, color: completionRate >= 100 ? '#10b981' : '#ef4444', lineHeight: 1 }}>
                             {totalActual.toLocaleString('vi-VN')}
                             <span style={{ fontSize: 16, fontWeight: 400, color: 'var(--text-muted)', marginLeft: 6 }}>kg</span>
                         </div>
                     </div>
                     <div style={{ textAlign: 'right' }}>
-                        <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>Muc tieu</div>
+                        <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>Mục tiêu định mức</div>
                         <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-secondary)' }}>{totalTarget.toLocaleString('vi-VN')} kg</div>
                     </div>
                 </div>
                 <ProgressBar value={completionRate} max={100} color={completionRate >= 100 ? '#10b981' : completionRate >= 80 ? '#f59e0b' : '#ef4444'} height={12} />
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 10, fontSize: 13 }}>
                     <span style={{ fontWeight: 700, color: completionRate >= 100 ? '#10b981' : '#ef4444' }}>{completionRate.toFixed(1)}%</span>
-                    <span style={{ color: 'var(--text-muted)' }}>Con <strong style={{ color: 'var(--text-primary)' }}>{remaining.toLocaleString('vi-VN')} kg</strong></span>
+                    <span style={{ color: 'var(--text-muted)' }}>Còn <strong style={{ color: 'var(--text-primary)' }}>{remaining.toLocaleString('vi-VN')} kg</strong></span>
                 </div>
             </div>
 
             {/* KPI Pills */}
             <div style={{ display: 'flex', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}>
-                <MetricPill label="Dang lam" value={board?.totalWorkers || 0} unit=" nguoi" color="#3b82f6" />
-                <MetricPill label="Tong gio cong" value={((board?.totalWorkerHours || 0)).toFixed(1)} unit=" gio" color="#8b5cf6" />
-                <MetricPill label="Don hang" value={board?.orderRows?.length || 0} unit="" color="#f59e0b" />
+                <MetricPill label="Đang làm việc" value={board?.totalWorkers || 0} unit=" người" color="#3b82f6" />
+                <MetricPill label="Tổng giờ công" value={((board?.totalWorkerHours || 0)).toFixed(1)} unit=" giờ" color="#8b5cf6" />
+                <MetricPill label="Đơn hàng" value={board?.orderRows?.length || 0} unit="" color="#f59e0b" />
             </div>
 
             {/* Cong doan */}
             <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 16, padding: 24, marginBottom: 20 }}>
-                <h2 style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 20 }}>San luong theo cong doan</h2>
+                <h2 style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 20 }}>Sản lượng theo công đoạn</h2>
                 <StageRow label="Rang" target={roast.targetKg || 0} actual={roast.actualKg || 0} color="#d97706" />
                 <StageRow label="QC" target={qc.targetKg || 0} actual={qc.actualKg || 0} color="#3b82f6" />
-                <StageRow label="Dong goi" target={packaging.targetKg || 0} actual={packaging.actualKg || 0} color="#8b5cf6" />
+                <StageRow label="Đóng gói" target={packaging.targetKg || 0} actual={packaging.actualKg || 0} color="#8b5cf6" />
             </div>
 
             {/* Don hang */}
             <div>
                 <h2 style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 12 }}>
-                    Don hang ({board?.orderRows?.length || 0})
+                    Đơn hàng ({board?.orderRows?.length || 0})
                 </h2>
                 {!board?.orderRows?.length ? (
                     <div style={{ textAlign: 'center', padding: 40, background: 'var(--bg-card)', borderRadius: 14, border: '1px solid var(--border)', color: 'var(--text-muted)', fontSize: 13 }}>
-                        Khong co don hang nao trong ngay nay
+                        Không có đơn hàng nào trong ngày này
                     </div>
                 ) : (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>

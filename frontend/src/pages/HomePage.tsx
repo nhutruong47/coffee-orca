@@ -12,6 +12,7 @@ import {
   Coffee
 } from 'lucide-react';
 import './ReelmarkHero.css';
+import api from '../services/api';
 
 const COFFEE_MEDIA = [
   {
@@ -97,7 +98,7 @@ export const HomePage: React.FC = () => {
   const [inputVal, setInputVal] = useState('');
   const [isThinking, setIsThinking] = useState(false);
 
-  const handleSendAi = (e: React.FormEvent) => {
+  const handleSendAi = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputVal.trim()) return;
 
@@ -107,23 +108,41 @@ export const HomePage: React.FC = () => {
     setInputVal('');
     setIsThinking(true);
 
-    setTimeout(() => {
-      let reply = 'Dựa trên tri thức vùng trồng và sàn giao dịch ORCA, tôi gợi ý cho bạn: ';
-      const lower = userText.toLowerCase();
+    try {
+      const [teamsRes, featuredRes] = await Promise.allSettled([
+        api.get('/api/teams/all'),
+        api.get('/api/inventory/featured')
+      ]);
+      const teams = teamsRes.status === 'fulfilled' && Array.isArray(teamsRes.value.data) ? teamsRes.value.data : [];
+      const featured = featuredRes.status === 'fulfilled' && Array.isArray(featuredRes.value.data) ? featuredRes.value.data : [];
+      const topFactory = teams.find((t: any) => t.name && !t.name.toLowerCase().includes('ghi nhận')) || teams[0];
+      const factorySummary = topFactory ? ` (Gợi ý xưởng trực tuyến: **${topFactory.name}** tại ${topFactory.region || 'Tây Nguyên'}, đang có ${teams.length} xưởng kết nối & ${featured.length} lô nguyên liệu sẵn kho)` : '';
 
-      if (lower.includes('chua') || lower.includes('hoa') || lower.includes('cold brew') || lower.includes('arabica')) {
-        reply += '🌾 **Arabica Cầu Đất (Washed Process)**: Độ cao 1.600m, đạt chuẩn SCAA 85.5 với nốt hương hoa cam, quả mọng nhiệt đới và hậu vị mật ong rừng. Rất lý tưởng cho Pour-over hoặc Cold Brew.';
-      } else if (lower.includes('đậm') || lower.includes('mạnh') || lower.includes('phin') || lower.includes('robusta')) {
-        reply += '🍫 **Fine Robusta Buôn Ma Thuột (Honey Process)**: Thể chất dày dặn (heavy body), hương vị socola đen, hạnh nhân nướng, caffeine tự nhiên 2.5% giúp bừng tỉnh năng lượng pha Phin hoặc Espresso.';
+      const lower = userText.toLowerCase();
+      let reply = 'Dựa trên dữ liệu thời gian thực từ mạng lưới xưởng ORCA: ';
+
+      const kgMatch = lower.match(/(\d+)\s*(kg|tấn|tan)/);
+      if (kgMatch) {
+        const rawNum = parseFloat(kgMatch[1]);
+        const finishedKg = kgMatch[2].startsWith('t') ? rawNum * 1000 : rawNum;
+        const greenNeeded = Math.ceil((finishedKg / 0.85) * 10) / 10;
+        reply += `⚡ **Tự động tính định mức gia công (${finishedKg.toLocaleString('vi-VN')}kg thành phẩm)**: Với tỷ lệ hao hụt ẩm & vỏ lụa tiêu chuẩn 15% (Yield 85%), bạn cần chuẩn bị **${greenNeeded.toLocaleString('vi-VN')}kg nhân xanh** (độ ẩm 11.5-12.5%). Chia làm 4 công đoạn: QC Đầu vào → Rang Profile → Cupping Agtron #58 → Đóng gói Van 1 chiều.${factorySummary}`;
+      } else if (lower.includes('chua') || lower.includes('hoa') || lower.includes('cold brew') || lower.includes('arabica')) {
+        reply += `🌾 **Arabica Cầu Đất (Washed Process)**: Độ cao 1.600m, chuẩn SCA 85.5+ với nốt hương hoa cam, quả mọng và hậu vị mật ong rừng. Khuyến nghị rang Light-Medium (Agtron #65, 196°C Drop temp) cho Pour-over hoặc Cold Brew.${factorySummary}`;
+      } else if (lower.includes('đậm') || lower.includes('mạnh') || lower.includes('phin') || lower.includes('robusta') || lower.includes('espresso')) {
+        reply += `🍫 **Fine Robusta Buôn Ma Thuột (Honey Process)**: Thể chất dày (heavy body), hương socola đen, hạnh nhân nướng, caffeine 2.4%. Khuyến nghị rang Medium-Dark (Agtron #52, thời gian phát triển 18% DTR) cho Phin & Espresso.${factorySummary}`;
       } else if (lower.includes('giá') || lower.includes('dự báo') || lower.includes('thị trường')) {
-        reply += '📊 **Tín hiệu AI Lead-Lag hôm nay**: Giá London Robusta đang tác động kéo giá thu mua Đắk Lắk quanh mức 88.500 - 89.500 đ/kg. Khuyến nghị xưởng nên chốt hợp đồng gia công kỳ hạn tháng tới.';
+        reply += `📊 **Tín hiệu AI Lead-Lag hôm nay**: Giá London Robusta đang dẫn dắt giá thu mua Đắk Lắk - Gia Lai quanh vùng 88.500 - 89.500 đ/kg. Khuyến nghị chốt hợp đồng gia công kỳ hạn tại mục Dự báo giá.${factorySummary}`;
       } else {
-        reply += '✨ **Liberica Quảng Trị (Anaerobic)**: Dòng cà phê Mít độc bản với hương thơm mít chín, hoa tiêu và vị chua thanh tao nhã độc nhất vô nhị.';
+        reply += `✨ **Tư vấn Phối trộn & Gia công Bản sắc**: Tỷ lệ vàng 70% Fine Robusta Gia Lai + 30% Arabica Cầu Đất cho hậu vị ngọt sâu và lớp crema dày mịn.${factorySummary}`;
       }
 
       setMessages([...newMsgs, { role: 'assistant', text: reply }]);
+    } catch {
+      setMessages([...newMsgs, { role: 'assistant', text: 'Hệ thống AI Sommelier đã ghi nhận yêu cầu. Bạn có thể đặt gia công trực tiếp tại mục Thị trường!' }]);
+    } finally {
       setIsThinking(false);
-    }, 800);
+    }
   };
 
   // Update scale factor --u based on viewport (1440x1080 design space)

@@ -26,6 +26,9 @@ public class ProductionPlanService {
     private final DailyTargetRepository targetRepo;
     private final AttendanceRepository attendanceRepo;
 
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private InventoryService inventoryService;
+
     public ProductionPlanService(ProductionPlanRepository planRepo, ProductionOrderRepository orderRepo,
                                  DailyTargetRepository targetRepo, AttendanceRepository attendanceRepo) {
         this.planRepo = planRepo;
@@ -127,6 +130,9 @@ public class ProductionPlanService {
         DailyTarget target = targetRepo.findById(targetId)
                 .orElseThrow(() -> new RuntimeException("Khong tim thay muc tieu ngay"));
 
+        double prevRoast = target.getActualRoastKg() != null ? target.getActualRoastKg() : 0.0;
+        double prevPackaged = target.getActualPackagedKg() != null ? target.getActualPackagedKg() : 0.0;
+
         if (actualRoastKg != null) target.setActualRoastKg(actualRoastKg);
         if (actualQcKg != null) target.setActualQcKg(actualQcKg);
         if (actualQcFailKg != null) target.setActualQcFailKg(actualQcFailKg);
@@ -134,6 +140,24 @@ public class ProductionPlanService {
         if (actualPackages != null) target.setActualPackages(actualPackages);
         if (notes != null) target.setNotes(notes);
         if (issues != null) target.setIssues(issues);
+
+        if (inventoryService != null && target.getOrder() != null && target.getOrder().getTeam() != null) {
+            UUID teamId = target.getOrder().getTeam().getId();
+            String pType = target.getOrder().getProductType() != null && !target.getOrder().getProductType().isBlank()
+                    ? target.getOrder().getProductType() : "Robusta";
+            if (actualRoastKg != null && actualRoastKg > prevRoast) {
+                double deltaRoast = actualRoastKg - prevRoast;
+                try {
+                    inventoryService.transferStock(teamId, pType, "GREEN", "ROASTED", deltaRoast);
+                } catch (Exception ignored) {}
+            }
+            if (actualPackagedKg != null && actualPackagedKg > prevPackaged) {
+                double deltaPkg = actualPackagedKg - prevPackaged;
+                try {
+                    inventoryService.transferStock(teamId, pType, "ROASTED", "PACKAGED", deltaPkg);
+                } catch (Exception ignored) {}
+            }
+        }
 
         double totalActual = 0.0;
         if (target.getActualRoastKg() != null) totalActual += target.getActualRoastKg();

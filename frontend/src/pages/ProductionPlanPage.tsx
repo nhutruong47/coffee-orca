@@ -7,31 +7,31 @@ import type { ProductionOrder, ProductionPlan, DailyTarget } from '../types/type
 import type { ShiftType, ProductionStage } from '../services/attendanceService';
 
 const STATUS_LABELS: Record<string, string> = {
-    PENDING: 'Cho xu ly',
-    CONFIRMED: 'Da xac nhan',
-    PLANNING: 'Dang ke hoach',
-    IN_PRODUCTION: 'Dang san xuat',
-    COMPLETED: 'Hoan thanh',
-    DELIVERED: 'Da giao',
-    CANCELLED: 'Da huy',
-    DRAFT: 'Ban nhap',
-    APPROVED: 'Da duyet',
-    IN_PROGRESS: 'Dang thuc hien',
+    PENDING: 'Chờ xử lý',
+    CONFIRMED: 'Đã xác nhận',
+    PLANNING: 'Đang lập kế hoạch',
+    IN_PRODUCTION: 'Đang sản xuất',
+    COMPLETED: 'Hoàn thành',
+    DELIVERED: 'Đã giao',
+    CANCELLED: 'Đã hủy',
+    DRAFT: 'Bản nháp',
+    APPROVED: 'Đã duyệt',
+    IN_PROGRESS: 'Đang thực hiện',
 };
 
 const STAGE_LABELS: Record<string, string> = {
-    RANH_VA_CHON: 'Rang & Chon',
+    RANH_VA_CHON: 'Rang & Chọn',
     RANG: 'Rang',
     XAY: 'Xay',
-    DONG_GOI: 'Dong goi',
-    QA: 'Kiem tra chat luong',
+    DONG_GOI: 'Đóng gói',
+    QA: 'Kiểm tra chất lượng',
 };
 
 const SHIFT_LABELS: Record<string, string> = {
-    SANG: 'Ca Sang (6h-14h)',
-    CHIEU: 'Ca Chieu (14h-22h)',
-    DEM: 'Ca Dem (22h-6h)',
-    NGAY: 'Ca Ngay (6h-18h)',
+    SANG: 'Ca Sáng (6h-14h)',
+    CHIEU: 'Ca Chiều (14h-22h)',
+    DEM: 'Ca Đêm (22h-6h)',
+    NGAY: 'Ca Ngày (6h-18h)',
 };
 
 const STAGE_UNIT: Record<string, { unit: string; max: number }> = {
