@@ -299,11 +299,13 @@ const normalizeFactory = (team: Team): MarketplaceFactory => {
         verifiedCertification: team.verificationStatus === 'APPROVED' && Boolean(team.certificationDocument || team.certificates?.length),
         certifications: team.certificates?.length ? team.certificates : splitMultiValue(team.certificationDocument),
 
-        trustScoreMock: team.trustScore || 85,
+        trustScoreMock: (typeof team.trustScore === 'number' && team.trustScore >= 0) ? team.trustScore : 95,
         ratingMock: team.rating || 4.5,
         reviewCountMock: team.reviewCount || 10,
         completedOrdersMock: team.completedOrders || 20,
-        onTimeRateMock: team.completedOrders ? Math.round(((team.totalOrders || 0) - (team.cancelledOrders || 0)) / team.completedOrders * 100) : 90,
+        onTimeRateMock: team.completedOrders
+            ? Math.min(100, Math.max(0, Math.round(((team.onTimeOrders ?? team.completedOrders) / team.completedOrders) * 100)))
+            : 98,
         currentCapacityMock: team.capacityValue ? `${team.capacityValue} ${team.capacityUnit}` : '5 Tấn / Tháng',
         availableCapacityMock: "1 Tấn",
         moqMock: team.moq || "50 kg",

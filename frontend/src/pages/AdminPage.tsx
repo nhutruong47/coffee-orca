@@ -19,7 +19,8 @@ import {
   Wallet,
   Receipt,
   Trash2,
-  Edit2
+  Edit2,
+  Package
 } from 'lucide-react';
 import { useChartPalette } from '../utils/chartTheme';
 import {
@@ -472,6 +473,7 @@ export default function AdminPage() {
   const dashboardKpis: KpiItem[] = [
     { label: 'Tổng số doanh nghiệp', value: number(adminTeams.length), detail: `+${number(overview.newTeamsThisMonth)} tháng này`, icon: Building2, tone: 'blue', trend: 'up' },
     { label: 'Tổng số người dùng', value: number(adminUsers.length), detail: `+${number(overview.newUsersThisMonth)} tháng này`, icon: Users, tone: 'violet', trend: 'up' },
+    { label: 'Tổng số đơn hàng', value: number(overview.totalOrders || 0), detail: `${number(overview.activeOrders || 0)} đang xử lý`, icon: Package, tone: 'blue', trend: 'up' },
     { label: 'Doanh thu tháng này', value: money(overview.revenueThisMonth), detail: 'Chỉ giao dịch xác thực', icon: DollarSign, tone: 'green', trend: 'up' },
     { label: 'Xưởng chờ duyệt', value: number(adminTeams.filter(t => t.verificationStatus === 'PENDING').length), detail: 'Cần xử lý', icon: AlertTriangle, tone: 'amber' },
   ];
