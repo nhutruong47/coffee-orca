@@ -77,6 +77,8 @@ function App() {
                                 <Route path="/marketplace" element={<ProtectedRoute><MarketplacePage /></ProtectedRoute>} />
                                 <Route path="/dat-hang" element={<ProtectedRoute><MarketplacePage /></ProtectedRoute>} />
                                 <Route path="/thi-truong-dat-hang" element={<ProtectedRoute><MarketplacePage /></ProtectedRoute>} />
+                                <Route path="/forecast" element={<CoffeeForecastPage />} />
+                                <Route path="/du-bao-gia" element={<CoffeeForecastPage />} />
                                 <Route path="/" element={<HomePage />} />
                                 <Route path="/ban-sac" element={<HomePage />} />
                                 <Route path="/san-pham" element={<Navigate to="/ban-sac#products" replace />} />
