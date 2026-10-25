@@ -17,8 +17,14 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-    const [user, setUser] = useState<UserInfo | null>(null);
-    const [token, setToken] = useState<string | null>(() => sessionStorage.getItem('token'));
+    const [user, setUser] = useState<UserInfo | null>(() => {
+        const saved = sessionStorage.getItem('user') || localStorage.getItem('user');
+        if (saved) {
+            try { return JSON.parse(saved); } catch {}
+        }
+        return null;
+    });
+    const [token, setToken] = useState<string | null>(() => sessionStorage.getItem('token') || localStorage.getItem('token'));
     const [isLoading, setIsLoading] = useState(true);
 
     const isAuthenticated = !!token && !!user;
@@ -26,7 +32,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Verify token on mount
     useEffect(() => {
         const verifyToken = async () => {
-            const savedToken = sessionStorage.getItem('token');
+            const savedToken = sessionStorage.getItem('token') || localStorage.getItem('token');
             if (!savedToken) {
                 setIsLoading(false);
                 return;
@@ -36,9 +42,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 const userInfo = await authService.getMe();
                 setUser(userInfo);
                 setToken(savedToken);
+                localStorage.setItem('user', JSON.stringify(userInfo));
             } catch {
                 sessionStorage.removeItem('token');
                 sessionStorage.removeItem('user');
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
                 setToken(null);
                 setUser(null);
             } finally {
@@ -52,26 +61,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const login = useCallback(async (data: LoginRequest) => {
         const response = await authService.login(data);
         sessionStorage.setItem('token', response.token);
+        localStorage.setItem('token', response.token);
         setToken(response.token);
 
         const userInfo = await authService.getMe();
         setUser(userInfo);
         sessionStorage.setItem('user', JSON.stringify(userInfo));
+        localStorage.setItem('user', JSON.stringify(userInfo));
     }, []);
 
     const register = useCallback(async (data: RegisterRequest) => {
         const response = await authService.register(data);
         sessionStorage.setItem('token', response.token);
+        localStorage.setItem('token', response.token);
         setToken(response.token);
 
         const userInfo = await authService.getMe();
         setUser(userInfo);
         sessionStorage.setItem('user', JSON.stringify(userInfo));
+        localStorage.setItem('user', JSON.stringify(userInfo));
     }, []);
 
     const logout = useCallback(() => {
         sessionStorage.removeItem('token');
         sessionStorage.removeItem('user');
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
         setToken(null);
         setUser(null);
     }, []);
