@@ -498,14 +498,14 @@
 .btn-ai-sommelier {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 14px 22px;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  padding: 0;
   background: var(--forest-green);
   color: #ffffff;
   border: none;
-  border-radius: 9999px;
-  font-size: 15px;
-  font-weight: 600;
+  border-radius: 50%;
   cursor: pointer;
   box-shadow: 0 8px 24px rgba(8, 72, 45, 0.35);
   transition: transform 0.2s, background 0.2s;

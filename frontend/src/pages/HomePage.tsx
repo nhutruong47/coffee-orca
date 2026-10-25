@@ -541,9 +541,10 @@ export const HomePage: React.FC = () => {
           <button 
             className="btn-ai-sommelier"
             onClick={() => setIsAiOpen(true)}
+            aria-label="ORCA AI Sommelier"
+            title="Trò chuyện với AI Sommelier"
           >
-            <Bot className="w-5 h-5" />
-            <span>AI Sommelier</span>
+            <Bot className="w-6 h-6" />
           </button>
         ) : (
           <div className="ai-chat-window">
