@@ -68,6 +68,69 @@ public class Attendance {
     @Column(columnDefinition = "TEXT")
     private String notes;
 
+    @Column(name = "check_in_address", length = 500)
+    private String checkInAddress;
+
+    @Column(name = "latitude")
+    private Double latitude;
+
+    @Column(name = "longitude")
+    private Double longitude;
+
+    @Column(name = "distance_meters")
+    private Integer distanceMeters;
+
+    @Column(name = "location_verified")
+    private Boolean locationVerified;
+
+    @Column(name = "check_in_photo_url", columnDefinition = "TEXT")
+    private String checkInPhotoUrl;
+
+    @Column(name = "standard_hours")
+    private Double standardHours;
+
+    @Column(name = "hourly_rate_vnd")
+    private Double hourlyRateVnd;
+
+    @Column(name = "overtime_multiplier")
+    private Double overtimeMultiplier;
+
+    @Column(name = "location_accuracy_meters")
+    private Double locationAccuracyMeters;
+
+    @Column(name = "location_status")
+    private String locationStatus;
+
+    @Column(name = "location_unavailable_reason", length = 500)
+    private String locationUnavailableReason;
+
+    @Column(name = "check_out_address", length = 500)
+    private String checkOutAddress;
+
+    @Column(name = "check_out_latitude")
+    private Double checkOutLatitude;
+
+    @Column(name = "check_out_longitude")
+    private Double checkOutLongitude;
+
+    @Column(name = "check_out_location_accuracy_meters")
+    private Double checkOutLocationAccuracyMeters;
+
+    @Column(name = "check_out_distance_meters")
+    private Integer checkOutDistanceMeters;
+
+    @Column(name = "check_out_location_verified")
+    private Boolean checkOutLocationVerified;
+
+    @Column(name = "check_out_location_status")
+    private String checkOutLocationStatus;
+
+    @Column(name = "check_out_location_unavailable_reason", length = 500)
+    private String checkOutLocationUnavailableReason;
+
+    @Column(name = "check_out_photo_url", columnDefinition = "TEXT")
+    private String checkOutPhotoUrl;
+
     public enum ShiftType {
         SANG,    // Ca sang: 6:00 - 14:00
         CHIEU,   // Ca chieu: 14:00 - 22:00
@@ -126,4 +189,46 @@ public class Attendance {
     public void setAttendanceStatus(AttendanceStatus attendanceStatus) { this.attendanceStatus = attendanceStatus; }
     public String getNotes() { return notes; }
     public void setNotes(String notes) { this.notes = notes; }
+    public String getCheckInAddress() { return checkInAddress; }
+    public void setCheckInAddress(String checkInAddress) { this.checkInAddress = checkInAddress; }
+    public Double getLatitude() { return latitude; }
+    public void setLatitude(Double latitude) { this.latitude = latitude; }
+    public Double getLongitude() { return longitude; }
+    public void setLongitude(Double longitude) { this.longitude = longitude; }
+    public Integer getDistanceMeters() { return distanceMeters; }
+    public void setDistanceMeters(Integer distanceMeters) { this.distanceMeters = distanceMeters; }
+    public Boolean getLocationVerified() { return locationVerified; }
+    public void setLocationVerified(Boolean locationVerified) { this.locationVerified = locationVerified; }
+    public String getCheckInPhotoUrl() { return checkInPhotoUrl; }
+    public void setCheckInPhotoUrl(String checkInPhotoUrl) { this.checkInPhotoUrl = checkInPhotoUrl; }
+    public Double getStandardHours() { return standardHours; }
+    public void setStandardHours(Double standardHours) { this.standardHours = standardHours; }
+    public Double getHourlyRateVnd() { return hourlyRateVnd; }
+    public void setHourlyRateVnd(Double hourlyRateVnd) { this.hourlyRateVnd = hourlyRateVnd; }
+    public Double getOvertimeMultiplier() { return overtimeMultiplier; }
+    public void setOvertimeMultiplier(Double overtimeMultiplier) { this.overtimeMultiplier = overtimeMultiplier; }
+    public Double getLocationAccuracyMeters() { return locationAccuracyMeters; }
+    public void setLocationAccuracyMeters(Double locationAccuracyMeters) { this.locationAccuracyMeters = locationAccuracyMeters; }
+    public String getLocationStatus() { return locationStatus; }
+    public void setLocationStatus(String locationStatus) { this.locationStatus = locationStatus; }
+    public String getLocationUnavailableReason() { return locationUnavailableReason; }
+    public void setLocationUnavailableReason(String locationUnavailableReason) { this.locationUnavailableReason = locationUnavailableReason; }
+    public String getCheckOutAddress() { return checkOutAddress; }
+    public void setCheckOutAddress(String checkOutAddress) { this.checkOutAddress = checkOutAddress; }
+    public Double getCheckOutLatitude() { return checkOutLatitude; }
+    public void setCheckOutLatitude(Double checkOutLatitude) { this.checkOutLatitude = checkOutLatitude; }
+    public Double getCheckOutLongitude() { return checkOutLongitude; }
+    public void setCheckOutLongitude(Double checkOutLongitude) { this.checkOutLongitude = checkOutLongitude; }
+    public Double getCheckOutLocationAccuracyMeters() { return checkOutLocationAccuracyMeters; }
+    public void setCheckOutLocationAccuracyMeters(Double checkOutLocationAccuracyMeters) { this.checkOutLocationAccuracyMeters = checkOutLocationAccuracyMeters; }
+    public Integer getCheckOutDistanceMeters() { return checkOutDistanceMeters; }
+    public void setCheckOutDistanceMeters(Integer checkOutDistanceMeters) { this.checkOutDistanceMeters = checkOutDistanceMeters; }
+    public Boolean getCheckOutLocationVerified() { return checkOutLocationVerified; }
+    public void setCheckOutLocationVerified(Boolean checkOutLocationVerified) { this.checkOutLocationVerified = checkOutLocationVerified; }
+    public String getCheckOutLocationStatus() { return checkOutLocationStatus; }
+    public void setCheckOutLocationStatus(String checkOutLocationStatus) { this.checkOutLocationStatus = checkOutLocationStatus; }
+    public String getCheckOutLocationUnavailableReason() { return checkOutLocationUnavailableReason; }
+    public void setCheckOutLocationUnavailableReason(String checkOutLocationUnavailableReason) { this.checkOutLocationUnavailableReason = checkOutLocationUnavailableReason; }
+    public String getCheckOutPhotoUrl() { return checkOutPhotoUrl; }
+    public void setCheckOutPhotoUrl(String checkOutPhotoUrl) { this.checkOutPhotoUrl = checkOutPhotoUrl; }
 }

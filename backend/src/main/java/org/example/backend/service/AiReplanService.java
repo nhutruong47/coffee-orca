@@ -21,6 +21,12 @@ public class AiReplanService {
     private final ProductionOrderRepository orderRepo;
     private final DailyTargetRepository targetRepo;
 
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private AttendanceRepository attendanceRepo;
+
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private InventoryRepository inventoryRepo;
+
     public AiReplanService(ProductionPlanRepository planRepo,
                            ProductionOrderRepository orderRepo,
                            DailyTargetRepository targetRepo) {
@@ -188,33 +194,65 @@ public class AiReplanService {
                                                ProductionOrder order, boolean underperforming) {
         List<String> recs = new ArrayList<>();
 
+        double greenNeededKg = Math.ceil(remainingKg / 0.85 * 10.0) / 10.0;
+        if (remainingKg > 0) {
+            recs.add("Định mức hạt nhân xanh cần chuẩn bị cho " + Math.round(remainingKg * 10.0) / 10.0
+                    + " kg thành phẩm còn lại (bù hao hụt rang 15%): " + greenNeededKg + " kg nhân xanh.");
+        }
+
+        if (order.getTeam() != null && inventoryRepo != null && remainingKg > 0) {
+            UUID teamId = order.getTeam().getId();
+            double greenStock = inventoryRepo.findByTeamIdOrderByProductTypeAscProductStateAsc(teamId).stream()
+                    .filter(i -> "GREEN".equalsIgnoreCase(i.getProductState()))
+                    .mapToDouble(i -> i.getQuantity() != null ? i.getQuantity() : 0.0)
+                    .sum();
+            if (greenStock < greenNeededKg) {
+                recs.add("⚠️ Cảnh báo nguyên liệu: Kho hạt xanh hiện còn " + Math.round(greenStock * 10.0) / 10.0
+                        + " kg, thiếu " + Math.round((greenNeededKg - greenStock) * 10.0) / 10.0
+                        + " kg nhân xanh để hoàn thành đơn.");
+            } else {
+                recs.add("✅ Tồn kho hạt nhân xanh khả dụng (" + Math.round(greenStock * 10.0) / 10.0
+                        + " kg) đủ đáp ứng định mức rang còn lại.");
+            }
+        }
+
+        if (order.getTeam() != null && attendanceRepo != null) {
+            List<Attendance> todayAtt = attendanceRepo.findByTeamIdAndDate(order.getTeam().getId(), LocalDate.now());
+            long roasters = todayAtt.stream().filter(a -> a.getStage() == Attendance.ProductionStage.RANG).count();
+            if (todayAtt.isEmpty()) {
+                recs.add("⚠️ Cảnh báo ca làm hôm nay: Chưa có nhân sự nào điểm danh vào ca tại xưởng.");
+            } else {
+                recs.add("Nhân sự điểm danh hôm nay: " + todayAtt.size() + " người (Công đoạn Rang: " + roasters + " người).");
+            }
+        }
+
         if (underperforming) {
-            recs.add("San luong thuc te (" + Math.round(avgActual * 100.0) / 100.0 + " kg/ngay) thap hon ke hoach (" + Math.round(originalTarget * 100.0) / 100.0 + " kg/ngay).");
+            recs.add("Sản lượng thực tế (" + Math.round(avgActual * 100.0) / 100.0 + " kg/ngày) đang thấp hơn kế hoạch (" + Math.round(originalTarget * 100.0) / 100.0 + " kg/ngày).");
         }
 
         if (remainingDays == 0 && remainingKg > 0) {
-            recs.add("Da het han lam viec nhung con " + Math.round(remainingKg * 100.0) / 100.0 + " kg chua hoan thanh. Can gia han them " + newDaysNeeded + " ngay.");
+            recs.add("Đã hết ngày làm việc theo lịch nhưng còn " + Math.round(remainingKg * 100.0) / 100.0 + " kg chưa hoàn thành. Cần gia hạn thêm " + newDaysNeeded + " ngày.");
         }
 
         if (remainingDays > 0 && newDaysNeeded > remainingDays) {
             int extraDays = newDaysNeeded - remainingDays;
-            recs.add("Can them " + extraDays + " ngay lam viec de hoan thanh muc tieu. De xuat tang ca hoac thue them nhan su.");
+            recs.add("Dự kiến cần thêm " + extraDays + " ngày làm việc để đạt mục tiêu. Đề xuất tăng ca hoặc bổ sung thợ rang.");
         }
 
         if (avgActual > 0 && remainingKg / avgActual <= 2) {
-            recs.add("Kha nang hoan thanh dung han: cao. Tien do hien tai on dinh.");
+            recs.add("Khả năng hoàn thành đúng hạn: Cao. Tiến độ các mẻ rang hiện tại ổn định.");
         }
 
         if (order.getInternalDeadline() != null) {
             long daysLeft = ChronoUnit.DAYS.between(LocalDate.now(), order.getInternalDeadline().toLocalDate());
             if (daysLeft <= 2) {
-                recs.add("Can CHAP CANH: han noi bo chi con " + daysLeft + " ngay. Kiem tra kha nang giao hang ngay.");
+                recs.add("🚨 Khẩn cấp: Hạn nội bộ chỉ còn " + daysLeft + " ngày. Ưu tiên tối đa cho công đoạn Đóng gói & QC xuất xưởng.");
             }
         }
 
         double shortfallPercent = originalTarget > 0 ? (originalTarget - avgActual) / originalTarget * 100 : 0;
         if (shortfallPercent > 20) {
-            recs.add("Thieu " + Math.round(shortfallPercent) + "% so voi ke hoach. Xem xet tang ca 2 gio/ngay de bup gap.");
+            recs.add("Hụt " + Math.round(shortfallPercent) + "% sản lượng ngày so với định mức. Đề xuất mở thêm 2 giờ tăng ca/ngày.");
         }
 
         return recs;

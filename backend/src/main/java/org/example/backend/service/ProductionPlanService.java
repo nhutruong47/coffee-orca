@@ -160,9 +160,13 @@ public class ProductionPlanService {
         }
 
         double totalActual = 0.0;
-        if (target.getActualRoastKg() != null) totalActual += target.getActualRoastKg();
-        if (target.getActualPackagedKg() != null) totalActual += target.getActualPackagedKg();
-        else if (target.getActualQcKg() != null) totalActual += target.getActualQcKg();
+        if (target.getActualPackagedKg() != null && target.getActualPackagedKg() > 0) {
+            totalActual = target.getActualPackagedKg();
+        } else if (target.getActualQcKg() != null && target.getActualQcKg() > 0) {
+            totalActual = target.getActualQcKg();
+        } else if (target.getActualRoastKg() != null && target.getActualRoastKg() > 0) {
+            totalActual = target.getActualRoastKg();
+        }
         target.setTotalActualKg(totalActual);
         target.calculateCompletionRate();
 

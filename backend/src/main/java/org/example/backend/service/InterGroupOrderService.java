@@ -726,6 +726,11 @@ public class InterGroupOrderService {
         }
 
         transitionTo(order, OrderStatus.DELIVERED, currentUser, "deliverOrder");
+        String productType = order.getProductType() != null && !order.getProductType().isBlank()
+                ? order.getProductType() : "Robusta";
+        if (order.getQuantity() != null && order.getQuantity() > 0) {
+            inventoryService.deductPackagedStock(sellerTeam.getId(), productType, (double) order.getQuantity());
+        }
         order.setDeliveryConfirmed(false);
         order.setBuyerViewed(false);
         if (deliveryNote != null && !deliveryNote.isBlank()) {
@@ -835,6 +840,14 @@ public class InterGroupOrderService {
         order.setDeliveryConfirmed(true);
         order.setDeliveryConfirmedAt(LocalDateTime.now());
         order.setDeliveryStatus(deliveryStatus);
+        if ("SHIPPING".equals(order.getStatus())) {
+            transitionTo(order, OrderStatus.DELIVERED, currentUser, "buyerConfirmDelivery:autoDeliver");
+            String productType = order.getProductType() != null && !order.getProductType().isBlank()
+                    ? order.getProductType() : "Robusta";
+            if (order.getQuantity() != null && order.getQuantity() > 0) {
+                inventoryService.deductPackagedStock(order.getSellerTeam().getId(), productType, (double) order.getQuantity());
+            }
+        }
         transitionTo(order, OrderStatus.COMPLETED, currentUser, "buyerConfirmDelivery");
 
         // Update seller trust stats + buyer completedOrders via TrustScoreService

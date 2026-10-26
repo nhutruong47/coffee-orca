@@ -118,6 +118,8 @@ export const payrollService = {
         api.get(`/api/payroll/teams/${teamId}/export-excel`, {
             params: toSalaryMonthParams(salaryMonth), responseType: 'blob'
         }),
+    updateMemberRate: (teamId: string, memberId: string, data: { hourlyRateVnd: number }) =>
+        api.put<{ teamId: string; memberId: string; hourlyRateVnd: number }>(`/api/payroll/teams/${teamId}/members/${memberId}/rate`, data).then(r => r.data),
 };
 
 export const productionService = {

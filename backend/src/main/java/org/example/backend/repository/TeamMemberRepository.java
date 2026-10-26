@@ -20,6 +20,10 @@ public interface TeamMemberRepository extends JpaRepository<TeamMember, UUID> {
     @EntityGraph(attributePaths = {"user", "team", "jobLabels"})
     Optional<TeamMember> findByTeamIdAndUserId(UUID teamId, UUID userId);
 
+    @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
+    @Query("select tm from TeamMember tm where tm.team.id = :teamId and tm.user.id = :userId")
+    Optional<TeamMember> lockByTeamAndUser(@Param("teamId") UUID teamId, @Param("userId") UUID userId);
+
     boolean existsByTeamIdAndUserId(UUID teamId, UUID userId);
 
     @Query("select count(distinct tm.user.id) from TeamMember tm where tm.team.owner.id = :ownerId")

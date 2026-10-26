@@ -57,7 +57,7 @@ public class ProductionBoardController {
     @GetMapping("/{teamId}/workforce")
     public ResponseEntity<?> getWorkforceToday(@PathVariable UUID teamId,
                                               @AuthenticationPrincipal User currentUser) {
-        accessControlService.requireTeamMember(currentUser, teamId);
+        accessControlService.requireTeamAdmin(currentUser, teamId);
         return ResponseEntity.ok(boardService.getWorkforceToday(teamId));
     }
 }

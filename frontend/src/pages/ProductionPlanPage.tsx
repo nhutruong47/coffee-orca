@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { productionService } from '../services/groupService';
-import { attendanceService } from '../services/attendanceService';
+import CheckInPanel from '../components/attendance/CheckInPanel';
 import { useAuth } from '../context/AuthContext';
 import type { ProductionOrder, ProductionPlan, DailyTarget } from '../types/types';
-import type { ShiftType, ProductionStage } from '../services/attendanceService';
 
 const STATUS_LABELS: Record<string, string> = {
     PENDING: 'Chờ xử lý',
@@ -17,21 +16,6 @@ const STATUS_LABELS: Record<string, string> = {
     DRAFT: 'Bản nháp',
     APPROVED: 'Đã duyệt',
     IN_PROGRESS: 'Đang thực hiện',
-};
-
-const STAGE_LABELS: Record<string, string> = {
-    RANH_VA_CHON: 'Rang & Chọn',
-    RANG: 'Rang',
-    XAY: 'Xay',
-    DONG_GOI: 'Đóng gói',
-    QA: 'Kiểm tra chất lượng',
-};
-
-const SHIFT_LABELS: Record<string, string> = {
-    SANG: 'Ca Sáng (6h-14h)',
-    CHIEU: 'Ca Chiều (14h-22h)',
-    DEM: 'Ca Đêm (22h-6h)',
-    NGAY: 'Ca Ngày (6h-18h)',
 };
 
 const STAGE_UNIT: Record<string, { unit: string; max: number }> = {
@@ -66,30 +50,13 @@ export default function ProductionPlanPage() {
     const [generating, setGenerating] = useState(false);
     const [approving, setApproving] = useState(false);
 
-    // Attendance
-    const [shiftType, setShiftType] = useState<ShiftType>('SANG');
-    const [stage, setStage] = useState<ProductionStage>('RANG');
-    const [myAttendance, setMyAttendance] = useState<any>(null);
-    const [loadingAttendance, setLoadingAttendance] = useState(false);
-
     useEffect(() => { loadOrders(); }, []);
-    useEffect(() => {
-        if (teamId && userId) loadMyAttendance();
-    }, [teamId, userId]);
-
     const loadOrders = async () => {
         try {
             const data = await productionService.getOrders(teamId, true);
             setOrders(data || []);
         } catch (e) { /* loadOrders failure tolerated */ }
         setLoading(false);
-    };
-
-    const loadMyAttendance = async () => {
-        try {
-            const att = await attendanceService.getTodayAttendance(teamId);
-            setMyAttendance(att);
-        } catch (e) { /* attendance load failure tolerated */ }
     };
 
     const handleSelectOrder = async (order: ProductionOrder) => {
@@ -168,36 +135,6 @@ export default function ProductionPlanPage() {
             alert(e.response?.data?.error || 'Loi luu tien do');
         } finally {
             setSavingTargetId(null);
-        }
-    };
-
-    const handleCheckIn = async () => {
-        if (!userId || !teamId) return;
-        setLoadingAttendance(true);
-        try {
-            const result = await attendanceService.checkIn(teamId, {
-                shiftType, stage, orderId: selectedOrder?.id
-            });
-            setMyAttendance(result);
-            alert('Check-in thanh cong!');
-        } catch (e: any) {
-            alert(e.response?.data?.error || e.message || 'Loi check-in');
-        } finally {
-            setLoadingAttendance(false);
-        }
-    };
-
-    const handleCheckOut = async () => {
-        if (!userId || !teamId) return;
-        setLoadingAttendance(true);
-        try {
-            const result = await attendanceService.checkOut(teamId);
-            setMyAttendance(result);
-            alert('Check-out thanh cong!');
-        } catch (e: any) {
-            alert(e.response?.data?.error || e.message || 'Loi check-out');
-        } finally {
-            setLoadingAttendance(false);
         }
     };
 
@@ -506,107 +443,7 @@ export default function ProductionPlanPage() {
                         </div>
                     )}
 
-                    {/* Tab: Attendance */}
-                    {activeTab === 'attendance' && (
-                        <div>
-                            <h2 style={{ fontSize: 16, fontWeight: 700, marginBottom: 16 }}>Cham cong</h2>
-                            {!myAttendance ? (
-                                <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 14, padding: 28 }}>
-                                    <div style={{ marginBottom: 20 }}>
-                                        <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 8 }}>Chon ca lam viec</label>
-                                        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                                            {(Object.entries(SHIFT_LABELS) as [ShiftType, string][]).map(([key, label]) => (
-                                                <button key={key} onClick={() => setShiftType(key)}
-                                                    style={{
-                                                        padding: '8px 16px', borderRadius: 10, border: `2px solid ${shiftType === key ? '#10b981' : 'var(--border)'}`,
-                                                        background: shiftType === key ? 'rgba(16,185,129,0.1)' : 'var(--bg-input)',
-                                                        color: shiftType === key ? '#10b981' : 'var(--text-secondary)', fontSize: 13, fontWeight: 600, cursor: 'pointer'
-                                                    }}>
-                                                    {label}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    <div style={{ marginBottom: 20 }}>
-                                        <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 8 }}>Cong doan lam viec</label>
-                                        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                                            {(Object.entries(STAGE_LABELS) as [ProductionStage, string][]).map(([key, label]) => (
-                                                <button key={key} onClick={() => setStage(key)}
-                                                    style={{
-                                                        padding: '8px 16px', borderRadius: 10, border: `2px solid ${stage === key ? '#3b82f6' : 'var(--border)'}`,
-                                                        background: stage === key ? 'rgba(59,130,246,0.1)' : 'var(--bg-input)',
-                                                        color: stage === key ? '#3b82f6' : 'var(--text-secondary)', fontSize: 13, fontWeight: 600, cursor: 'pointer'
-                                                    }}>
-                                                    {label}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    <div style={{ marginBottom: 20, padding: '10px 12px', borderRadius: 10, background: 'var(--bg-input)', color: 'var(--text-secondary)', fontSize: 12 }}>
-                                        Thời gian nghỉ được xưởng cấu hình và hệ thống tự trừ khi tính công.
-                                    </div>
-
-                                    <button onClick={handleCheckIn} disabled={loadingAttendance}
-                                        style={{
-                                            width: '100%', padding: '14px', borderRadius: 12, border: 'none',
-                                            background: 'linear-gradient(135deg, #10b981, #059669)',
-                                            color: '#fff', fontSize: 16, fontWeight: 800, cursor: loadingAttendance ? 'not-allowed' : 'pointer',
-                                            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8
-                                        }}>
-                                        {loadingAttendance ? 'Dang xu ly...' : 'Check-in'}
-                                    </button>
-                                </div>
-                            ) : (
-                                <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 14, padding: 24 }}>
-                                    <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 16 }}>Trang thai hom nay</h3>
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                                        {[
-                                            ['Ca lam', SHIFT_LABELS[myAttendance.shiftType] || myAttendance.shiftType],
-                                            ['Cong doan', STAGE_LABELS[myAttendance.productionStage] || myAttendance.productionStage],
-                                            ['Check-in', myAttendance.checkInTime ? new Date(myAttendance.checkInTime).toLocaleTimeString('vi-VN') : '-'],
-                                            ['Don hang', myAttendance.orderTitle || 'Khong lien ket'],
-                                            ['Gio nghi', `${myAttendance.breakMinutes} phut`],
-                                        ].map(([label, value]) => (
-                                            <div key={label as string} style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid var(--border)' }}>
-                                                <span style={{ color: 'var(--text-muted)', fontSize: 13 }}>{label}</span>
-                                                <span style={{ fontWeight: 600, fontSize: 13 }}>{value}</span>
-                                            </div>
-                                        ))}
-                                    </div>
-
-                                    {!myAttendance.checkOutTime ? (
-                                        <button onClick={handleCheckOut} disabled={loadingAttendance}
-                                            style={{
-                                                width: '100%', marginTop: 16, padding: '14px', borderRadius: 12, border: 'none',
-                                                background: 'linear-gradient(135deg, #ef4444, #dc2626)',
-                                                color: '#fff', fontSize: 16, fontWeight: 800, cursor: loadingAttendance ? 'not-allowed' : 'pointer'
-                                            }}>
-                                            {loadingAttendance ? 'Dang xu ly...' : 'Check-out'}
-                                        </button>
-                                    ) : (
-                                        <div style={{ marginTop: 16, background: 'rgba(16,185,129,0.08)', borderRadius: 12, padding: 16 }}>
-                                            <div style={{ fontSize: 14, fontWeight: 700, color: '#10b981', marginBottom: 12 }}>Ca lam viec da hoan thanh</div>
-                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                                                {[
-                                                    ['Gio thuong', `${myAttendance.regularHours}h`],
-                                                    ['Gio tang ca', `${myAttendance.overtimeHours}h`],
-                                                    ['Tong gio', `${myAttendance.actualWorkHours}h`],
-                                                    ['Check-out', new Date(myAttendance.checkOutTime).toLocaleTimeString('vi-VN')],
-                                                ].map(([label, value]) => (
-                                                    <div key={label as string} style={{ background: 'rgba(16,185,129,0.1)', borderRadius: 8, padding: '8px 12px' }}>
-                                                        <div style={{ fontSize: 11, color: '#059669', marginBottom: 2 }}>{label}</div>
-                                                        <div style={{ fontSize: 15, fontWeight: 800, color: '#10b981' }}>{value}</div>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-                        </div>
-                    )}
+                    {activeTab === 'attendance' && <CheckInPanel key={teamId} teamId={teamId} orderId={selectedOrder?.id} />}
                 </>
             )}
         </div>

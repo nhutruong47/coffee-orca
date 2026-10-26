@@ -177,8 +177,12 @@ public class ProductionBoardService {
 
         for (Attendance a : attendances) {
             Map<String, Object> w = new LinkedHashMap<>();
+            w.put("id", a.getId().toString());
             w.put("userId", a.getUser().getId().toString());
-            w.put("userName", a.getUser().getFullName());
+            String name = (a.getUser().getFullName() != null && !a.getUser().getFullName().isBlank())
+                    ? a.getUser().getFullName()
+                    : a.getUser().getUsername();
+            w.put("userName", name);
             w.put("shiftType", a.getShiftType() != null ? a.getShiftType().name() : null);
             w.put("stage", a.getStage() != null ? a.getStage().name() : null);
             w.put("checkInTime", a.getCheckInTime());
@@ -187,6 +191,15 @@ public class ProductionBoardService {
             w.put("actualWorkHours", a.getActualWorkHours());
             w.put("regularHours", a.getRegularHours());
             w.put("overtimeHours", a.getOvertimeHours());
+            w.put("checkInAddress", a.getCheckInAddress());
+            w.put("latitude", a.getLatitude());
+            w.put("longitude", a.getLongitude());
+            w.put("distanceMeters", a.getDistanceMeters());
+            w.put("locationStatus", a.getLocationStatus() == null ? "UNVERIFIED" : a.getLocationStatus());
+            w.put("locationVerified", "WITHIN_RADIUS".equals(a.getLocationStatus()) ? Boolean.TRUE
+                    : "OUTSIDE_RADIUS".equals(a.getLocationStatus()) ? Boolean.FALSE : null);
+            w.put("hasCheckInPhoto", a.getCheckInPhotoUrl() != null);
+            w.put("notes", a.getNotes());
             w.put("productivity", a.getActualWorkHours() != null && a.getActualWorkHours() > 0
                     ? Math.round((a.getActualWorkHours() > 0 ? a.getActualWorkHours() : 0) * 10.0) / 10.0
                     : null);
@@ -215,8 +228,11 @@ public class ProductionBoardService {
         stageHours.put("DONG_GOI", 0.0);
         stageHours.put("QA", 0.0);
         for (Attendance a : attendances) {
-            if (a.getStage() != null && a.getCheckOutTime() != null) {
-                double hours = a.getRegularHours() + a.getOvertimeHours();
+            if (a.getStage() != null) {
+                double hours = (a.getCheckOutTime() != null)
+                        ? ((a.getRegularHours() != null ? a.getRegularHours() : 0.0)
+                                + (a.getOvertimeHours() != null ? a.getOvertimeHours() : 0.0))
+                        : 0.0;
                 stageHours.merge(a.getStage().name(), hours, Double::sum);
             }
         }

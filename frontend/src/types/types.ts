@@ -1,3 +1,5 @@
+import type { EvidenceFields } from '../services/attendanceService';
+
 // === Request DTOs ===
 export interface LoginRequest {
     username: string;
@@ -516,6 +518,7 @@ export interface PayrollItem {
     memberId: string;
     memberName: string;
     memberCode: string;
+    roleLabel?: string;
     regularHours: number;
     overtimeHours: number;
     attendanceDays: number;
@@ -532,10 +535,14 @@ export interface PayrollItem {
     advanceVnd: number;
     netPayVnd: number;
     note?: string | null;
+    lastCheckInAddress?: string | null;
+    lastLatitude?: number | null;
+    lastLongitude?: number | null;
+    lastCheckInPhotoUrl?: string | null;
     attendanceLines: PayrollAttendanceLine[];
 }
 
-export interface PayrollAttendanceLine {
+export interface PayrollAttendanceLine extends EvidenceFields {
     id: string;
     date: string;
     checkInTime?: string | null;
@@ -552,6 +559,13 @@ export interface PayrollAttendanceLine {
     attendanceStatus?: string | null;
     shiftType?: string | null;
     productionStage?: string | null;
+    stage?: string | null;
+    checkInAddress?: string | null;
+    latitude?: number | null;
+    longitude?: number | null;
+    distanceMeters?: number | null;
+    locationVerified?: boolean | null;
+    checkInPhotoUrl?: string | null;
     payable: boolean;
 }
 

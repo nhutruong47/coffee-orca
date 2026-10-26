@@ -14,6 +14,8 @@ import java.util.UUID;
 @Repository
 public interface AttendanceRepository extends JpaRepository<Attendance, UUID> {
     Optional<Attendance> findByUserIdAndTeamIdAndDate(UUID userId, UUID teamId, LocalDate date);
+    Optional<Attendance> findFirstByUserIdAndTeamIdAndCheckOutTimeIsNullOrderByCheckInTimeDesc(UUID userId, UUID teamId);
+    List<Attendance> findByUserIdAndTeamIdAndCheckInTimeBefore(UUID userId, UUID teamId, java.time.LocalDateTime end);
     Optional<Attendance> findFirstByUserIdAndTeamIdAndDateAndCheckOutTimeIsNullOrderByCheckInTimeDesc(UUID userId, UUID teamId, LocalDate date);
     Optional<Attendance> findFirstByUserIdAndTeamIdAndDateOrderByCheckInTimeDesc(UUID userId, UUID teamId, LocalDate date);
     List<Attendance> findByTeamId(UUID teamId);

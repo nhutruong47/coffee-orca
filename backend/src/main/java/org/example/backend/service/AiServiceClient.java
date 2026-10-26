@@ -37,6 +37,9 @@ public class AiServiceClient {
     
     private final InventoryRepository inventoryRepository;
 
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private org.example.backend.repository.AttendanceRepository attendanceRepository;
+
     public AiServiceClient(InventoryRepository inventoryRepository) {
         this.inventoryRepository = inventoryRepository;
     }
@@ -111,8 +114,24 @@ public class AiServiceClient {
                     sb.append("- ").append(item.getName())
                       .append(": ").append(item.getQuantity()).append(" ").append(item.getUnit()).append("\n");
                 }
-                sb.append("LƯU Ý QUAN TRỌNG: Nếu yêu cầu sản lượng VƯỢT QUÁ số lượng nguyên liệu có trong kho, BẠN PHẢI GHI CẢNH BÁO RÕ RÀNG vào đầu mục 'description' (VD: ⚠️ CẢNH BÁO: Trong kho chỉ còn ... không đủ nguyên liệu).\n\n");
+                sb.append("LƯU Ý QUAN TRỌNG: Nếu yêu cầu sản lượng VƯỢT QUÁ số lượng nguyên liệu có trong kho (tính cả hao hụt rang 15%, tức cần Nhân xanh = Thành phẩm / 0.85), BẠN PHẢI GHI CẢNH BÁO RÕ RÀNG vào đầu mục 'description' (VD: ⚠️ CẢNH BÁO: Trong kho chỉ còn ... không đủ nguyên liệu).\n\n");
                 inventoryContext = sb.toString();
+            }
+            if (attendanceRepository != null) {
+                var todayAtt = attendanceRepository.findByTeamIdAndDate(teamId, java.time.LocalDate.now());
+                if (!todayAtt.isEmpty()) {
+                    StringBuilder attSb = new StringBuilder(inventoryContext);
+                    attSb.append("--- NHÂN SỰ ĐÃ ĐIỂM DANH CA HÔM NAY ---\n");
+                    for (var a : todayAtt) {
+                        String uName = a.getUser().getFullName() != null ? a.getUser().getFullName() : a.getUser().getUsername();
+                        attSb.append("- ").append(uName)
+                             .append(" (Ca: ").append(a.getShiftType() != null ? a.getShiftType().name() : "NGAY")
+                             .append(", Công đoạn: ").append(a.getStage() != null ? a.getStage().name() : "RANG")
+                             .append(")\n");
+                    }
+                    attSb.append("Ưu tiên phân công nhiệm vụ cho các nhân sự đã điểm danh có mặt tại xưởng hôm nay.\n\n");
+                    inventoryContext = attSb.toString();
+                }
             }
         }
 

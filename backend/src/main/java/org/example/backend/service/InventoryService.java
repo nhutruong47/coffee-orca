@@ -60,7 +60,7 @@ public class InventoryService {
      * <p>Each retry runs in a NEW transaction so the previous (failed) one
      * is fully rolled back before the next attempt.
      */
-    @Transactional(propagation = Propagation.NEVER)
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public void runWithOptimisticRetry(Runnable action) {
         OptimisticLockingFailureException last = null;
         for (int attempt = 1; attempt <= MAX_OPTIMISTIC_RETRIES; attempt++) {

@@ -511,21 +511,36 @@ public class TaskService {
                 .mapToDouble(t -> t.getActualWorkload() != null ? t.getActualWorkload() : (t.getWorkload() != null ? t.getWorkload() : 0))
                 .sum();
 
-            // Get attendance data for this member and team
-            List<Attendance> attendances = salaryMonth == null
+            // Get closed attendance data for this member and team; open shifts and tasks never generate pay.
+            List<Attendance> attendances = (salaryMonth == null
                     ? attendanceRepo.findByUserIdAndTeamId(member.getId(), teamId)
-                    : attendanceRepo.findByUserIdAndTeamIdAndDateBetween(member.getId(), teamId, periodStart, periodEnd);
-            double totalRegularHours = attendances.stream().mapToDouble(a -> a.getRegularHours() != null ? a.getRegularHours() : 0.0).sum();
-            double totalOvertimeHours = attendances.stream().mapToDouble(a -> a.getOvertimeHours() != null ? a.getOvertimeHours() : 0.0).sum();
-
-            // Use hourly rate from tasks or default 50000 VND/hour
-            double avgRate = teamTasks.stream()
-                .filter(t -> t.getHourlyRate() != null)
-                .mapToDouble(Task::getHourlyRate)
-                .average().orElse(50000);
-            
-            // Overtime rate defaults to 1.5x of normal rate
-            double defaultOvertimeRate = avgRate * 1.5;
+                    : attendanceRepo.findByUserIdAndTeamIdAndDateBetween(member.getId(), teamId, periodStart, periodEnd))
+                    .stream()
+                    .filter(a -> a.getCheckInTime() != null && a.getCheckOutTime() != null)
+                    .collect(Collectors.toList());
+            double totalRegularHours = 0;
+            double totalOvertimeHours = 0;
+            double estimatedSalary = 0;
+            double avgRate = 50000;
+            double defaultOvertimeRate = 75000;
+            for (Attendance a : attendances) {
+                double standard = a.getStandardHours() != null && a.getStandardHours() > 0 ? a.getStandardHours() : 8.0;
+                double rate = a.getHourlyRateVnd() != null && a.getHourlyRateVnd() > 0 ? a.getHourlyRateVnd() : 50000.0;
+                double multiplier = a.getOvertimeMultiplier() != null && a.getOvertimeMultiplier() >= 1.5
+                        ? a.getOvertimeMultiplier() : 1.5;
+                long elapsed = Math.max(0L, java.time.Duration.between(a.getCheckInTime(), a.getCheckOutTime()).toMinutes());
+                long breakMins = Math.min(elapsed, Math.max(0, a.getBreakMinutes() == null ? 0 : a.getBreakMinutes()));
+                double worked = Math.round(((elapsed - breakMins) / 60.0) * 10000.0) / 10000.0;
+                double reg = Math.round(Math.min(worked, standard) * 10000.0) / 10000.0;
+                double ot = Math.round(Math.max(0.0, worked - reg) * 10000.0) / 10000.0;
+                totalRegularHours += reg;
+                totalOvertimeHours += ot;
+                estimatedSalary += Math.round(reg * rate) + Math.round(ot * rate * multiplier);
+                avgRate = rate;
+                defaultOvertimeRate = rate * multiplier;
+            }
+            totalRegularHours = Math.round(totalRegularHours * 10000.0) / 10000.0;
+            totalOvertimeHours = Math.round(totalOvertimeHours * 10000.0) / 10000.0;
 
             SalaryDTO dto = new SalaryDTO();
             dto.setMemberId(member.getId().toString());
@@ -534,16 +549,11 @@ public class TaskService {
             dto.setCompletedTasks(completed);
             dto.setTotalWorkload(totalWorkload);
             dto.setTotalActualWorkload(totalWorkload);
-            
             dto.setRegularHours(totalRegularHours);
             dto.setOvertimeHours(totalOvertimeHours);
             dto.setHourlyRate(avgRate);
             dto.setOvertimeRate(defaultOvertimeRate);
-            
-            // Salary calculation based on Attendance, not Task Workload anymore
-            // Fallback to totalWorkload if no attendance data exists (backward compatibility or testing)
-            double billableRegular = totalRegularHours > 0 ? totalRegularHours : totalWorkload;
-            dto.setEstimatedSalary((billableRegular * avgRate) + (totalOvertimeHours * defaultOvertimeRate));
+            dto.setEstimatedSalary(estimatedSalary);
             report.add(dto);
         }
         return report;
@@ -900,8 +910,7 @@ public class TaskService {
                 row.createCell(4).setCellValue(s.getRegularHours());
                 row.createCell(5).setCellValue(s.getOvertimeHours());
                 row.createCell(6).setCellValue(s.getHourlyRate());
-                double salary = (s.getRegularHours() > 0 ? s.getRegularHours() : s.getTotalWorkload()) * s.getHourlyRate()
-                        + (s.getOvertimeHours() * s.getOvertimeRate());
+                double salary = s.getEstimatedSalary();
                 totalSalary += salary;
                 row.createCell(7).setCellValue(salary);
             }
@@ -922,33 +931,7 @@ public class TaskService {
     }
 
     public Map<String, Object> payoutSalary(UUID teamId, UUID actorId, Integer year, Integer month) {
-        List<SalaryDTO> report = getSalaryReport(teamId, year, month);
-        double totalSalary = report.stream()
-                .mapToDouble(s -> {
-                    // Use attendance hours if available, fallback to task workload (same as getSalaryReport)
-                    double billableRegular = s.getRegularHours() > 0 ? s.getRegularHours() : s.getTotalWorkload();
-                    double overtimeHours = s.getOvertimeHours() > 0 ? s.getOvertimeHours() : 0;
-                    return (billableRegular * s.getHourlyRate())
-                            + (overtimeHours * s.getOvertimeRate());
-                })
-                .sum();
-        if (totalSalary <= 0) {
-            throw new RuntimeException("Khong co luong de phat cho nhom nay.");
-        }
-        User actor = userRepo.findById(actorId).orElseThrow(() -> new RuntimeException("User not found"));
-        String description = "Phat luong thang cho " + report.size() + " nhan vien. Tong quy: "
-                + String.format("%,.0f", totalSalary) + " VND.";
-        notificationService.createAndSend(
-                actor,
-                "Phat luong thanh cong",
-                description,
-                "SALARY_PAYOUT",
-                null);
-        return Map.of(
-                "message", "Phat luong thanh cong",
-                "totalEmployees", report.size(),
-                "totalSalary", totalSalary,
-                "currency", "VND");
+        throw new RuntimeException("Bảng lương chỉ ở trạng thái nháp (DRAFT) và không hỗ trợ giải ngân tự động.");
     }
 
     public void saveSalaryPayout(UUID teamId, UUID actorId, double totalAmount, Long payosOrderId, String checkoutUrl) {

@@ -160,21 +160,19 @@ public class TaskController {
         return ResponseEntity.ok(taskService.getDependencies(id));
     }
 
-    @GetMapping("/{id}/checklists")
+    @GetMapping({"/{id}/checklists", "/{id}/checklist"})
     public ResponseEntity<?> getChecklist(@PathVariable UUID id, @AuthenticationPrincipal User user) {
         accessControlService.requireTaskAccess(user, id);
         return ResponseEntity.ok(taskService.getChecklist(id));
     }
 
-
-
-    @PostMapping("/{id}/checklists")
+    @PostMapping({"/{id}/checklists", "/{id}/checklist"})
     public ResponseEntity<?> addChecklistItem(@PathVariable UUID id, @RequestBody Map<String, String> body, @AuthenticationPrincipal User user) {
         accessControlService.requireTaskModifierAccess(user, id);
         return ResponseEntity.ok(taskService.addChecklistItem(id, body.get("content")));
     }
 
-    @PatchMapping("/checklists/{checklistId}/toggle")
+    @PatchMapping({"/checklists/{checklistId}/toggle", "/checklist/{checklistId}/toggle"})
     public ResponseEntity<?> toggleChecklist(@PathVariable UUID checklistId, @AuthenticationPrincipal User user) {
         accessControlService.requireChecklistAccess(user, checklistId);
         taskService.toggleChecklistItem(checklistId);
@@ -196,7 +194,7 @@ public class TaskController {
                                              @RequestParam(required = false) Integer year,
                                              @RequestParam(required = false) Integer month,
                                              @AuthenticationPrincipal User user) {
-        accessControlService.requireTeamMember(user, teamId);
+        accessControlService.requireTeamAdmin(user, teamId);
         return ResponseEntity.ok(taskService.getSalaryReport(teamId, year, month));
     }
 
@@ -205,7 +203,7 @@ public class TaskController {
                                                     @RequestParam(required = false) Integer year,
                                                     @RequestParam(required = false) Integer month,
                                                     @AuthenticationPrincipal User user) throws Exception {
-        accessControlService.requireTeamMember(user, teamId);
+        accessControlService.requireTeamAdmin(user, teamId);
         byte[] excelBytes = taskService.exportSalaryExcel(teamId, year, month);
         String period = year != null && month != null ? "-" + year + "-" + String.format("%02d", month) : "";
         String filename = "bang-luong-" + teamId + period + ".xlsx";
@@ -220,38 +218,8 @@ public class TaskController {
             @RequestParam(required = false) Integer year,
             @RequestParam(required = false) Integer month,
             @AuthenticationPrincipal User user) {
-        // We get totalSalary from taskService
-        Map<String, Object> mockResult = taskService.payoutSalary(teamId, user.getId(), year, month);
-        double totalSalary = (double) mockResult.get("totalSalary");
-        
-        // Generate PayOS link
-        Map<String, Object> payosResult = payosPaymentService.createSalaryPaymentLink(user, teamId.toString(), (long) totalSalary);
-        
-        // Extract order code and url from the PayosPaymentService response (flat: {checkoutUrl, txnRef})
-        Long orderCode = null;
-        String checkoutUrl = null;
-        if (payosResult != null) {
-            if (payosResult.containsKey("checkoutUrl") && payosResult.get("checkoutUrl") != null) {
-                checkoutUrl = payosResult.get("checkoutUrl").toString();
-            }
-            if (payosResult.containsKey("txnRef") && payosResult.get("txnRef") != null) {
-                String txnRefStr = payosResult.get("txnRef").toString();
-                try {
-                    orderCode = Long.parseLong(txnRefStr);
-                } catch (NumberFormatException ignored) {
-                    orderCode = null;
-                }
-            }
-        }
-
-        taskService.saveSalaryPayout(teamId, user.getId(), totalSalary, orderCode, checkoutUrl);
-
-        Map<String, Object> response = new LinkedHashMap<>();
-        response.put("checkoutUrl", checkoutUrl);
-        response.put("txnRef", payosResult != null ? payosResult.get("txnRef") : null);
-        response.put("totalSalary", totalSalary);
-        response.put("teamId", teamId.toString());
-        return ResponseEntity.ok(response);
+        accessControlService.requireTeamAdmin(user, teamId);
+        return ResponseEntity.ok(taskService.payoutSalary(teamId, user.getId(), year, month));
     }
 
     @DeleteMapping("/{id}")
