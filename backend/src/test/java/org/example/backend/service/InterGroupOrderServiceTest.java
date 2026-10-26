@@ -284,11 +284,46 @@ class InterGroupOrderServiceTest {
         assertThat(order.getBuyerViewed()).isFalse();
     }
 
-    @Test
-    @DisplayName("markOrdersAsViewed is a no-op for empty list")
-    void markOrdersAsViewed_emptyListNoOp() {
+    @Test void markOrdersAsViewed_emptyListNoOp() {
         service.markOrdersAsViewed(java.util.List.of(), "BUYER");
         service.markOrdersAsViewed(null, "BUYER");
         verify(orderRepo, never()).saveAll(any());
+    }
+
+    @Test void factoryProvidedDeliveryDeductsStockWhileBlankOrCustomerMaterialDoesNot() {
+        order.setQuantity(10); order.setMaterialSource("FACTORY_PROVIDED"); order.setProductType("Arabica");
+        when(orderRepo.findById(orderId)).thenReturn(Optional.of(order));
+        when(orderRepo.save(any())).thenAnswer(i -> i.getArgument(0));
+        service.deliverOrder(orderId, "delivered", sellerOwner, null);
+        verify(inventoryService).deductPackagedStock(sellerTeam.getId(), "Arabica", 10.0);
+    }
+
+    @Test void customerProvidedMaterialDeliveryDoesNotDeductFactoryPackagedStock() {
+        order.setQuantity(10); order.setMaterialSource("CUSTOMER_PROVIDED");
+        when(orderRepo.findById(orderId)).thenReturn(Optional.of(order));
+        when(orderRepo.save(any())).thenAnswer(i -> i.getArgument(0));
+        service.deliverOrder(orderId, "delivered", sellerOwner, null);
+        order.setStatus(OrderStatus.SHIPPING.name()); order.setMaterialSource(null);
+        service.deliverOrder(orderId, "delivered", sellerOwner, null);
+        verify(inventoryService, never()).deductPackagedStock(any(), any(), any(Double.class));
+    }
+
+    @Test void repeatedUpdateOrderStatusToDeliveredIsIdempotentForStock() {
+        order.setQuantity(10); order.setMaterialSource("FACTORY_PROVIDED"); order.setProductType("Robusta"); order.setStatus(OrderStatus.DELIVERED.name());
+        when(orderRepo.findById(orderId)).thenReturn(Optional.of(order));
+        when(orderRepo.save(any())).thenAnswer(i -> i.getArgument(0));
+        service.updateOrderStatus(orderId, "DELIVERED", sellerOwner);
+        verify(inventoryService, never()).deductPackagedStock(any(), any(), any(Double.class));
+    }
+
+    @Test void acceptOrderPropagatesBootstrapFailures() {
+        order.setStatus(OrderStatus.RFQ_CREATED.name());
+        org.example.backend.entity.Goal savedGoal = new org.example.backend.entity.Goal(); savedGoal.setId(UUID.randomUUID());
+        TaskService tasks = mock(TaskService.class); setField(service, "taskService", tasks);
+        when(orderRepo.findById(orderId)).thenReturn(Optional.of(order));
+        when(goalRepo.save(any())).thenReturn(savedGoal);
+        when(orderRepo.save(any())).thenAnswer(i -> i.getArgument(0));
+        when(tasks.create(any())).thenThrow(new IllegalStateException("task bootstrap failed"));
+        assertThatThrownBy(() -> service.acceptOrder(orderId, sellerOwner)).isInstanceOf(IllegalStateException.class);
     }
 }

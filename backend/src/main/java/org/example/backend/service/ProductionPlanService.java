@@ -133,6 +133,10 @@ public class ProductionPlanService {
         double prevRoast = target.getActualRoastKg() != null ? target.getActualRoastKg() : 0.0;
         double prevPackaged = target.getActualPackagedKg() != null ? target.getActualPackagedKg() : 0.0;
 
+        if ((actualRoastKg != null && (!Double.isFinite(actualRoastKg) || actualRoastKg < prevRoast))
+                || (actualPackagedKg != null && (!Double.isFinite(actualPackagedKg) || actualPackagedKg < prevPackaged))) {
+            throw new IllegalArgumentException("Recorded production cannot decrease; use a stock correction workflow");
+        }
         if (actualRoastKg != null) target.setActualRoastKg(actualRoastKg);
         if (actualQcKg != null) target.setActualQcKg(actualQcKg);
         if (actualQcFailKg != null) target.setActualQcFailKg(actualQcFailKg);
@@ -147,15 +151,11 @@ public class ProductionPlanService {
                     ? target.getOrder().getProductType() : "Robusta";
             if (actualRoastKg != null && actualRoastKg > prevRoast) {
                 double deltaRoast = actualRoastKg - prevRoast;
-                try {
-                    inventoryService.transferStock(teamId, pType, "GREEN", "ROASTED", deltaRoast);
-                } catch (Exception ignored) {}
+                inventoryService.transferStock(teamId, pType, "GREEN", "ROASTED", deltaRoast);
             }
             if (actualPackagedKg != null && actualPackagedKg > prevPackaged) {
                 double deltaPkg = actualPackagedKg - prevPackaged;
-                try {
-                    inventoryService.transferStock(teamId, pType, "ROASTED", "PACKAGED", deltaPkg);
-                } catch (Exception ignored) {}
+                inventoryService.transferStock(teamId, pType, "ROASTED", "PACKAGED", deltaPkg);
             }
         }
 
@@ -196,13 +196,13 @@ public class ProductionPlanService {
     private void updateOrderCompletedQuantity(UUID orderId) {
         List<DailyTarget> allTargets = targetRepo.findByOrderIdOrderByTargetDateAsc(orderId);
         double totalCompleted = allTargets.stream()
-                .filter(t -> t.getTotalActualKg() != null)
-                .mapToDouble(DailyTarget::getTotalActualKg)
+                .filter(t -> t.getActualPackagedKg() != null)
+                .mapToDouble(DailyTarget::getActualPackagedKg)
                 .sum();
         ProductionOrder order = orderRepo.findById(orderId).orElse(null);
         if (order != null) {
             order.setCompletedQuantity(totalCompleted);
-            if (totalCompleted >= (order.getOutputTarget() != null ? order.getOutputTarget() : 0)) {
+            if (order.getOutputTarget() != null && order.getOutputTarget() > 0 && totalCompleted >= order.getOutputTarget()) {
                 order.setStatus("COMPLETED");
             }
             orderRepo.save(order);

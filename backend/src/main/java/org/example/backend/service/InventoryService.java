@@ -60,8 +60,13 @@ public class InventoryService {
      * <p>Each retry runs in a NEW transaction so the previous (failed) one
      * is fully rolled back before the next attempt.
      */
-    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public void runWithOptimisticRetry(Runnable action) {
+        // An owning order/task transaction must commit or roll back with its stock.
+        // Conflicts in that case must retry the entire business operation, not just stock.
+        if (org.springframework.transaction.support.TransactionSynchronizationManager.isActualTransactionActive()) {
+            action.run();
+            return;
+        }
         OptimisticLockingFailureException last = null;
         for (int attempt = 1; attempt <= MAX_OPTIMISTIC_RETRIES; attempt++) {
             try {
@@ -269,7 +274,7 @@ public class InventoryService {
     }
 
     /** Inner transaction body — runs in {@code REQUIRES_NEW} per retry. */
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     public void doTransferStock(UUID teamId, String productType, String fromState, String toState, double quantity) {
         Team team = teamRepo.findById(teamId)
                 .orElseThrow(() -> new RuntimeException("Team not found"));
@@ -280,8 +285,12 @@ public class InventoryService {
                 : quantity;
 
         // Deduct from source
-        InventoryItem source = getOrCreate(team, productType, fromState);
-        double newSourceQty = Math.max(0, source.getQuantity() - sourceDeduction);
+        InventoryItem source = inventoryRepo.findByTeamIdAndProductTypeAndProductState(teamId, productType, fromState)
+                .orElseThrow(() -> new IllegalStateException("Insufficient source stock: " + productType + " " + fromState));
+        if (source.getQuantity() < sourceDeduction) {
+            throw new IllegalStateException("Insufficient source stock: " + productType + " " + fromState);
+        }
+        double newSourceQty = source.getQuantity() - sourceDeduction;
         source.setQuantity(newSourceQty);
         inventoryRepo.save(source);
 
@@ -302,14 +311,15 @@ public class InventoryService {
     }
 
     /** Inner transaction body — runs in {@code REQUIRES_NEW} per retry. */
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     public void doDeductPackagedStock(UUID teamId, String productType, double quantity) {
         InventoryItem item = inventoryRepo.findByTeamIdAndProductTypeAndProductState(teamId, productType, "PACKAGED")
-                .orElse(null);
-        if (item != null) {
-            item.setQuantity(Math.max(0, item.getQuantity() - quantity));
-            inventoryRepo.save(item);
+                .orElseThrow(() -> new IllegalStateException("Insufficient packaged stock: " + productType));
+        if (item.getQuantity() < quantity) {
+            throw new IllegalStateException("Insufficient packaged stock: " + productType);
         }
+        item.setQuantity(item.getQuantity() - quantity);
+        inventoryRepo.save(item);
     }
 
     /**

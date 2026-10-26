@@ -57,9 +57,27 @@ public class PayrollService {
         double defaultOt = teamSettings != null && teamSettings.getOvertimeMultiplier() != null
                 ? teamSettings.getOvertimeMultiplier() : 1.5;
         Map<UUID, Double> memberRates = rates.ratesForTeam(teamId);
-        List<Map<String, Object>> items = members.findByTeamId(teamId).stream()
-                .filter(m -> m.getUser() != null)
-                .map(m -> memberRow(m, period, memberRates.getOrDefault(m.getUser().getId(), defaultRate), defaultOt))
+        Map<UUID, TeamMember> currentMembers = new LinkedHashMap<>();
+        Map<UUID, User> people = new LinkedHashMap<>();
+        for (TeamMember member : members.findByTeamId(teamId)) {
+            if (member.getUser() != null) {
+                currentMembers.put(member.getUser().getId(), member);
+                people.put(member.getUser().getId(), member.getUser());
+            }
+        }
+        Map<UUID, List<Attendance>> shiftsByUser = new LinkedHashMap<>();
+        for (Attendance shift : attendances.findByTeamIdAndDateBetween(
+                teamId, period.atDay(1), period.atEndOfMonth())) {
+            if (shift.getUser() != null) {
+                UUID userId = shift.getUser().getId();
+                people.putIfAbsent(userId, shift.getUser());
+                shiftsByUser.computeIfAbsent(userId, ignored -> new ArrayList<>()).add(shift);
+            }
+        }
+        List<Map<String, Object>> items = people.values().stream()
+                .map(person -> memberRow(person, currentMembers.get(person.getId()),
+                        shiftsByUser.getOrDefault(person.getId(), List.of()),
+                        memberRates.getOrDefault(person.getId(), defaultRate), defaultOt))
                 .toList();
         Map<String, Object> summary = new LinkedHashMap<>();
         summary.put("memberCount", items.size());
@@ -79,6 +97,7 @@ public class PayrollService {
         summary.put("totalTasks", 0);
         summary.put("completedTasks", 0);
         summary.put("missingCheckoutCount", items.stream().mapToInt(i -> (int) num(i, "missingCheckoutDays")).sum());
+        summary.put("needsReviewCount", items.stream().mapToInt(i -> (int) num(i, "needsReviewCount")).sum());
         Map<String, Object> report = new LinkedHashMap<>();
         report.put("runId", teamId + ":" + period);
         report.put("teamId", teamId.toString());
@@ -103,7 +122,7 @@ public class PayrollService {
                     "STT", "Mã NV", "Họ và tên", "Vị trí / Công đoạn", "Số ngày công",
                     "Giờ thường (h)", "Giờ tăng ca (h)", "Đơn giá/giờ (VNĐ)",
                     "Lương cơ bản (VNĐ)", "Lương tăng ca (VNĐ)", "Phụ cấp & Thưởng (VNĐ)",
-                    "Thực nhận (VNĐ)", "Địa điểm điểm danh gần nhất"
+                    "Thực nhận (VNĐ)", "Địa điểm điểm danh gần nhất", "Số ca cần rà soát"
             };
             Row hRow = sheet.createRow(0);
             for (int i = 0; i < headers.length; i++) {
@@ -120,7 +139,11 @@ public class PayrollService {
                 row.createCell(4).setCellValue((int) num(item, "attendanceDays"));
                 row.createCell(5).setCellValue(num(item, "regularHours"));
                 row.createCell(6).setCellValue(num(item, "overtimeHours"));
-                row.createCell(7).setCellValue(num(item, "hourlyRateVnd"));
+                if (item.get("historicalHourlyRateVnd") instanceof Number rateCell) {
+                    row.createCell(7).setCellValue(rateCell.doubleValue());
+                } else {
+                    row.createCell(7).setCellValue(text(item, "historicalRateLabel"));
+                }
                 row.createCell(8).setCellValue(num(item, "regularPayVnd"));
                 row.createCell(9).setCellValue(num(item, "overtimePayVnd"));
                 row.createCell(10).setCellValue(num(item, "allowanceVnd"));
@@ -128,6 +151,7 @@ public class PayrollService {
                 totalNet += net;
                 row.createCell(11).setCellValue(net);
                 row.createCell(12).setCellValue(text(item, "lastCheckInAddress"));
+                row.createCell(13).setCellValue(num(item, "needsReviewCount"));
             }
             Row totalRow = sheet.createRow(items.size() + 1);
             totalRow.createCell(2).setCellValue("TỔNG QUỸ LƯƠNG THÁNG");
@@ -142,10 +166,9 @@ public class PayrollService {
         }
     }
 
-    private Map<String, Object> memberRow(TeamMember member, YearMonth period, double memberRate, double defaultOt) {
-        User person = member.getUser();
-        List<Attendance> shifts = new ArrayList<>(attendances.findByUserIdAndTeamIdAndDateBetween(
-                person.getId(), member.getTeam().getId(), period.atDay(1), period.atEndOfMonth()));
+    private Map<String, Object> memberRow(User person, TeamMember member, List<Attendance> attendance,
+            double memberRate, double defaultOt) {
+        List<Attendance> shifts = new ArrayList<>(attendance);
         shifts.sort((a, b) -> {
             LocalDate da = a.getDate() != null ? a.getDate() : LocalDate.MIN;
             LocalDate db = b.getDate() != null ? b.getDate() : LocalDate.MIN;
@@ -165,12 +188,13 @@ public class PayrollService {
                 .filter(s -> s.getAttendanceStatus() == Attendance.AttendanceStatus.LATE).count();
         Attendance latest = shifts.isEmpty() ? null : shifts.get(0);
         Map<String, Object> item = new LinkedHashMap<>();
-        item.put("itemId", member.getId().toString());
+        item.put("itemId", member == null ? "historical:" + person.getId() : member.getId().toString());
+        item.put("currentMember", member != null);
         item.put("memberId", person.getId().toString());
         item.put("memberCode", person.getUsername());
         item.put("memberName", person.getFullName() == null || person.getFullName().isBlank()
                 ? person.getUsername() : person.getFullName());
-        item.put("roleLabel", String.join(", ", member.getJobLabels()));
+        item.put("roleLabel", member == null ? "" : String.join(", ", member.getJobLabels()));
         item.put("regularHours", regHours);
         item.put("overtimeHours", otHours);
         item.put("attendanceDays", paidDays);
@@ -178,7 +202,25 @@ public class PayrollService {
         item.put("missingCheckoutDays", missingCheckouts);
         item.put("totalTasks", 0);
         item.put("completedTasks", 0);
+        List<Double> snapshotRates = lines.stream()
+                .filter(l -> Boolean.TRUE.equals(l.get("payable")) && l.get("hourlyRateVnd") instanceof Number)
+                .map(l -> ((Number) l.get("hourlyRateVnd")).doubleValue())
+                .distinct().sorted().toList();
+        if (snapshotRates.isEmpty()) {
+            snapshotRates = lines.stream()
+                    .filter(l -> l.get("hourlyRateVnd") instanceof Number)
+                    .map(l -> ((Number) l.get("hourlyRateVnd")).doubleValue())
+                    .distinct().sorted().toList();
+        }
+        Double historicalRate = snapshotRates.size() == 1 ? snapshotRates.getFirst() : null;
+        String historicalRateLabel = snapshotRates.size() == 1
+                ? formatRate(snapshotRates.getFirst())
+                : snapshotRates.size() > 1
+                ? "Nhiều mức: " + snapshotRates.stream().map(PayrollService::formatRate).reduce((a, b) -> a + ", " + b).orElse("")
+                : lines.isEmpty() ? "" : "Chưa rõ";
         item.put("hourlyRateVnd", memberRate);
+        item.put("historicalHourlyRateVnd", historicalRate);
+        item.put("historicalRateLabel", historicalRateLabel);
         item.put("overtimeMultiplier", defaultOt);
         item.put("regularPayVnd", regPay);
         item.put("overtimePayVnd", otPay);
@@ -189,22 +231,27 @@ public class PayrollService {
         item.put("lastCheckInAddress", latest == null ? null : blankToNull(latest.getCheckInAddress()));
         item.put("lastLatitude", latest == null ? null : latest.getLatitude());
         item.put("lastLongitude", latest == null ? null : latest.getLongitude());
+        item.put("needsReviewCount", (int) lines.stream().filter(l -> Boolean.TRUE.equals(l.get("needsReview"))).count());
         item.put("attendanceLines", lines);
         return item;
     }
 
     private Map<String, Object> line(Attendance a) {
-        double standard = a.getStandardHours() != null && a.getStandardHours() > 0 ? a.getStandardHours() : 8.0;
-        double rate = a.getHourlyRateVnd() != null && a.getHourlyRateVnd() > 0 ? a.getHourlyRateVnd() : 50000.0;
-        double multiplier = a.getOvertimeMultiplier() != null && a.getOvertimeMultiplier() >= 1.5 ? a.getOvertimeMultiplier() : 1.5;
+        Double standard = positiveFinite(a.getStandardHours()) ? a.getStandardHours() : null;
+        Double rate = positiveFinite(a.getHourlyRateVnd()) ? a.getHourlyRateVnd() : null;
+        Double multiplier = positiveFinite(a.getOvertimeMultiplier()) && a.getOvertimeMultiplier() >= 1.5
+                ? a.getOvertimeMultiplier() : null;
+        boolean knownBreak = a.getBreakMinutes() != null && a.getBreakMinutes() >= 0;
+        boolean knownSnapshot = standard != null && rate != null && multiplier != null && knownBreak;
+        boolean payable = knownSnapshot && a.getCheckInTime() != null && a.getCheckOutTime() != null;
         long elapsedMinutes = a.getCheckInTime() != null && a.getCheckOutTime() != null
                 ? Math.max(0L, Duration.between(a.getCheckInTime(), a.getCheckOutTime()).toMinutes()) : 0L;
         long breakMinutes = Math.min(elapsedMinutes, Math.max(0, a.getBreakMinutes() == null ? 0 : a.getBreakMinutes()));
         double worked = round4((elapsedMinutes - breakMinutes) / 60.0);
-        double reg = round4(Math.min(worked, standard));
-        double ot = round4(Math.max(0.0, worked - reg));
-        long regPay = Math.round(reg * rate);
-        long otPay = Math.round(ot * rate * multiplier);
+        double reg = knownSnapshot ? round4(Math.min(worked, standard)) : 0.0;
+        double ot = knownSnapshot ? round4(Math.max(0.0, worked - reg)) : 0.0;
+        long regPay = payable ? Math.round(reg * rate) : 0L;
+        long otPay = payable ? Math.round(ot * rate * multiplier) : 0L;
         Map<String, Object> line = new LinkedHashMap<>();
         line.put("id", a.getId().toString());
         line.put("date", a.getDate() == null ? null : a.getDate().toString());
@@ -213,12 +260,17 @@ public class PayrollService {
         line.put("regularHours", reg);
         line.put("overtimeHours", ot);
         line.put("workedHours", worked);
+        line.put("snapshotStatus", knownSnapshot ? "KNOWN" : "UNKNOWN");
+        line.put("needsReview", !knownSnapshot);
+        line.put("warning", knownSnapshot ? null : "Thiếu hoặc không hợp lệ dữ liệu lương lịch sử — cần rà soát, chưa tính lương.");
+        line.put("standardHours", standard);
+        line.put("breakMinutes", knownBreak ? a.getBreakMinutes() : null);
         line.put("hourlyRateVnd", rate);
         line.put("overtimeMultiplier", multiplier);
         line.put("regularPayVnd", regPay);
         line.put("overtimePayVnd", otPay);
         line.put("totalPayVnd", regPay + otPay);
-        line.put("payable", a.getCheckInTime() != null && a.getCheckOutTime() != null);
+        line.put("payable", payable);
         String inStatus = normalizeStatus(a.getLocationStatus());
         String outStatus = normalizeStatus(a.getCheckOutLocationStatus());
         line.put("checkInAddress", blankToNull(a.getCheckInAddress()));
@@ -269,6 +321,14 @@ public class PayrollService {
 
     private static double num(Map<String, Object> row, String key) {
         return ((Number) row.getOrDefault(key, 0)).doubleValue();
+    }
+
+    private static String formatRate(double rate) {
+        return rate == Math.rint(rate) ? Long.toString(Math.round(rate)) : Double.toString(rate);
+    }
+
+    private static boolean positiveFinite(Double value) {
+        return value != null && Double.isFinite(value) && value > 0;
     }
 
     private static double round4(double value) {

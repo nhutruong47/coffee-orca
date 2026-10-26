@@ -511,6 +511,7 @@ export interface PayrollSummary {
     totalTasks: number;
     completedTasks: number;
     missingCheckoutCount: number;
+    needsReviewCount?: number;
 }
 
 export interface PayrollItem {
@@ -519,14 +520,18 @@ export interface PayrollItem {
     memberName: string;
     memberCode: string;
     roleLabel?: string;
+    currentMember?: boolean;
     regularHours: number;
     overtimeHours: number;
     attendanceDays: number;
     lateDays: number;
     missingCheckoutDays: number;
+    needsReviewCount?: number;
     totalTasks: number;
     completedTasks: number;
     hourlyRateVnd: number;
+    historicalHourlyRateVnd?: number | null;
+    historicalRateLabel?: string | null;
     overtimeMultiplier: number;
     regularPayVnd: number;
     overtimePayVnd: number;
@@ -551,8 +556,8 @@ export interface PayrollAttendanceLine extends EvidenceFields {
     regularHours: number;
     overtimeHours: number;
     workedHours: number;
-    hourlyRateVnd: number;
-    overtimeMultiplier: number;
+    hourlyRateVnd: number | null;
+    overtimeMultiplier: number | null;
     regularPayVnd: number;
     overtimePayVnd: number;
     totalPayVnd: number;
@@ -567,6 +572,9 @@ export interface PayrollAttendanceLine extends EvidenceFields {
     locationVerified?: boolean | null;
     checkInPhotoUrl?: string | null;
     payable: boolean;
+    snapshotStatus?: 'VALID' | 'UNKNOWN' | string;
+    needsReview?: boolean;
+    warning?: string | null;
 }
 
 export interface PayrollReport {

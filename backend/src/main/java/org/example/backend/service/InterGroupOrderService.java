@@ -244,6 +244,7 @@ public class InterGroupOrderService {
         return toDTO(saved);
     }
 
+    @Transactional
     public InterGroupOrderDTO acceptOrder(UUID orderId, User currentUser) {
         InterGroupOrder order = orderRepo.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
@@ -356,27 +357,22 @@ public class InterGroupOrderService {
         double greenRequired = Math.ceil((qty / 0.85) * 100.0) / 100.0;
 
         if (taskService != null) {
-            try {
-                String goalIdStr = savedGoal.getId().toString();
-                createAutoTask(goalIdStr, "[QC Đầu Vào] Phân loại & đo độ ẩm nhân xanh (11.5% - 12.5%)",
-                        "Kiểm tra độ ẩm, tỷ lệ hạt lỗi và sàng phân cỡ cho lô " + order.getTitle(),
-                        "QA", greenRequired, 2.0, order.getDeadline());
-                createAutoTask(goalIdStr, "[Rang Mẻ] Gia công rang chuẩn profile & tách đá (Destoner)",
-                        "Rang theo hồ sơ nhiệt tiêu chuẩn, hao hụt dự kiến 15% cho đơn " + order.getTitle(),
-                        "RANG", qty, 4.0, order.getDeadline());
-                createAutoTask(goalIdStr, "[Cupping & QC] Đo màu Agtron, thử nếm SCA & degassing",
-                        "Kiểm định chất lượng mẻ rang và độ đồng nhất màu hạt",
-                        "QA", qty, 1.5, order.getDeadline());
-                createAutoTask(goalIdStr, "[Đóng Gói] Đóng túi van 1 chiều, hàn nhiệt & dán tem truy xuất lô",
-                        "Đóng gói thành phẩm, ghi mã lô truy xuất nguồn gốc cho đơn " + order.getTitle(),
-                        "DONG_GOI", qty, 2.5, order.getDeadline());
-            } catch (Exception ignored) {
-                // Non-fatal if task auto-generation encounters any constraint in mock tests
-            }
+            String goalIdStr = savedGoal.getId().toString();
+            createAutoTask(goalIdStr, "[QC Đầu Vào] Phân loại & đo độ ẩm nhân xanh (11.5% - 12.5%)",
+                    "Kiểm tra độ ẩm, tỷ lệ hạt lỗi và sàng phân cỡ cho lô " + order.getTitle(),
+                    "QA", greenRequired, 2.0, order.getDeadline());
+            createAutoTask(goalIdStr, "[Rang Mẻ] Gia công rang chuẩn profile & tách đá (Destoner)",
+                    "Rang theo hồ sơ nhiệt tiêu chuẩn, hao hụt dự kiến 15% cho đơn " + order.getTitle(),
+                    "RANG", qty, 4.0, order.getDeadline());
+            createAutoTask(goalIdStr, "[Cupping & QC] Đo màu Agtron, thử nếm SCA & degassing",
+                    "Kiểm định chất lượng mẻ rang và độ đồng nhất màu hạt",
+                    "QA", qty, 1.5, order.getDeadline());
+            createAutoTask(goalIdStr, "[Đóng Gói] Đóng túi van 1 chiều, hàn nhiệt & dán tem truy xuất lô",
+                    "Đóng gói thành phẩm, ghi mã lô truy xuất nguồn gốc cho đơn " + order.getTitle(),
+                    "DONG_GOI", qty, 2.5, order.getDeadline());
         }
 
         if (productionOrderService != null && sellerTeam != null && sellerTeam.getId() != null) {
-            try {
                 org.example.backend.entity.ProductionOrder po = new org.example.backend.entity.ProductionOrder();
                 po.setTitle(order.getTitle());
                 po.setDescription(order.getDescription());
@@ -403,9 +399,6 @@ public class InterGroupOrderService {
                 if (productionPlanService != null && createdPo != null && createdPo.getId() != null) {
                     productionPlanService.generatePlan(createdPo.getId());
                 }
-            } catch (Exception ignored) {
-                // Non-fatal in unit tests
-            }
         }
     }
 
@@ -422,6 +415,7 @@ public class InterGroupOrderService {
         taskService.create(dto);
     }
 
+    @Transactional
     public InterGroupOrderDTO rejectOrder(UUID orderId, User currentUser) {
         InterGroupOrder order = orderRepo.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
@@ -726,11 +720,7 @@ public class InterGroupOrderService {
         }
 
         transitionTo(order, OrderStatus.DELIVERED, currentUser, "deliverOrder");
-        String productType = order.getProductType() != null && !order.getProductType().isBlank()
-                ? order.getProductType() : "Robusta";
-        if (order.getQuantity() != null && order.getQuantity() > 0) {
-            inventoryService.deductPackagedStock(sellerTeam.getId(), productType, (double) order.getQuantity());
-        }
+        deductOrderPackagedStockIfNeeded(order);
         order.setDeliveryConfirmed(false);
         order.setBuyerViewed(false);
         if (deliveryNote != null && !deliveryNote.isBlank()) {
@@ -842,11 +832,7 @@ public class InterGroupOrderService {
         order.setDeliveryStatus(deliveryStatus);
         if ("SHIPPING".equals(order.getStatus())) {
             transitionTo(order, OrderStatus.DELIVERED, currentUser, "buyerConfirmDelivery:autoDeliver");
-            String productType = order.getProductType() != null && !order.getProductType().isBlank()
-                    ? order.getProductType() : "Robusta";
-            if (order.getQuantity() != null && order.getQuantity() > 0) {
-                inventoryService.deductPackagedStock(order.getSellerTeam().getId(), productType, (double) order.getQuantity());
-            }
+            deductOrderPackagedStockIfNeeded(order);
         }
         transitionTo(order, OrderStatus.COMPLETED, currentUser, "buyerConfirmDelivery");
 
@@ -892,6 +878,19 @@ public class InterGroupOrderService {
     }
 
     // === Helper methods ===
+
+    private void deductOrderPackagedStockIfNeeded(InterGroupOrder order) {
+        String matSource = order.getMaterialSource();
+        if (!"FACTORY_PROVIDED".equals(matSource) && !"COMBINED".equals(matSource)) {
+            return;
+        }
+        if (order.getQuantity() == null || order.getQuantity() <= 0 || order.getSellerTeam() == null) {
+            return;
+        }
+        String productType = order.getProductType() != null && !order.getProductType().isBlank()
+                ? order.getProductType() : "Robusta";
+        inventoryService.deductPackagedStock(order.getSellerTeam().getId(), productType, (double) order.getQuantity());
+    }
 
     /** Map delivery fields from DTO to entity */
     private void mapDeliveryFields(InterGroupOrder order, InterGroupOrderDTO dto) {
@@ -1069,26 +1068,15 @@ public class InterGroupOrderService {
             throw new RuntimeException("Chỉ chủ xưởng mới được cập nhật trạng thái.");
         }
 
+        OrderStatus current = OrderStatus.fromLegacy(order.getStatus());
         OrderStatus target = OrderStatus.fromLegacy(newStatus);
         transitionTo(order, target, currentUser, "updateOrderStatus");
         order.setBuyerViewed(false);
 
-        // Auto deduct inventory when DELIVERED + factory-provided materials
-        if (target == OrderStatus.DELIVERED) {
+        // Auto deduct inventory when entering DELIVERED for the first time with factory-provided materials
+        if (target == OrderStatus.DELIVERED && current != OrderStatus.DELIVERED) {
             order.setDeliveryConfirmed(false);
-            String matSource = order.getMaterialSource();
-            if (matSource == null || "FACTORY_PROVIDED".equals(matSource) || "COMBINED".equals(matSource)) {
-                String productType = order.getProductType();
-                if (productType != null && !productType.isBlank() && order.getQuantity() != null) {
-                    try {
-                        inventoryService.deductPackagedStock(
-                                order.getSellerTeam().getId(), productType, order.getQuantity());
-                    } catch (Exception e) {
-                        System.err.println("Auto inventory deduction failed: " + e.getMessage());
-                        throw new RuntimeException("Lỗi trừ kho: " + e.getMessage());
-                    }
-                }
-            }
+            deductOrderPackagedStockIfNeeded(order);
         }
 
         InterGroupOrder saved = orderRepo.save(order);

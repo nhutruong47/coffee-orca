@@ -15,10 +15,13 @@ public class AiController {
 
     private final AiServiceClient aiServiceClient;
     private final TeamMemberRepository teamMemberRepo;
+    private final org.example.backend.service.AccessControlService accessControlService;
 
-    public AiController(AiServiceClient aiServiceClient, TeamMemberRepository teamMemberRepo) {
+    public AiController(AiServiceClient aiServiceClient, TeamMemberRepository teamMemberRepo,
+                        org.example.backend.service.AccessControlService accessControlService) {
         this.aiServiceClient = aiServiceClient;
         this.teamMemberRepo = teamMemberRepo;
+        this.accessControlService = accessControlService;
     }
 
     /**
@@ -27,17 +30,19 @@ public class AiController {
      */
     @PostMapping("/parse")
     public ResponseEntity<AiParseResult> parseText(@RequestBody Map<String, String> payload) {
-        System.out.println("DEBUG AiController - parseText called with: " + payload);
+
         String text = payload.getOrDefault("text", "");
         String teamIdStr = payload.get("teamId");
         if (text.isBlank()) {
             return ResponseEntity.badRequest().build();
         }
 
-        java.util.UUID teamId = null;
-        if (teamIdStr != null && !teamIdStr.isBlank()) {
-            try { teamId = java.util.UUID.fromString(teamIdStr); } catch (Exception ignored) {}
-        }
+        UUID teamId;
+        try { teamId = UUID.fromString(teamIdStr); }
+        catch (RuntimeException invalid) { return ResponseEntity.badRequest().build(); }
+        var authentication = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        var user = authentication != null && authentication.getPrincipal() instanceof org.example.backend.entity.User u ? u : null;
+        accessControlService.requireTeamMember(user, teamId);
 
         // Build member context from team members' job labels
         String memberContext = "";

@@ -104,36 +104,29 @@ public class AiServiceClient {
     }
 
     public AiParseResult parseTask(String text, java.util.UUID teamId, String memberContext, String historyContext) {
-        String inventoryContext = "";
-        if (teamId != null) {
-            List<InventoryItem> items = inventoryRepository.findByTeamIdOrderByLastUpdatedDesc(teamId);
-            if (!items.isEmpty()) {
-                StringBuilder sb = new StringBuilder();
-                sb.append("\n--- TÌNH TRẠNG KHO HIỆN TẠI ---\n");
-                for (InventoryItem item : items) {
-                    sb.append("- ").append(item.getName())
-                      .append(": ").append(item.getQuantity()).append(" ").append(item.getUnit()).append("\n");
-                }
-                sb.append("LƯU Ý QUAN TRỌNG: Nếu yêu cầu sản lượng VƯỢT QUÁ số lượng nguyên liệu có trong kho (tính cả hao hụt rang 15%, tức cần Nhân xanh = Thành phẩm / 0.85), BẠN PHẢI GHI CẢNH BÁO RÕ RÀNG vào đầu mục 'description' (VD: ⚠️ CẢNH BÁO: Trong kho chỉ còn ... không đủ nguyên liệu).\n\n");
-                inventoryContext = sb.toString();
-            }
-            if (attendanceRepository != null) {
-                var todayAtt = attendanceRepository.findByTeamIdAndDate(teamId, java.time.LocalDate.now());
-                if (!todayAtt.isEmpty()) {
-                    StringBuilder attSb = new StringBuilder(inventoryContext);
-                    attSb.append("--- NHÂN SỰ ĐÃ ĐIỂM DANH CA HÔM NAY ---\n");
-                    for (var a : todayAtt) {
-                        String uName = a.getUser().getFullName() != null ? a.getUser().getFullName() : a.getUser().getUsername();
-                        attSb.append("- ").append(uName)
-                             .append(" (Ca: ").append(a.getShiftType() != null ? a.getShiftType().name() : "NGAY")
-                             .append(", Công đoạn: ").append(a.getStage() != null ? a.getStage().name() : "RANG")
-                             .append(")\n");
-                    }
-                    attSb.append("Ưu tiên phân công nhiệm vụ cho các nhân sự đã điểm danh có mặt tại xưởng hôm nay.\n\n");
-                    inventoryContext = attSb.toString();
-                }
-            }
+        if (teamId == null) throw new IllegalArgumentException("teamId is required");
+        if (text == null || text.isBlank()) throw new IllegalArgumentException("text is required");
+        StringBuilder facts = new StringBuilder("\n--- TÌNH TRẠNG KHO HIỆN TẠI ---\n");
+        List<InventoryItem> items = inventoryRepository.findByTeamIdOrderByLastUpdatedDesc(teamId);
+        if (items.isEmpty()) facts.append("KHO TRỐNG: Không có nguyên liệu được ghi nhận. Không được giả định đủ kho.\n");
+        for (InventoryItem item : items) {
+            facts.append("- ").append(item.getProductType()).append(" / ").append(item.getProductState())
+                    .append(": ").append(item.getQuantity()).append(" ").append(item.getUnit()).append("\n");
         }
+        facts.append("Chỉ dùng đúng loại sản phẩm và trạng thái, không cộng đơn vị khác nhau. "
+                + "Hao hụt rang 15%: nhân xanh = thành phẩm / 0.85. Cảnh báo rõ nếu không đủ nguyên liệu.\n");
+        facts.append("--- NHÂN SỰ KHẢ DỤNG TRONG CA ĐANG MỞ ---\n");
+        if (attendanceRepository != null) {
+            var available = AiOperationalContext.available(attendanceRepository, teamId, java.time.LocalDateTime.now());
+            if (available.isEmpty()) facts.append("KHÔNG CÓ NHÂN SỰ KHẢ DỤNG. Không tự phân công người chưa có mặt.\n");
+            for (var a : available) {
+                facts.append("- ").append(a.getUser().getUsername()).append(" (Ca: ").append(a.getShiftType())
+                        .append(", Công đoạn: ").append(a.getStage()).append(")\n");
+            }
+        } else facts.append("Chưa xác minh được nhân sự khả dụng.\n");
+        facts.append("Danh sách thành viên/nhãn chỉ mô tả kỹ năng, không chứng minh đang có mặt. "
+                + "Chỉ phân công ca hiện tại cho nhân sự khả dụng; lịch ca tương lai cần xác nhận.\n");
+        String inventoryContext = facts.toString();
 
         AiParseResult result = null;
         String apiKey = resolveGeminiApiKey();
@@ -141,28 +134,16 @@ public class AiServiceClient {
             try {
                 result = parseWithGemini(text, memberContext, historyContext, inventoryContext, apiKey, resolveGeminiModel());
             } catch (Exception e) {
-                logger.error("⚠️ Lỗi gọi Gemini: {}", e.getMessage(), e);
-                result = new AiParseResult();
-                result.setTitle("LỖI KẾT NỐI AI");
-                result.setDescription("❌ Google Cloud từ chối kết nối. Lỗi chi tiết: **" + e.getMessage() + "**\n\nNếu bạn thấy lỗi 403 hoặc 400, có nghĩa là **API Key này đã bị hỏng/hết hạn hoặc chưa được cấp quyền truy cập AI**.");
-                result.setNeedsClarification(true);
+                logger.warn("AI provider unavailable ({})", e.getClass().getSimpleName());
+                result = unavailableResult();
             }
         }
         if (result == null) {
-            result = parseWithRegex(text);
+            result = unavailableResult();
         }
 
-        if (result.getTasks() == null || result.getTasks().isEmpty()) {
-            List<Map<String, Object>> fallbackTasks = new ArrayList<>();
-            Map<String, Object> genericTask = new HashMap<>();
-            genericTask.put("title", "Xử lý yêu cầu: " + (result.getTitle() != null ? result.getTitle() : text));
-            genericTask.put("description", result.getDescription() != null ? result.getDescription() : "Thực hiện công việc theo yêu cầu.");
-            genericTask.put("workload", 8.0);
-            genericTask.put("priority", 2);
-            genericTask.put("assigneeRole", "Senior");
-            fallbackTasks.add(genericTask);
-            result.setTasks(fallbackTasks);
-        }
+        if (result.getTasks() == null) result.setTasks(Collections.emptyList());
+        if (Boolean.TRUE.equals(result.getNeedsClarification())) result.setTasks(Collections.emptyList());
         
         return result;
     }
@@ -346,12 +327,13 @@ public class AiServiceClient {
         }
     }
 
-    private AiParseResult parseWithRegex(String text) {
+    private AiParseResult unavailableResult() {
         AiParseResult result = new AiParseResult();
-        result.setSource("regex");
-        result.setTitle("Kế hoạch: " + text.substring(0, Math.min(text.length(), 50)));
-        result.setDescription("Hệ thống tự động biên dịch do AI Model gặp lỗi hoặc không khả dụng.");
-        result.setNeedsClarification(false);
+        result.setSource("unavailable");
+        result.setTitle("AI không khả dụng");
+        result.setDescription("Không thể lập kế hoạch AI. Vui lòng thử lại sau hoặc lập kế hoạch thủ công.");
+        result.setNeedsClarification(true);
+        result.setTasks(Collections.emptyList());
         return result;
     }
 }

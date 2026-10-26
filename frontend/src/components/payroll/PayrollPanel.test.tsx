@@ -120,4 +120,84 @@ describe('PayrollPanel', () => {
         expect(screen.getAllByText('Cách tính thực nhận').length).toBeGreaterThan(0);
         expect(screen.getAllByText('Chấm công từng ngày').length).toBeGreaterThan(0);
     });
+
+    it('renders former members and unknown historical wage snapshots without fabricating rates or showing future-rate editor', async () => {
+        vi.mocked(payrollService.getReport).mockResolvedValueOnce({
+            runId: 'run-history',
+            teamId: 'team-1',
+            year: 2026,
+            month: 7,
+            status: 'DRAFT',
+            updatedAt: '2026-07-31',
+            summary: {
+                memberCount: 1,
+                paidMemberCount: 0,
+                attendanceDays: 0,
+                regularHours: 0,
+                overtimeHours: 0,
+                totalHours: 0,
+                grossPayVnd: 0,
+                allowanceVnd: 0,
+                deductionVnd: 0,
+                advanceVnd: 0,
+                netPayVnd: 0,
+                totalTasks: 0,
+                completedTasks: 0,
+                missingCheckoutCount: 0,
+                needsReviewCount: 1,
+            },
+            items: [{
+                itemId: 'historical:former-1',
+                memberId: 'former-1',
+                memberName: 'Lê Hoàng Cựu',
+                memberCode: 'lehoangcuu',
+                roleLabel: 'Đã rời xưởng',
+                currentMember: false,
+                regularHours: 0,
+                overtimeHours: 0,
+                attendanceDays: 0,
+                lateDays: 0,
+                missingCheckoutDays: 0,
+                needsReviewCount: 1,
+                totalTasks: 0,
+                completedTasks: 0,
+                hourlyRateVnd: 50000,
+                historicalHourlyRateVnd: null,
+                historicalRateLabel: 'Chưa rõ',
+                overtimeMultiplier: 1.5,
+                regularPayVnd: 0,
+                overtimePayVnd: 0,
+                allowanceVnd: 0,
+                deductionVnd: 0,
+                advanceVnd: 0,
+                netPayVnd: 0,
+                attendanceLines: [{
+                    id: 'line-legacy-1',
+                    date: '2026-07-10',
+                    checkInTime: '2026-07-10T08:00:00',
+                    checkOutTime: '2026-07-10T17:00:00',
+                    regularHours: 0,
+                    overtimeHours: 0,
+                    workedHours: 0,
+                    hourlyRateVnd: null,
+                    overtimeMultiplier: null,
+                    regularPayVnd: 0,
+                    overtimePayVnd: 0,
+                    totalPayVnd: 0,
+                    payable: false,
+                    snapshotStatus: 'UNKNOWN',
+                    needsReview: true,
+                    warning: 'Thiếu hoặc sai định mức lương lịch sử; cần rà soát và không tự gán mức lương mặc định.',
+                }],
+            }],
+        });
+
+        render(<PayrollPanel teamId="team-1" defaultOpen />);
+        await screen.findAllByText(/Lê Hoàng Cựu/);
+        expect(screen.getByText(/1 ca thiếu định mức lương lịch sử — cần rà soát/)).toBeInTheDocument();
+        fireEvent.click(screen.getAllByRole('button', { name: /Lê Hoàng Cựu/ })[0]);
+        expect(screen.queryByLabelText('Đơn giá cho ca mới (đ/giờ)')).not.toBeInTheDocument();
+        expect(screen.getAllByText(/Thiếu hoặc sai định mức lương lịch sử/).length).toBeGreaterThan(0);
+        expect(screen.queryByText(/Chưa tan ca — chưa tính lương/)).not.toBeInTheDocument();
+    });
 });

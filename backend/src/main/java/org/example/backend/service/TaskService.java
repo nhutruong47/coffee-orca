@@ -202,67 +202,102 @@ public class TaskService {
     }
 
     private void handleInventoryDeduction(Task t, String oldStatus) {
-        if (t.getGoal() != null && t.getGoal().getTeam() != null) {
-            Team team = t.getGoal().getTeam();
-            double qty = t.getActualOutput() != null && t.getActualOutput() > 0 ? t.getActualOutput() :
-                        (t.getOutputTarget() != null && t.getOutputTarget() > 0 ? t.getOutputTarget() :
-                        (t.getWorkload() != null ? t.getWorkload() : 0.0));
-            if (qty > 0) {
-                List<InventoryItem> items = inventoryRepo.findByTeamIdOrderByProductTypeAscProductStateAsc(team.getId());
-                if (items.isEmpty()) return;
+        if (t.getGoal() == null || t.getGoal().getTeam() == null) return;
+        boolean completing = !"COMPLETED".equals(oldStatus) && "COMPLETED".equals(t.getStatus());
+        boolean reopening = "COMPLETED".equals(oldStatus) && !"COMPLETED".equals(t.getStatus());
+        if (!completing && !reopening) return;
 
-                String stage = (t.getProductionStage() != null ? t.getProductionStage() : "").toUpperCase(Locale.ROOT);
-                String titleLower = (t.getTitle() != null ? t.getTitle() : "").toLowerCase(Locale.ROOT);
-                boolean isRoasting = stage.contains("RANG") || stage.contains("ROAST") || titleLower.contains("rang");
-                boolean isPackaging = stage.contains("DONG_GOI") || stage.contains("PACK") || titleLower.contains("đóng gói");
+        double qty = t.getActualOutput() != null && t.getActualOutput() > 0 ? t.getActualOutput()
+                : (t.getOutputTarget() != null && t.getOutputTarget() > 0 ? t.getOutputTarget() : 0.0);
+        if (qty <= 0) return;
 
-                InventoryItem matched = items.stream()
-                        .filter(i -> i.getProductType() != null &&
-                                (titleLower.contains(i.getProductType().toLowerCase(Locale.ROOT)) ||
-                                 (t.getGoal().getTitle() != null && t.getGoal().getTitle().toLowerCase(Locale.ROOT).contains(i.getProductType().toLowerCase(Locale.ROOT)))))
-                        .findFirst()
-                        .orElse(items.get(0));
-                String pType = matched.getProductType();
+        String stage = (t.getProductionStage() != null ? t.getProductionStage() : "").toUpperCase(Locale.ROOT);
+        String titleLower = (t.getTitle() != null ? t.getTitle() : "").toLowerCase(Locale.ROOT);
+        boolean isQa = stage.contains("QA") || stage.contains("QC")
+                || titleLower.contains("qc") || titleLower.contains("qa")
+                || titleLower.contains("cupping") || titleLower.contains("độ ẩm");
+        if (isQa) return;
+        boolean isRoasting = stage.contains("RANG") || stage.contains("ROAST") || titleLower.contains("rang");
+        boolean isGrinding = stage.contains("XAY") || stage.contains("GRIND") || titleLower.contains("xay");
+        boolean isPackaging = stage.contains("DONG_GOI") || stage.contains("PACK") || titleLower.contains("đóng gói");
+        if (!isRoasting && !isGrinding && !isPackaging) return;
 
-                if (!"COMPLETED".equals(oldStatus) && "COMPLETED".equals(t.getStatus())) {
-                    if (isRoasting) {
-                        double greenNeeded = Math.round((qty / ROASTING_YIELD_RATIO) * 100.0) / 100.0;
-                        InventoryItem greenItem = items.stream()
-                                .filter(i -> pType.equalsIgnoreCase(i.getProductType()) && ("GREEN".equalsIgnoreCase(i.getProductState()) || "RAW_MATERIAL".equalsIgnoreCase(i.getProductType())))
-                                .findFirst().orElse(matched);
-                        greenItem.setQuantity(Math.max(0, greenItem.getQuantity() - greenNeeded));
-                        inventoryRepo.save(greenItem);
-                        checkLowStockAlert(team, greenItem);
-
-                        inventoryRepo.findByTeamIdAndProductTypeAndProductState(team.getId(), pType, "ROASTED")
-                                .ifPresent(roasted -> {
-                                    roasted.setQuantity(roasted.getQuantity() + qty);
-                                    inventoryRepo.save(roasted);
-                                });
-                    } else if (isPackaging) {
-                        InventoryItem roastedItem = items.stream()
-                                .filter(i -> pType.equalsIgnoreCase(i.getProductType()) && "ROASTED".equalsIgnoreCase(i.getProductState()))
-                                .findFirst().orElse(matched);
-                        roastedItem.setQuantity(Math.max(0, roastedItem.getQuantity() - qty));
-                        inventoryRepo.save(roastedItem);
-
-                        inventoryRepo.findByTeamIdAndProductTypeAndProductState(team.getId(), pType, "PACKAGED")
-                                .ifPresent(packaged -> {
-                                    packaged.setQuantity(packaged.getQuantity() + qty);
-                                    inventoryRepo.save(packaged);
-                                });
-                    } else {
-                        matched.setQuantity(Math.max(0, matched.getQuantity() - qty));
-                        inventoryRepo.save(matched);
-                        checkLowStockAlert(team, matched);
-                    }
-                } else if ("COMPLETED".equals(oldStatus) && !"COMPLETED".equals(t.getStatus())) {
-                    double greenRevert = isRoasting ? Math.round((qty / ROASTING_YIELD_RATIO) * 100.0) / 100.0 : qty;
-                    matched.setQuantity(matched.getQuantity() + greenRevert);
-                    inventoryRepo.save(matched);
-                }
-            }
+        Team team = t.getGoal().getTeam();
+        List<InventoryItem> items = inventoryRepo.findByTeamIdOrderByProductTypeAscProductStateAsc(team.getId());
+        if (items.isEmpty()) {
+            throw new IllegalStateException("Insufficient stock for production task: " + t.getTitle());
         }
+
+        InventoryItem matched = items.stream()
+                .filter(i -> i.getProductType() != null &&
+                        (titleLower.contains(i.getProductType().toLowerCase(Locale.ROOT)) ||
+                         (t.getGoal().getTitle() != null && t.getGoal().getTitle().toLowerCase(Locale.ROOT).contains(i.getProductType().toLowerCase(Locale.ROOT)))))
+                .findFirst()
+                .orElse(items.get(0));
+        String pType = matched.getProductType();
+        double sourceDelta = isRoasting ? Math.round((qty / ROASTING_YIELD_RATIO) * 100.0) / 100.0 : qty;
+
+        InventoryItem source;
+        String targetState;
+        if (isRoasting) {
+            source = findProductState(items, pType, "GREEN")
+                    .or(() -> items.stream().filter(i -> pType.equalsIgnoreCase(i.getProductType()) && "RAW_MATERIAL".equalsIgnoreCase(i.getProductType())).findFirst())
+                    .orElseThrow(() -> new IllegalStateException("Insufficient stock: " + pType + " GREEN"));
+            targetState = "ROASTED";
+        } else if (isGrinding) {
+            source = findProductState(items, pType, "ROASTED")
+                    .orElseThrow(() -> new IllegalStateException("Insufficient stock: " + pType + " ROASTED"));
+            targetState = "GROUND";
+        } else {
+            source = findProductState(items, pType, "GROUND")
+                    .filter(i -> completing ? i.getQuantity() >= qty : i.getQuantity() >= 0)
+                    .or(() -> findProductState(items, pType, "ROASTED"))
+                    .orElseThrow(() -> new IllegalStateException("Insufficient stock: " + pType + " ROASTED/GROUND"));
+            targetState = "PACKAGED";
+        }
+
+        if (completing) {
+            if (source.getQuantity() < sourceDelta) {
+                throw new IllegalStateException("Insufficient stock: " + pType + " " + source.getProductState());
+            }
+            source.setQuantity(source.getQuantity() - sourceDelta);
+            inventoryRepo.save(source);
+            checkLowStockAlert(team, source);
+
+            InventoryItem target = findProductState(items, pType, targetState)
+                    .or(() -> inventoryRepo.findByTeamIdAndProductTypeAndProductState(team.getId(), pType, targetState))
+                    .orElseGet(() -> newInventoryItem(team, pType, targetState));
+            target.setQuantity(target.getQuantity() + qty);
+            inventoryRepo.save(target);
+        } else {
+            InventoryItem target = findProductState(items, pType, targetState)
+                    .or(() -> inventoryRepo.findByTeamIdAndProductTypeAndProductState(team.getId(), pType, targetState))
+                    .orElseThrow(() -> new IllegalStateException("Cannot revert task; missing output stock: " + pType + " " + targetState));
+            if (target.getQuantity() < qty) {
+                throw new IllegalStateException("Cannot revert task; output stock already consumed: " + pType + " " + targetState);
+            }
+            target.setQuantity(target.getQuantity() - qty);
+            inventoryRepo.save(target);
+            source.setQuantity(source.getQuantity() + sourceDelta);
+            inventoryRepo.save(source);
+        }
+    }
+
+    private Optional<InventoryItem> findProductState(List<InventoryItem> items, String productType, String state) {
+        return items.stream()
+                .filter(i -> productType != null && productType.equalsIgnoreCase(i.getProductType())
+                        && state.equalsIgnoreCase(i.getProductState()))
+                .findFirst();
+    }
+
+    private InventoryItem newInventoryItem(Team team, String productType, String productState) {
+        InventoryItem item = new InventoryItem();
+        item.setTeam(team);
+        item.setProductType(productType);
+        item.setProductState(productState);
+        item.setQuantity(0.0);
+        item.setUnit("kg");
+        return item;
     }
 
     private void checkLowStockAlert(Team team, InventoryItem item) {
