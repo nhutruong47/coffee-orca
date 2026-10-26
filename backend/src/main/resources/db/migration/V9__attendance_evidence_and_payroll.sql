@@ -27,8 +27,8 @@ ALTER TABLE attendances ADD COLUMN IF NOT EXISTS overtime_multiplier DOUBLE PREC
 CREATE TABLE IF NOT EXISTS attendance_settings (
     id UUID PRIMARY KEY,
     team_id UUID NOT NULL UNIQUE REFERENCES teams(id) ON DELETE CASCADE,
-    work_start_time VARCHAR(20) DEFAULT '08:00',
-    work_end_time VARCHAR(20) DEFAULT '17:00',
+    work_start_time TIME DEFAULT '08:00:00',
+    work_end_time TIME DEFAULT '17:00:00',
     standard_hours DOUBLE PRECISION DEFAULT 8.0,
     break_minutes INTEGER DEFAULT 60,
     hourly_rate_vnd DOUBLE PRECISION DEFAULT 50000.0,
